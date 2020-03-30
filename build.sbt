@@ -1,4 +1,4 @@
-name := "viva2020"
+name := "tap-2020-base"
 
 version := "0.1"
 
