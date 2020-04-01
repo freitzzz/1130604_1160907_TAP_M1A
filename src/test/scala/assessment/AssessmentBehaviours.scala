@@ -12,17 +12,17 @@ import scala.xml.Elem
 trait AssessmentBehaviours {
   this: AnyFunSuite =>
 
-  val IN = "_in.xml" // Input file termination
-  val OUT = "_out.xml" // Input file termination
-  val OUTERROR = "_outerror.xml" // Input file termination
-  def PATH: String // Assessment file path
+  val IN = "_in.xml"              // Input file termination
+  val OUT = "_out.xml"            // Output file termination
+  val OUTERROR = "_outerror.xml"  // Error file termination
+  def PATH: String                // Assessment file path
 
   private def testXml(eoxml: Elem, oxml: Elem): Try[Boolean] = {
     val cmp = XmlCompare.compare(eoxml,oxml)
     if (cmp.isEqual) Success(true) else Failure(new Exception(cmp.message))
   }
 
-  def testWithFailure(t: Throwable, f: File): (File, Try[Boolean]) = {
+  private def testWithFailure(t: Throwable, f: File): (File, Try[Boolean]) = {
     val efn = f.getPath.replace(IN, OUTERROR)
     val fileError = loadError(efn).getMessage
     val test = if (t.getMessage.equals(fileError)) Success(true)
@@ -30,7 +30,7 @@ trait AssessmentBehaviours {
     (f, test)
   }
 
-  def testWithSuccess(xml: Elem, f: File): (File, Try[Boolean])= {
+  private def testWithSuccess(xml: Elem, f: File): (File, Try[Boolean])= {
     val ofn = f.getPath.replace(IN, OUT)
 
     val test = for {
@@ -54,7 +54,7 @@ trait AssessmentBehaviours {
       val numTests = testInputFiles.size
       val tested = testInputFiles.map(testFile(_, ms))
       tested.foreach { case (f, t) => println(s"File: ${f.getName} Result: $t") }
-      val passedTests = tested.count { case (_, t) => t.isSuccess }
+      val passedTests = tested.filter { case (_, t) => t.isSuccess }.length
       val ratio : Int = (passedTests*100) / numTests
       println(s"Final score: $passedTests / ${testInputFiles.size} = $ratio")
       assert(passedTests==numTests)
