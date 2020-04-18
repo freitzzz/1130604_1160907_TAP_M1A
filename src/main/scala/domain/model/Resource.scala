@@ -7,6 +7,7 @@ sealed abstract class Resource(id: String,
 
   def hasRole(role: Role): Boolean = this.roles.contains(role)
 
+}
 
 object Resource {
 
