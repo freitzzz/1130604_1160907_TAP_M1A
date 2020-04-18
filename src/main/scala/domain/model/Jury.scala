@@ -17,7 +17,9 @@ object Jury {
              adviser: Resource,
              supervisors: List[Resource],
              coAdvisers: List[Resource]) = {
-    if (president.hasRole[President] && adviser.hasRole[Adviser]) {
+    if (president.hasRole(President()) && adviser.hasRole(Adviser()) && supervisors
+          .forall(s => s.hasRole(Supervisor())) && coAdvisers
+          .forall(co => co.hasRole(CoAdviser()))) {
       Some(new Jury(president, adviser, supervisors, coAdvisers) {})
     } else {
       None
