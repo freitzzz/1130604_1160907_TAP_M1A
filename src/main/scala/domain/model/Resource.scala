@@ -5,10 +5,8 @@ sealed abstract class Resource(id: String,
                                availabilities: List[Availability],
                                roles: List[Role]) {
 
-  def hasRole[R](): Boolean = {
-    this.roles.exists(role => role.isInstanceOf[R])
-  }
-}
+  def hasRole(role: Role): Boolean = this.roles.contains(role)
+
 
 object Resource {
 
