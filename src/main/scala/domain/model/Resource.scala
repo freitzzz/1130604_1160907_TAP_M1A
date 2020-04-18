@@ -3,7 +3,12 @@ package domain.model
 sealed abstract class Resource(id: String,
                                name: String,
                                availabilities: List[Availability],
-                               roles: List[Role]) {}
+                               roles: List[Role]) {
+
+  def hasRole[R](): Boolean = {
+    this.roles.exists(role => role.isInstanceOf[R])
+  }
+}
 
 object Resource {
 
