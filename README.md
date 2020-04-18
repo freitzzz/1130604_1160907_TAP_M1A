@@ -12,12 +12,15 @@ To improve the quality of the software being produced, one must adopt and define
 - Don't over-engineer. Think twice before designing and writing the code of your solution. Simple is difficult.
 - Don't re-engineer. Whenever possible take advantage of Scala APIs.
 - Design for reusability and maintainability with Functional Programming (FP) techniques such as High Order Functions (HOF) and Pattern Matching. In the same way that you pass functions as arguments in HOF, inject all non-function dependencies to your function via parameters. Always work with only that is the input of the function.
+- Declare domain classes as ADT (Algebric Data Types) and with the use of smart constructors validate the domain rules specific to the class. If the validation is successful return a `Some` with the instance of the class else return an empty `None`.
 - Unit test the conditions of your functions.
 - Enhance your domain correctness with the use of property-based testing. Design exhaustive generators that match *real* (expected) data to test the behavior of your functions.
 - Use [scalatest](http://www.scalatest.org/) as the unit testing framework.
 - Use [scalacheck](https://www.scalacheck.org/) as the property-based testing framework.
 - Use [Mockito](https://site.mockito.org/) for mocking dependencies and enhancing your test value and experience. Scalatest already provides [support for Mockito](http://www.scalatest.org/user_guide/testing_with_mock_objects#mockito) so take advantage of it.
 - Adopt a TDD approach when implementing functional code. It eases the implementation so much, as with the tests already defined, **you know the inputs, outputs and behavior** of your functions, and with this you just need to adapt your implementation to support the expected behavior.
+- Adopt the AAA (Arrange-Act-Assert) pattern when designing unit tests as it improves the readability and comprehension of the test by dividing the test body in three phases.
+- Take advantage of the [Matchers](http://www.scalatest.org/user_guide/using_matchers) API of `scalatest` in unit tests as it improves the readability and comprehension of the test by providing a rich grammar of comparison connectors specific of the testing domain.
 - Recur to [scala-xml](https://www.scala-lang.org/api/2.9.3/scala/xml/XML$.html) API for serializing, deserializing and manipulating XML documents.
 - Recur to `LocalDateTime` and `OffsetDateTime` APIs for date and time representations and operations. They are well tested implementations and are compatible with scala-xml API.
 - Use [sbt](https://www.scala-sbt.org/) as the build tool.
