@@ -10,6 +10,15 @@ abstract case class Jury private (president: Resource,
   override def hashCode(): Int =
     president.hashCode() + adviser.hashCode() + supervisors
       .hashCode() + coAdvisers.hashCode()
+
+  def asResourcesSet(): Set[Resource] = {
+    val supervisorSet = supervisors.toSet
+    val coAdvisersSet = coAdvisers.toSet
+    val presidentsSet = Set(president)
+    val advisersSet = Set(adviser)
+
+    supervisorSet ++ coAdvisersSet ++ presidentsSet ++ advisersSet
+  }
 }
 
 object Jury {

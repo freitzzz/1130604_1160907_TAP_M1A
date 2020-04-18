@@ -292,6 +292,53 @@ class JuryTest extends AnyFunSuite with Matchers {
     equality shouldBe false
   }
 
+  test("jury with multiple elements, count should be equal to initial elements") {
+
+    // Arrange
+    val president = Teacher(
+      id = "Teacher 001",
+      name = "Fake Teacher",
+      availabilities = generateAvailabilities,
+      roles = List[Role](generatePresident())
+    )
+
+    val adviser = Teacher(
+      id = "Teacher 001",
+      name = "Fake Teacher",
+      availabilities = generateAvailabilities,
+      roles = List[Role](generateAdviser())
+    )
+
+    val supervisor = External(
+      id = "Teacher 001",
+      name = "Fake Teacher",
+      availabilities = generateAvailabilities,
+      roles = List[Role](generateSupervisor())
+    )
+
+    val coAdviser = External(
+      id = "Teacher 001",
+      name = "Fake Teacher",
+      availabilities = generateAvailabilities,
+      roles = List[Role](generateCoAdviser())
+    )
+
+    // Act
+
+    val jury =
+      Jury.create(
+        president,
+        adviser,
+        List[Resource](supervisor),
+        List[Resource](coAdviser)
+      )
+
+    val jurySet = jury.get.asResourcesSet()
+    //Assert
+
+    jurySet.size shouldBe 4
+  }
+
   def generateAvailability(pref: Int): Availability = {
 
     val start = LocalDateTime.now()
