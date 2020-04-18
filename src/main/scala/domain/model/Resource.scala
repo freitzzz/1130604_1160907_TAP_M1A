@@ -11,7 +11,8 @@ object Resource {
                     name: String,
                     availabilities: List[Availability],
                     roles: List[Role]): Boolean = {
-    availabilities.distinct.size == availabilities.size && roles.nonEmpty
+    availabilities.distinct.size == availabilities.size && roles.nonEmpty && roles.distinct.size == roles.size
+
   }
 
 }
@@ -28,7 +29,7 @@ object Teacher {
              availabilities: List[Availability],
              roles: List[Role]): Option[Teacher] = {
     if (Resource.validResource(id, name, availabilities, roles)
-        && !roles.exists((role) => role.getClass == Supervisor.getClass))
+        && !roles.exists(role => role.isInstanceOf[Supervisor]))
       Some(new Teacher(id, name, availabilities, roles))
     else
       None
@@ -48,8 +49,7 @@ object External {
              roles: List[Role]): Option[External] = {
     if (Resource.validResource(id, name, availabilities, roles)
         && !roles.exists(
-          (role) =>
-            role.getClass == President.getClass || role.getClass == Adviser.getClass
+          role => role.isInstanceOf[President] || role.isInstanceOf[Adviser]
         ))
       Some(new External(id, name, availabilities, roles))
     else
