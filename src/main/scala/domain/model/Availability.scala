@@ -4,7 +4,13 @@ import java.time.LocalDateTime
 
 abstract case class Availability private (start: LocalDateTime,
                                           end: LocalDateTime,
-                                          preference: Int)
+                                          preference: Int) {
+
+  override def equals(o: Any): Boolean = this.hashCode() == o.hashCode()
+
+  override def hashCode(): Int = start.hashCode() + end.hashCode() + preference
+}
+
 object Availability {
   def create(start: LocalDateTime,
              end: LocalDateTime,
