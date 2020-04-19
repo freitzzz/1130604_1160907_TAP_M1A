@@ -17,7 +17,7 @@ object Main {
     //val outputFileName = scala.io.StdIn.readLine()
 
     val fileLoader = FileIO.load(
-      "C:\\Tap\\1130604_1160907_tap_m1a\\files\\assessment\\ms01\\valid_agenda_in.xml"
+      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms01/valid_agenda_in.xml"
     )
 
     val agenda = fileLoader.get
@@ -40,19 +40,9 @@ object Main {
           })
       )
 
-    val test = roles
+    val mappedRoles = roles
       .groupBy(role => role._1)
-      .map(role => role._2)
-      .flatten
-      .map(role => role._2)
-    println(test)
-
-    val mappedRoles = roles.groupMap(key => key._1)(
-      value =>
-        roles
-          .filter(role => role._1 == value._1)
-          .map(x => x._2.get)
-    )
+      .map(roleTuple => (roleTuple._1, roleTuple._2.map(tuple => tuple._2.get)))
 
     println(mappedRoles)
 
@@ -79,7 +69,7 @@ object Main {
                       .get
                 )
                 .toList,
-              roles = List[Role]()
+              roles = mappedRoles(valueNode.attributes("id").toString()).toList
           )
       )
 
@@ -87,14 +77,15 @@ object Main {
 
     // Retrieve externals
     val externalsXML = agenda \ "resources" \ "externals" \ "external"
+
     val mappedExternals = externalsXML
-      .map(
-        node =>
+      .groupMap(keyNode => keyNode.attributes("id").toString())(
+        valueNode =>
           External
             .create(
-              node.attributes("id").toString(),
-              node.attributes("name").toString(),
-              (node \ "availability")
+              valueNode.attributes("id").toString(),
+              valueNode.attributes("name").toString(),
+              (valueNode \ "availability")
                 .map(
                   childNode =>
                     Availability
@@ -108,11 +99,11 @@ object Main {
                       .get
                 )
                 .toList,
-              roles = List[Role]()
-            )
-            .get
+              roles = mappedRoles(valueNode.attributes("id").toString()).toList
+          )
       )
-      .toList
+
+    println(mappedExternals)
 
     //
 
