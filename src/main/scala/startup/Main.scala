@@ -4,6 +4,7 @@ import domain.model._
 import io.FileIO
 import java.time.LocalDateTime
 
+import scala.util.{Failure, Try}
 import scala.xml.XML
 
 object Main {
@@ -42,7 +43,7 @@ object Main {
 
     val mappedRoles = roles
       .groupBy(role => role._1)
-      .map(roleTuple => (roleTuple._1, roleTuple._2.map(tuple => tuple._2.get)))
+      .map(entry => (entry._1, entry._2.map(tuple => tuple._2.get).distinct))
 
     println(mappedRoles)
 
@@ -69,7 +70,9 @@ object Main {
                       .get
                 )
                 .toList,
-              roles = mappedRoles(valueNode.attributes("id").toString()).toList
+              roles = mappedRoles
+                .getOrElse(valueNode.attributes("id").toString(), List.empty)
+                .toList
           )
       )
 
@@ -99,9 +102,14 @@ object Main {
                       .get
                 )
                 .toList,
-              roles = mappedRoles(valueNode.attributes("id").toString()).toList
+              roles = mappedRoles
+                .getOrElse(valueNode.attributes("id").toString(), List.empty)
+                .toList
           )
       )
+    // TODO: There may exist teachers or externals that are not on vivas and the mapped results will indicate it as None
+    // However None can also be indicated by an illegal state of a domain class which causes conflict to verify if the
+    // domain is valid
 
     println(mappedExternals)
 
