@@ -11,7 +11,7 @@ abstract case class Jury private (president: Resource,
     president.hashCode() + adviser.hashCode() + supervisors
       .hashCode() + coAdvisers.hashCode()
 
-  def asResourcesSet(): Set[Resource] = {
+  def asResourcesSet: Set[Resource] = {
     val supervisorSet = supervisors.toSet
     val coAdvisersSet = coAdvisers.toSet
     val presidentsSet = Set(president)
@@ -25,7 +25,7 @@ object Jury {
   def create(president: Resource,
              adviser: Resource,
              supervisors: List[Resource],
-             coAdvisers: List[Resource]) = {
+             coAdvisers: List[Resource]): Option[Jury] = {
     if (president.hasRole(President()) && adviser.hasRole(Adviser()) && supervisors
           .forall(s => s.hasRole(Supervisor())) && coAdvisers
           .forall(co => co.hasRole(CoAdviser()))) {
