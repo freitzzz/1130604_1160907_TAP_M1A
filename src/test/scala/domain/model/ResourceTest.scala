@@ -333,4 +333,226 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
   }
 
+  test(
+    "given a period of time in which the resource is available on, availabilityOn returns the resource availability that complies with the defined period of time"
+  ) {
+
+    // Arrange
+
+    val id = "1"
+
+    val name = "John"
+
+    val roleX = CoAdviser()
+
+    val roleY = Supervisor()
+
+    val startDateTimeX = LocalDateTime.now()
+
+    val endDateTimeX = startDateTimeX.plusMinutes(5)
+
+    val preferenceX = 5
+
+    val availabilityX =
+      Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
+
+    val startDateTimeY = startDateTimeX.plusMinutes(6)
+
+    val endDateTimeY = startDateTimeY.plusMinutes(5)
+
+    val preferenceY = 5
+
+    val availabilityY =
+      Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
+
+    val availabilities = List[Availability](availabilityX, availabilityY)
+
+    val roles = List[Role](roleX, roleY)
+
+    // Act
+
+    val periodWhichResourceIsAvailableOnStart = startDateTimeX.plusMinutes(3)
+
+    val periodWhichResourceIsAvailableOnEnd = endDateTimeX
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val availabilityOnGivenPeriod = external.availabilityOn(
+      periodWhichResourceIsAvailableOnStart,
+      periodWhichResourceIsAvailableOnEnd
+    )
+
+    val expectedAvailability = availabilityX
+
+    // Assert
+
+    availabilityOnGivenPeriod shouldBe Some(expectedAvailability)
+
+  }
+
+  test(
+    "given a period of time in which the resource is not available, availabilityOn returns the resource availability that complies with the defined period of time"
+  ) {
+
+    // Arrange
+
+    val id = "1"
+
+    val name = "John"
+
+    val roleX = CoAdviser()
+
+    val roleY = Supervisor()
+
+    val startDateTimeX = LocalDateTime.now()
+
+    val endDateTimeX = startDateTimeX.plusMinutes(5)
+
+    val preferenceX = 5
+
+    val availabilityX =
+      Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
+
+    val startDateTimeY = startDateTimeX.plusMinutes(6)
+
+    val endDateTimeY = startDateTimeY.plusMinutes(5)
+
+    val preferenceY = 5
+
+    val availabilityY =
+      Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
+
+    val availabilities = List[Availability](availabilityX, availabilityY)
+
+    val roles = List[Role](roleX, roleY)
+
+    // Act
+
+    val periodWhichResourceIsAvailableOnStart = startDateTimeX.plusMinutes(3)
+
+    val periodWhichResourceIsAvailableOnEnd = endDateTimeY
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val availabilityOnGivenPeriod = external.availabilityOn(
+      periodWhichResourceIsAvailableOnStart,
+      periodWhichResourceIsAvailableOnEnd
+    )
+
+    // Assert
+
+    availabilityOnGivenPeriod shouldBe None
+
+  }
+
+  test(
+    "given a period of time in which the resource is available on, isAvailableOn returns boolean true"
+  ) {
+
+    // Arrange
+
+    val id = "1"
+
+    val name = "John"
+
+    val roleX = CoAdviser()
+
+    val roleY = Supervisor()
+
+    val startDateTimeX = LocalDateTime.now()
+
+    val endDateTimeX = startDateTimeX.plusMinutes(5)
+
+    val preferenceX = 5
+
+    val availabilityX =
+      Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
+
+    val startDateTimeY = startDateTimeX.plusMinutes(6)
+
+    val endDateTimeY = startDateTimeY.plusMinutes(5)
+
+    val preferenceY = 5
+
+    val availabilityY =
+      Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
+
+    val availabilities = List[Availability](availabilityX, availabilityY)
+
+    val roles = List[Role](roleX, roleY)
+
+    // Act
+
+    val periodWhichResourceIsAvailableOnStart = startDateTimeX.plusMinutes(3)
+
+    val periodWhichResourceIsAvailableOnEnd = endDateTimeX
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val isAvailableOnGivenPeriod = external.isAvailableOn(
+      periodWhichResourceIsAvailableOnStart,
+      periodWhichResourceIsAvailableOnEnd
+    )
+
+    // Assert
+
+    isAvailableOnGivenPeriod shouldBe true
+
+  }
+
+  test(
+    "given a period of time in which the resource is not available, isAvailableOn returns boolean true"
+  ) {
+
+    // Arrange
+
+    val id = "1"
+
+    val name = "John"
+
+    val roleX = CoAdviser()
+
+    val roleY = Supervisor()
+
+    val startDateTimeX = LocalDateTime.now()
+
+    val endDateTimeX = startDateTimeX.plusMinutes(5)
+
+    val preferenceX = 5
+
+    val availabilityX =
+      Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
+
+    val startDateTimeY = startDateTimeX.plusMinutes(6)
+
+    val endDateTimeY = startDateTimeY.plusMinutes(5)
+
+    val preferenceY = 5
+
+    val availabilityY =
+      Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
+
+    val availabilities = List[Availability](availabilityX, availabilityY)
+
+    val roles = List[Role](roleX, roleY)
+
+    // Act
+
+    val periodWhichResourceIsAvailableOnStart = startDateTimeX.plusMinutes(3)
+
+    val periodWhichResourceIsAvailableOnEnd = endDateTimeY
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val isAvailableOnGivenPeriod = external.isAvailableOn(
+      periodWhichResourceIsAvailableOnStart,
+      periodWhichResourceIsAvailableOnEnd
+    )
+
+    // Assert
+
+    isAvailableOnGivenPeriod shouldBe false
+
+  }
+
 }

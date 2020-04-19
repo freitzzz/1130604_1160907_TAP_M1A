@@ -1,11 +1,24 @@
 package domain.model
 
+import java.time.LocalDateTime
+import scala.math.Ordering.Implicits._
+
 sealed abstract class Resource(id: String,
                                name: String,
                                availabilities: List[Availability],
                                roles: List[Role]) {
 
   def hasRole(role: Role): Boolean = this.roles.contains(role)
+
+  def isAvailableOn(start: LocalDateTime, end: LocalDateTime): Boolean =
+    availabilityOn(start, end).nonEmpty
+
+  def availabilityOn(start: LocalDateTime,
+                     end: LocalDateTime): Option[Availability] = {
+    availabilities.find(
+      availability => start >= availability.start && end <= availability.end
+    )
+  }
 
 }
 
