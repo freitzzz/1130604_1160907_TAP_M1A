@@ -1,7 +1,9 @@
 package domain.model
 
 import java.time.LocalDateTime
+
 import scala.math.Ordering.Implicits._
+import scala.util.{Failure, Success, Try}
 
 sealed abstract class Resource(id: String,
                                name: String,
@@ -27,9 +29,22 @@ object Resource {
   def validResource(id: String,
                     name: String,
                     availabilities: List[Availability],
-                    roles: List[Role]): Boolean = {
-    availabilities.distinct.size == availabilities.size && roles.nonEmpty && roles.distinct.size == roles.size
+                    roles: List[Role]): Try[Any] = {
 
+    if (availabilities.distinct.size != availabilities.size)
+      Failure(
+        new IllegalArgumentException(
+          "Resource cannot have duplicate availabilities"
+        )
+      )
+    else if (roles.isEmpty)
+      Failure(new IllegalArgumentException("Resource needs at least one role"))
+    else if (roles.distinct.size != roles.size)
+      Failure(
+        new IllegalArgumentException("Resource cannot have duplicate roles")
+      )
+    else
+      Success(null)
   }
 
 }
@@ -44,12 +59,19 @@ object Teacher {
   def create(id: String,
              name: String,
              availabilities: List[Availability],
-             roles: List[Role]): Option[Teacher] = {
-    if (Resource.validResource(id, name, availabilities, roles)
-        && !roles.exists(role => role.isInstanceOf[Supervisor]))
-      Some(new Teacher(id, name, availabilities, roles))
+             roles: List[Role]): Try[Teacher] = {
+    val validResource = Resource.validResource(id, name, availabilities, roles)
+
+    if (validResource.isFailure)
+      Failure(validResource.failed.get)
+    else if (roles.exists(role => role.isInstanceOf[Supervisor]))
+      Failure(
+        new IllegalArgumentException(
+          "Teacher cannot have the role of supervisor"
+        )
+      )
     else
-      None
+      Success(new Teacher(id, name, availabilities, roles))
   }
 }
 
@@ -63,13 +85,23 @@ object External {
   def create(id: String,
              name: String,
              availabilities: List[Availability],
-             roles: List[Role]): Option[External] = {
-    if (Resource.validResource(id, name, availabilities, roles)
-        && !roles.exists(
-          role => role.isInstanceOf[President] || role.isInstanceOf[Adviser]
-        ))
-      Some(new External(id, name, availabilities, roles))
+             roles: List[Role]): Try[External] = {
+    val validResource = Resource.validResource(id, name, availabilities, roles)
+
+    if (validResource.isFailure)
+      Failure(validResource.failed.get)
+    else if (roles.exists(role => role.isInstanceOf[President]))
+      Failure(
+        new IllegalArgumentException(
+          "External cannot have the role of president"
+        )
+      )
+    else if (roles.exists(role => role.isInstanceOf[Adviser]))
+      Failure(
+        new IllegalArgumentException("External cannot have the role of adviser")
+      )
     else
-      None
+      Success(new External(id, name, availabilities, roles))
+
   }
 }

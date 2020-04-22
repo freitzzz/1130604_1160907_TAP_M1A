@@ -29,7 +29,8 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val isValid = Resource.validResource(id, name, availabilities, roles)
+    val isValid =
+      Resource.validResource(id, name, availabilities, roles).isSuccess
 
     // Assert
 
@@ -55,7 +56,8 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val isValid = Resource.validResource(id, name, availabilities, roles)
+    val isValid =
+      Resource.validResource(id, name, availabilities, roles).isSuccess
 
     // Assert
 
@@ -85,7 +87,8 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val isValid = Resource.validResource(id, name, availabilities, roles)
+    val isValid =
+      Resource.validResource(id, name, availabilities, roles).isSuccess
 
     // Assert
 
@@ -115,7 +118,8 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val isValid = Resource.validResource(id, name, availabilities, roles)
+    val isValid =
+      Resource.validResource(id, name, availabilities, roles).isSuccess
 
     // Assert
 
@@ -141,7 +145,8 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val isValid = Resource.validResource(id, name, availabilities, roles)
+    val isValid =
+      Resource.validResource(id, name, availabilities, roles).isSuccess
 
     // Assert
 
@@ -169,7 +174,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    teacher shouldBe None
+    teacher.isFailure shouldBe true
 
   }
 
@@ -193,7 +198,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    teacher shouldBe Some(teacher.get)
+    teacher.isSuccess shouldBe true
 
   }
 
@@ -217,7 +222,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    external shouldBe None
+    external.isFailure shouldBe true
 
   }
 
@@ -241,7 +246,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    external shouldBe None
+    external.isFailure shouldBe true
 
   }
 
@@ -269,7 +274,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    external shouldBe Some(external.get)
+    external.isSuccess shouldBe true
 
   }
 

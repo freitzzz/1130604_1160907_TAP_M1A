@@ -31,7 +31,7 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     //Assert
 
-    jury shouldBe None
+    jury.isFailure shouldBe true
   }
 
   test("jury should not accept to be constituted without adviser") {
@@ -58,7 +58,7 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     //Assert
 
-    jury shouldBe None
+    jury.isFailure shouldBe true
   }
 
   test("jury with supervisors should all be supervisors") {
@@ -97,7 +97,7 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     //Assert
 
-    jury shouldBe None
+    jury.isFailure shouldBe true
   }
 
   test("jury with coadvisers should all be coadvisers") {
@@ -136,7 +136,7 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     //Assert
 
-    jury shouldBe None
+    jury.isFailure shouldBe true
   }
 
   test("jury with correct elements should be constituted") {
@@ -181,7 +181,7 @@ class JuryTest extends AnyFunSuite with Matchers {
       )
 
     //Assert
-    jury shouldBe Some(jury.get)
+    jury.isSuccess shouldBe true
   }
 
   test(
@@ -333,7 +333,7 @@ class JuryTest extends AnyFunSuite with Matchers {
         List[Resource](coAdviser)
       )
 
-    val jurySet = jury.get.asResourcesSet()
+    val jurySet = jury.get.asResourcesSet
     //Assert
 
     jurySet.size shouldBe 4

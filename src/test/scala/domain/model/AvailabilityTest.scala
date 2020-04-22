@@ -11,7 +11,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val start = LocalDateTime.now()
+    val start = LocalDateTime.now() //
     val end = start.plusMinutes(5)
     val preference = 0
 
@@ -21,7 +21,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    availability shouldBe None
+    availability.isFailure shouldBe true
 
   }
 
@@ -39,7 +39,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    availability shouldBe None
+    availability.isFailure shouldBe true
 
   }
 
@@ -57,7 +57,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    availability shouldBe None
+    availability.isFailure shouldBe true
 
   }
 
@@ -75,7 +75,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    availability shouldBe None
+    availability.isFailure shouldBe true
 
   }
 
@@ -95,7 +95,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    availability shouldBe Some(availability.get)
+    availability.isSuccess shouldBe true
 
   }
 

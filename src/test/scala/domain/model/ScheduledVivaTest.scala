@@ -72,7 +72,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    scheduledViva shouldBe None
+    scheduledViva.isFailure shouldBe true
 
   }
 
@@ -142,8 +142,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    scheduledViva shouldBe None
-
+    scheduledViva.isFailure shouldBe true
   }
 
   test(
@@ -215,8 +214,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    scheduledViva shouldBe Some(scheduledViva.get)
-
+    scheduledViva.isSuccess shouldBe true
   }
 
   test(
@@ -297,7 +295,5 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     // Assert
 
     scheduledViva.scheduledPreference shouldBe expectedScheduledVivaPreference
-
   }
-
 }

@@ -2,6 +2,8 @@ package domain.model
 
 import java.time.LocalDateTime
 
+import scala.util.{Failure, Success, Try}
+
 abstract case class Availability private (start: LocalDateTime,
                                           end: LocalDateTime,
                                           preference: Int) {
@@ -14,10 +16,14 @@ abstract case class Availability private (start: LocalDateTime,
 object Availability {
   def create(start: LocalDateTime,
              end: LocalDateTime,
-             preference: Int): Option[Availability] = {
-    if (preference <= 0 || preference > 10 || end.isBefore(start))
-      None
+             preference: Int): Try[Availability] = {
+    if (preference <= 0 || preference > 5 || end.isBefore(start))
+      Failure(
+        new IllegalArgumentException(
+          "#todo: this exception name will not be valuable as refactor of preference and date times to their own classes"
+        )
+      )
     else
-      Some(new Availability(start, end, preference) {})
+      Success(new Availability(start, end, preference) {})
   }
 }
