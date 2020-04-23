@@ -1,8 +1,6 @@
 package domain.model
 
-import java.time.LocalDateTime
-
-import scala.util.{Failure, Success, Try}
+import scala.util.{Success, Try}
 
 abstract case class Availability private (period: Period,
                                           preference: Preference) {
