@@ -1,30 +1,17 @@
 package domain.model
 
-import java.time.LocalDateTime
+import scala.util.{Success, Try}
 
-import scala.util.{Failure, Success, Try}
-
-abstract case class Availability private (start: LocalDateTime,
-                                          end: LocalDateTime,
+abstract case class Availability private (period: Period,
                                           preference: Preference) {
 
   override def equals(o: Any): Boolean = this.hashCode() == o.hashCode()
 
   override def hashCode(): Int =
-    start.hashCode() + end.hashCode() + preference.value
+    period.hashCode() + preference.value
 }
 
 object Availability {
-  def create(start: LocalDateTime,
-             end: LocalDateTime,
-             preference: Preference): Try[Availability] = {
-    if (end.isBefore(start))
-      Failure(
-        new IllegalArgumentException(
-          "#todo: this exception name will not be valuable as refactor of preference and date times to their own classes"
-        )
-      )
-    else
-      Success(new Availability(start, end, preference) {})
-  }
+  def create(period: Period, preference: Preference): Try[Availability] =
+    Success(new Availability(period, preference) {})
 }

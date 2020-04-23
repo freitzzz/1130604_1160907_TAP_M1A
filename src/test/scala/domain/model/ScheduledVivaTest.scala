@@ -7,91 +7,6 @@ import org.scalatest.matchers.should.Matchers
 
 class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
-  test("start date time cannot be after end date time") {
-
-    // Arrange
-
-    val student = NonEmptyString.create("Doe").get
-
-    val title =
-      NonEmptyString
-        .create(
-          "Understanding Parallelism Programming with Functional Programming Paradigm"
-        )
-        .get
-
-    val presidentAvailabilityStartDateTime = LocalDateTime.now()
-
-    val presidentAvailabilityEndDateTime =
-      presidentAvailabilityStartDateTime.plusMinutes(10)
-
-    val presidentAvailabilityPreference = Preference.create(5).get
-
-    val presidentAvailability = Availability
-      .create(
-        presidentAvailabilityStartDateTime,
-        presidentAvailabilityEndDateTime,
-        presidentAvailabilityPreference
-      )
-      .get
-
-    val adviserAvailabilityStartDateTime =
-      presidentAvailabilityStartDateTime.plusMinutes(5)
-
-    val adviserAvailabilityEndDateTime =
-      presidentAvailabilityStartDateTime.plusMinutes(15)
-
-    val adviserAvailabilityPreference = Preference.create(3).get
-
-    val adviserAvailability = Availability
-      .create(
-        adviserAvailabilityStartDateTime,
-        adviserAvailabilityEndDateTime,
-        adviserAvailabilityPreference
-      )
-      .get
-
-    val president = Teacher
-      .create(
-        NonEmptyString.create("1").get,
-        NonEmptyString.create("John").get,
-        List(presidentAvailability),
-        List(President())
-      )
-      .get
-
-    val adviser =
-      Teacher
-        .create(
-          NonEmptyString.create("2").get,
-          NonEmptyString.create("Doe").get,
-          List(adviserAvailability),
-          List(Adviser())
-        )
-        .get
-
-    val jury = Jury.create(president, adviser, List.empty, List.empty).get
-
-    val viva = Viva.create(student, title, jury).get
-
-    val scheduledVivaStartDateTime = presidentAvailabilityEndDateTime
-
-    val scheduledVivaEndDateTime = presidentAvailabilityStartDateTime
-
-    // Act
-
-    val scheduledViva = ScheduledViva.create(
-      viva,
-      scheduledVivaStartDateTime,
-      scheduledVivaEndDateTime
-    )
-
-    // Assert
-
-    scheduledViva.isFailure shouldBe true
-
-  }
-
   test("scheduled viva time period must comply with jury availabilities") {
 
     // Arrange
@@ -110,14 +25,17 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val presidentAvailabilityEndDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(10)
 
+    val presidentAvailabilityPeriod = Period
+      .create(
+        presidentAvailabilityStartDateTime,
+        presidentAvailabilityEndDateTime
+      )
+      .get
+
     val presidentAvailabilityPreference = Preference.create(5).get
 
     val presidentAvailability = Availability
-      .create(
-        presidentAvailabilityStartDateTime,
-        presidentAvailabilityEndDateTime,
-        presidentAvailabilityPreference
-      )
+      .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
       .get
 
     val adviserAvailabilityStartDateTime =
@@ -126,14 +44,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val adviserAvailabilityEndDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(15)
 
+    val adviserAvailabilityPeriod = Period
+      .create(adviserAvailabilityStartDateTime, adviserAvailabilityEndDateTime)
+      .get
+
     val adviserAvailabilityPreference = Preference.create(3).get
 
     val adviserAvailability = Availability
-      .create(
-        adviserAvailabilityStartDateTime,
-        adviserAvailabilityEndDateTime,
-        adviserAvailabilityPreference
-      )
+      .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
       .get
 
     val president = Teacher
@@ -164,13 +82,12 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val scheduledVivaEndDateTime =
       adviserAvailabilityEndDateTime.plusMinutes(20)
 
+    val scheduledVivaPeriod =
+      Period.create(scheduledVivaStartDateTime, scheduledVivaEndDateTime).get
+
     // Act
 
-    val scheduledViva = ScheduledViva.create(
-      viva,
-      scheduledVivaStartDateTime,
-      scheduledVivaEndDateTime
-    )
+    val scheduledViva = ScheduledViva.create(viva, scheduledVivaPeriod)
 
     // Assert
 
@@ -197,14 +114,17 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val presidentAvailabilityEndDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(10)
 
+    val presidentAvailabilityPeriod = Period
+      .create(
+        presidentAvailabilityStartDateTime,
+        presidentAvailabilityEndDateTime
+      )
+      .get
+
     val presidentAvailabilityPreference = Preference.create(5).get
 
     val presidentAvailability = Availability
-      .create(
-        presidentAvailabilityStartDateTime,
-        presidentAvailabilityEndDateTime,
-        presidentAvailabilityPreference
-      )
+      .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
       .get
 
     val adviserAvailabilityStartDateTime =
@@ -213,14 +133,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val adviserAvailabilityEndDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(15)
 
+    val adviserAvailabilityPeriod = Period
+      .create(adviserAvailabilityStartDateTime, adviserAvailabilityEndDateTime)
+      .get
+
     val adviserAvailabilityPreference = Preference.create(3).get
 
     val adviserAvailability = Availability
-      .create(
-        adviserAvailabilityStartDateTime,
-        adviserAvailabilityEndDateTime,
-        adviserAvailabilityPreference
-      )
+      .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
       .get
 
     val president = Teacher
@@ -252,13 +172,12 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val scheduledVivaEndDateTime =
       scheduledVivaStartDateTime.plusMinutes(5)
 
+    val scheduledVivaPeriod =
+      Period.create(scheduledVivaStartDateTime, scheduledVivaEndDateTime).get
+
     // Act
 
-    val scheduledViva = ScheduledViva.create(
-      viva,
-      scheduledVivaStartDateTime,
-      scheduledVivaEndDateTime
-    )
+    val scheduledViva = ScheduledViva.create(viva, scheduledVivaPeriod)
 
     // Assert
 
@@ -285,14 +204,17 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val presidentAvailabilityEndDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(10)
 
+    val presidentAvailabilityPeriod = Period
+      .create(
+        presidentAvailabilityStartDateTime,
+        presidentAvailabilityEndDateTime
+      )
+      .get
+
     val presidentAvailabilityPreference = Preference.create(5).get
 
     val presidentAvailability = Availability
-      .create(
-        presidentAvailabilityStartDateTime,
-        presidentAvailabilityEndDateTime,
-        presidentAvailabilityPreference
-      )
+      .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
       .get
 
     val adviserAvailabilityStartDateTime =
@@ -301,14 +223,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val adviserAvailabilityEndDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(15)
 
+    val adviserAvailabilityPeriod = Period
+      .create(adviserAvailabilityStartDateTime, adviserAvailabilityEndDateTime)
+      .get
+
     val adviserAvailabilityPreference = Preference.create(3).get
 
     val adviserAvailability = Availability
-      .create(
-        adviserAvailabilityStartDateTime,
-        adviserAvailabilityEndDateTime,
-        adviserAvailabilityPreference
-      )
+      .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
       .get
 
     val president = Teacher
@@ -340,20 +262,17 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
     val scheduledVivaEndDateTime =
       scheduledVivaStartDateTime.plusMinutes(5)
 
+    val scheduledVivaPeriod =
+      Period.create(scheduledVivaStartDateTime, scheduledVivaEndDateTime).get
+
     val scheduledViva = ScheduledViva
-      .create(viva, scheduledVivaStartDateTime, scheduledVivaEndDateTime)
+      .create(viva, scheduledVivaPeriod)
       .get
 
     // Act
 
     val expectedScheduledVivaPreference = viva.jury.asResourcesSet
-      .flatMap(
-        resource =>
-          resource.availabilityOn(
-            scheduledVivaStartDateTime,
-            scheduledVivaEndDateTime
-        )
-      )
+      .flatMap(resource => resource.availabilityOn(scheduledVivaPeriod))
       .foldLeft(0)(_ + _.preference.value)
 
     // Assert

@@ -1,40 +1,29 @@
 package domain.model
 
-import java.time.LocalDateTime
-
 import scala.util._
 
 sealed abstract case class ScheduledViva private (viva: Viva,
-                                                  start: LocalDateTime,
-                                                  end: LocalDateTime,
+                                                  period: Period,
                                                   scheduledPreference: Int)
 object ScheduledViva {
 
-  def create(viva: Viva,
-             start: LocalDateTime,
-             end: LocalDateTime): Try[ScheduledViva] = {
+  def create(viva: Viva, period: Period): Try[ScheduledViva] = {
 
     val vivaJuryAsResourcesSet = viva.jury.asResourcesSet
 
-    if (end.isBefore(start)) {
+    if (!vivaJuryAsResourcesSet.forall(
+          resource => resource.isAvailableOn(period)
+        )) {
       Failure(
         new IllegalArgumentException(
-          s"Invalid scheduled viva creation. End date ${end} cannot be before start date ${start}."
-        )
-      )
-    } else if (!vivaJuryAsResourcesSet.forall(
-                 resource => resource.isAvailableOn(start, end)
-               )) {
-      Failure(
-        new IllegalArgumentException(
-          s"Invalid scheduled viva creation. Not all members of the jury are available from ${start} to ${end}."
+          s"Invalid scheduled viva creation. Not all members of the jury are available from ${period.start} to ${period.end}."
         )
       )
     } else {
       val sumOfPreferences = vivaJuryAsResourcesSet
-        .flatMap(resource => resource.availabilityOn(start, end))
+        .flatMap(resource => resource.availabilityOn(period))
         .foldLeft(0)(_ + _.preference.value)
-      Success(new ScheduledViva(viva, start, end, sumOfPreferences) {})
+      Success(new ScheduledViva(viva, period, sumOfPreferences) {})
     }
   }
 }

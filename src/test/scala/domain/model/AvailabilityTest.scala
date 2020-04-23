@@ -7,59 +7,20 @@ import org.scalatest.matchers.should.Matchers
 
 class AvailabilityTest extends AnyFunSuite with Matchers {
 
-  test("start date time cannot be after end date time") {
-
-    // Arrange
-
-    val start = LocalDateTime.now()
-    val end = start.minusMinutes(5)
-    val preference = Preference.create(5).get
-
-    // Act
-
-    val availability = Availability.create(start, end, preference)
-
-    // Assert
-
-    availability.isFailure shouldBe true
-
-  }
-
-  test(
-    "with end date time after start date time and preference ranging values [1-10] a valid availability can be produced"
-  ) {
+  test("hashcode should be the sum of period hash code plus preference value") {
 
     // Arrange
 
     val start = LocalDateTime.now()
     val end = start.plusMinutes(5)
+    val period = Period.create(start, end).get
     val preference = Preference.create(5).get
-
-    // Act
-
-    val availability = Availability.create(start, end, preference)
-
-    // Assert
-
-    availability.isSuccess shouldBe true
-
-  }
-
-  test(
-    "hashcode should be the sum of availability start and end date time hash code plus preference value"
-  ) {
-
-    // Arrange
-
-    val start = LocalDateTime.now()
-    val end = start.plusMinutes(5)
-    val preference = Preference.create(5).get
-    val expectedHashCode = start.hashCode() + end.hashCode() + preference.value
+    val expectedHashCode = period.hashCode() + preference.value
 
     // Act
 
     val availabilityHashCode =
-      Availability.create(start, end, preference).get.hashCode()
+      Availability.create(period, preference).get.hashCode()
 
     // Assert
 
@@ -75,17 +36,19 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     val startX = LocalDateTime.now()
     val endX = startX.plusMinutes(5)
+    val periodX = Period.create(startX, endX).get
     val preferenceX = Preference.create(5).get
 
     val startY = startX.plusMinutes(10)
     val endY = startY.plusMinutes(5)
+    val periodY = Period.create(startY, endY).get
     val preferenceY = Preference.create(5).get
 
     // Act
 
-    val availabilityX = Availability.create(startX, endX, preferenceX).get
+    val availabilityX = Availability.create(periodX, preferenceX).get
 
-    val availabilityY = Availability.create(startY, endY, preferenceY).get
+    val availabilityY = Availability.create(periodY, preferenceY).get
 
     val availabilityXHashCode = availabilityX.hashCode()
 
@@ -109,17 +72,19 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     val startX = LocalDateTime.now()
     val endX = startX.plusMinutes(5)
+    val periodX = Period.create(startX, endX).get
     val preferenceX = Preference.create(5).get
 
     val startY = startX
     val endY = startY.plusMinutes(5)
+    val periodY = Period.create(startY, endY).get
     val preferenceY = Preference.create(5).get
 
     // Act
 
-    val availabilityX = Availability.create(startX, endX, preferenceX).get
+    val availabilityX = Availability.create(periodX, preferenceX).get
 
-    val availabilityY = Availability.create(startY, endY, preferenceY).get
+    val availabilityY = Availability.create(periodY, preferenceY).get
 
     val availabilityXHashCode = availabilityX.hashCode()
 
