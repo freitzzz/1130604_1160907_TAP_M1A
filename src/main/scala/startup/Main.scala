@@ -10,7 +10,7 @@ import scala.xml.XML
 object Main {
   def main(args: Array[String]): Unit = {
 
-    println("Please insert the name of the file to read: ")
+    /*println("Please insert the name of the file to read: ")
 
     //val inputFile = scala.io.StdIn.readLine()
 
@@ -117,7 +117,7 @@ object Main {
 
     println(vivasXML)
     val xxx = vivasXML \ "president"
-    print(xxx)
+    print(xxx)*/
 //    val vivas = vivasXML
 //      .map(
 //        node =>

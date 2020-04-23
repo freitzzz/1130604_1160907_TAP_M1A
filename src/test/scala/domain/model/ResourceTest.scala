@@ -16,7 +16,11 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val name = "John"
 
     val availability = Availability
-      .create(LocalDateTime.now(), LocalDateTime.now().plusMinutes(10), 5)
+      .create(
+        LocalDateTime.now(),
+        LocalDateTime.now().plusMinutes(10),
+        Preference.create(5).get
+      )
       .get
 
     val duplicateAvailability = availability
@@ -47,7 +51,11 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val name = "John"
 
     val availability = Availability
-      .create(LocalDateTime.now(), LocalDateTime.now().plusMinutes(10), 5)
+      .create(
+        LocalDateTime.now(),
+        LocalDateTime.now().plusMinutes(10),
+        Preference.create(5).get
+      )
       .get
 
     val availabilities = List[Availability](availability)
@@ -74,7 +82,11 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val name = "John"
 
     val availability = Availability
-      .create(LocalDateTime.now(), LocalDateTime.now().plusMinutes(10), 5)
+      .create(
+        LocalDateTime.now(),
+        LocalDateTime.now().plusMinutes(10),
+        Preference.create(5).get
+      )
       .get
 
     val role = President()
@@ -107,7 +119,11 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val name = "John"
 
     val availability = Availability
-      .create(LocalDateTime.now(), LocalDateTime.now().plusMinutes(10), 5)
+      .create(
+        LocalDateTime.now(),
+        LocalDateTime.now().plusMinutes(10),
+        Preference.create(5).get
+      )
       .get
 
     val role = President()
@@ -356,7 +372,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeX = startDateTimeX.plusMinutes(5)
 
-    val preferenceX = 5
+    val preferenceX = Preference.create(5).get
 
     val availabilityX =
       Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
@@ -365,7 +381,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeY = startDateTimeY.plusMinutes(5)
 
-    val preferenceY = 5
+    val preferenceY = Preference.create(5).get
 
     val availabilityY =
       Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
@@ -413,7 +429,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeX = startDateTimeX.plusMinutes(5)
 
-    val preferenceX = 5
+    val preferenceX = Preference.create(5).get
 
     val availabilityX =
       Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
@@ -422,7 +438,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeY = startDateTimeY.plusMinutes(5)
 
-    val preferenceY = 5
+    val preferenceY = Preference.create(5).get
 
     val availabilityY =
       Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
@@ -468,7 +484,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeX = startDateTimeX.plusMinutes(5)
 
-    val preferenceX = 5
+    val preferenceX = Preference.create(5).get
 
     val availabilityX =
       Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
@@ -477,7 +493,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeY = startDateTimeY.plusMinutes(5)
 
-    val preferenceY = 5
+    val preferenceY = Preference.create(5).get
 
     val availabilityY =
       Availability.create(startDateTimeY, endDateTimeY, preferenceY).get
@@ -523,7 +539,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeX = startDateTimeX.plusMinutes(5)
 
-    val preferenceX = 5
+    val preferenceX = Preference.create(5).get
 
     val availabilityX =
       Availability.create(startDateTimeX, endDateTimeX, preferenceX).get
@@ -532,7 +548,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val endDateTimeY = startDateTimeY.plusMinutes(5)
 
-    val preferenceY = 5
+    val preferenceY = Preference.create(5).get
 
     val availabilityY =
       Availability.create(startDateTimeY, endDateTimeY, preferenceY).get

@@ -7,67 +7,13 @@ import org.scalatest.matchers.should.Matchers
 
 class AvailabilityTest extends AnyFunSuite with Matchers {
 
-  test("availability preference should not accept negative values") {
-
-    // Arrange
-
-    val start = LocalDateTime.now() //
-    val end = start.plusMinutes(5)
-    val preference = 0
-
-    // Act
-
-    val availability = Availability.create(start, end, preference)
-
-    // Assert
-
-    availability.isFailure shouldBe true
-
-  }
-
-  test("availability preference should not accept the value 0") {
-
-    // Arrange
-
-    val start = LocalDateTime.now()
-    val end = start.plusMinutes(5)
-    val preference = 0
-
-    // Act
-
-    val availability = Availability.create(start, end, preference)
-
-    // Assert
-
-    availability.isFailure shouldBe true
-
-  }
-
-  test("availability preference should not accept the values greater than 10") {
-
-    // Arrange
-
-    val start = LocalDateTime.now()
-    val end = start.plusMinutes(5)
-    val preference = 11
-
-    // Act
-
-    val availability = Availability.create(start, end, preference)
-
-    // Assert
-
-    availability.isFailure shouldBe true
-
-  }
-
   test("start date time cannot be after end date time") {
 
     // Arrange
 
     val start = LocalDateTime.now()
     val end = start.minusMinutes(5)
-    val preference = 5
+    val preference = Preference.create(5).get
 
     // Act
 
@@ -87,7 +33,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     val start = LocalDateTime.now()
     val end = start.plusMinutes(5)
-    val preference = 5
+    val preference = Preference.create(5).get
 
     // Act
 
@@ -107,8 +53,8 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     val start = LocalDateTime.now()
     val end = start.plusMinutes(5)
-    val preference = 5
-    val expectedHashCode = start.hashCode() + end.hashCode() + preference
+    val preference = Preference.create(5).get
+    val expectedHashCode = start.hashCode() + end.hashCode() + preference.value
 
     // Act
 
@@ -129,11 +75,11 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     val startX = LocalDateTime.now()
     val endX = startX.plusMinutes(5)
-    val preferenceX = 5
+    val preferenceX = Preference.create(5).get
 
     val startY = startX.plusMinutes(10)
     val endY = startY.plusMinutes(5)
-    val preferenceY = 5
+    val preferenceY = Preference.create(5).get
 
     // Act
 
@@ -163,11 +109,11 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     val startX = LocalDateTime.now()
     val endX = startX.plusMinutes(5)
-    val preferenceX = 5
+    val preferenceX = Preference.create(5).get
 
     val startY = startX
     val endY = startY.plusMinutes(5)
-    val preferenceY = 5
+    val preferenceY = Preference.create(5).get
 
     // Act
 
