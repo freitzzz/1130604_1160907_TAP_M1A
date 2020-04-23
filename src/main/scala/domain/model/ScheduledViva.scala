@@ -33,7 +33,7 @@ object ScheduledViva {
     } else {
       val sumOfPreferences = vivaJuryAsResourcesSet
         .flatMap(resource => resource.availabilityOn(start, end))
-        .foldLeft(0)(_ + _.preference)
+        .foldLeft(0)(_ + _.preference.value)
       Success(new ScheduledViva(viva, start, end, sumOfPreferences) {})
     }
   }

@@ -290,7 +290,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
             scheduledVivaEndDateTime
         )
       )
-      .foldLeft(0)(_ + _.preference)
+      .foldLeft(0)(_ + _.preference.value)
 
     // Assert
 
