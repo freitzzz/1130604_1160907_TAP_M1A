@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 import scala.math.Ordering.Implicits._
 import scala.util.{Failure, Success, Try}
 
-sealed abstract class Resource(id: String,
-                               name: String,
+sealed abstract class Resource(id: NonEmptyString,
+                               name: NonEmptyString,
                                availabilities: List[Availability],
                                roles: List[Role]) {
 
@@ -26,8 +26,8 @@ sealed abstract class Resource(id: String,
 
 object Resource {
 
-  def validResource(id: String,
-                    name: String,
+  def validResource(id: NonEmptyString,
+                    name: NonEmptyString,
                     availabilities: List[Availability],
                     roles: List[Role]): Try[Any] = {
 
@@ -49,15 +49,15 @@ object Resource {
 
 }
 
-case class Teacher private (id: String,
-                            name: String,
+case class Teacher private (id: NonEmptyString,
+                            name: NonEmptyString,
                             availabilities: List[Availability],
                             roles: List[Role])
     extends Resource(id, name, availabilities, roles)
 
 object Teacher {
-  def create(id: String,
-             name: String,
+  def create(id: NonEmptyString,
+             name: NonEmptyString,
              availabilities: List[Availability],
              roles: List[Role]): Try[Teacher] = {
     val validResource = Resource.validResource(id, name, availabilities, roles)
@@ -75,15 +75,15 @@ object Teacher {
   }
 }
 
-case class External private (id: String,
-                             name: String,
+case class External private (id: NonEmptyString,
+                             name: NonEmptyString,
                              availabilities: List[Availability],
                              roles: List[Role])
     extends Resource(id, name, availabilities, roles)
 
 object External {
-  def create(id: String,
-             name: String,
+  def create(id: NonEmptyString,
+             name: NonEmptyString,
              availabilities: List[Availability],
              roles: List[Role]): Try[External] = {
     val validResource = Resource.validResource(id, name, availabilities, roles)

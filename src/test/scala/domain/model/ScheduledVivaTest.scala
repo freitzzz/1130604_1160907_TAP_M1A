@@ -11,10 +11,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val student = "Doe"
+    val student = NonEmptyString.create("Doe").get
 
     val title =
-      "Understanding Parallelism Programming with Functional Programming Paradigm"
+      NonEmptyString
+        .create(
+          "Understanding Parallelism Programming with Functional Programming Paradigm"
+        )
+        .get
 
     val presidentAvailabilityStartDateTime = LocalDateTime.now()
 
@@ -48,11 +52,23 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
       .get
 
     val president = Teacher
-      .create("1", "John", List(presidentAvailability), List(President()))
+      .create(
+        NonEmptyString.create("1").get,
+        NonEmptyString.create("John").get,
+        List(presidentAvailability),
+        List(President())
+      )
       .get
 
     val adviser =
-      Teacher.create("2", "Doe", List(adviserAvailability), List(Adviser())).get
+      Teacher
+        .create(
+          NonEmptyString.create("2").get,
+          NonEmptyString.create("Doe").get,
+          List(adviserAvailability),
+          List(Adviser())
+        )
+        .get
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
@@ -80,10 +96,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val student = "Doe"
+    val student = NonEmptyString.create("Doe").get
 
     val title =
-      "Understanding Parallelism Programming with Functional Programming Paradigm"
+      NonEmptyString
+        .create(
+          "Understanding Parallelism Programming with Functional Programming Paradigm"
+        )
+        .get
 
     val presidentAvailabilityStartDateTime = LocalDateTime.now()
 
@@ -117,11 +137,23 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
       .get
 
     val president = Teacher
-      .create("1", "John", List(presidentAvailability), List(President()))
+      .create(
+        NonEmptyString.create("1").get,
+        NonEmptyString.create("John").get,
+        List(presidentAvailability),
+        List(President())
+      )
       .get
 
     val adviser =
-      Teacher.create("2", "Doe", List(adviserAvailability), List(Adviser())).get
+      Teacher
+        .create(
+          NonEmptyString.create("2").get,
+          NonEmptyString.create("Doe").get,
+          List(adviserAvailability),
+          List(Adviser())
+        )
+        .get
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
@@ -151,10 +183,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val student = "Doe"
+    val student = NonEmptyString.create("Doe").get
 
     val title =
-      "Understanding Parallelism Programming with Functional Programming Paradigm"
+      NonEmptyString
+        .create(
+          "Understanding Parallelism Programming with Functional Programming Paradigm"
+        )
+        .get
 
     val presidentAvailabilityStartDateTime = LocalDateTime.now()
 
@@ -188,11 +224,23 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
       .get
 
     val president = Teacher
-      .create("1", "John", List(presidentAvailability), List(President()))
+      .create(
+        NonEmptyString.create("1").get,
+        NonEmptyString.create("John").get,
+        List(presidentAvailability),
+        List(President())
+      )
       .get
 
     val adviser =
-      Teacher.create("2", "Doe", List(adviserAvailability), List(Adviser())).get
+      Teacher
+        .create(
+          NonEmptyString.create("2").get,
+          NonEmptyString.create("Doe").get,
+          List(adviserAvailability),
+          List(Adviser())
+        )
+        .get
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
@@ -223,10 +271,14 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val student = "Doe"
+    val student = NonEmptyString.create("Doe").get
 
     val title =
-      "Understanding Parallelism Programming with Functional Programming Paradigm"
+      NonEmptyString
+        .create(
+          "Understanding Parallelism Programming with Functional Programming Paradigm"
+        )
+        .get
 
     val presidentAvailabilityStartDateTime = LocalDateTime.now()
 
@@ -260,11 +312,23 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
       .get
 
     val president = Teacher
-      .create("1", "John", List(presidentAvailability), List(President()))
+      .create(
+        NonEmptyString.create("1").get,
+        NonEmptyString.create("John").get,
+        List(presidentAvailability),
+        List(President())
+      )
       .get
 
     val adviser =
-      Teacher.create("2", "Doe", List(adviserAvailability), List(Adviser())).get
+      Teacher
+        .create(
+          NonEmptyString.create("2").get,
+          NonEmptyString.create("Doe").get,
+          List(adviserAvailability),
+          List(Adviser())
+        )
+        .get
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 

@@ -11,9 +11,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val availability = Availability
       .create(
@@ -46,9 +46,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val availability = Availability
       .create(
@@ -77,9 +77,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val availability = Availability
       .create(
@@ -114,9 +114,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val availability = Availability
       .create(
@@ -149,9 +149,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val role = President()
 
@@ -174,9 +174,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val role = Supervisor()
 
@@ -198,9 +198,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val role = President()
 
@@ -222,9 +222,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "Mary"
+    val name = NonEmptyString.create("Mary").get
 
     val role = President()
 
@@ -246,9 +246,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "Mary"
+    val name = NonEmptyString.create("Mary").get
 
     val role = Adviser()
 
@@ -272,9 +272,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("Mary").get
 
     val roleX = CoAdviser()
 
@@ -300,9 +300,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val roleX = CoAdviser()
 
@@ -330,9 +330,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val roleX = CoAdviser()
 
@@ -360,9 +360,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val roleX = CoAdviser()
 
@@ -417,9 +417,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val roleX = CoAdviser()
 
@@ -472,9 +472,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val roleX = CoAdviser()
 
@@ -527,9 +527,9 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     // Arrange
 
-    val id = "1"
+    val id = NonEmptyString.create("1").get
 
-    val name = "John"
+    val name = NonEmptyString.create("John").get
 
     val roleX = CoAdviser()
 
