@@ -18,7 +18,8 @@ sealed abstract class Resource(id: NonEmptyString,
   def availabilityOn(start: LocalDateTime,
                      end: LocalDateTime): Option[Availability] = {
     availabilities.find(
-      availability => start >= availability.start && end <= availability.end
+      availability =>
+        start >= availability.period.start && end <= availability.period.end
     )
   }
 

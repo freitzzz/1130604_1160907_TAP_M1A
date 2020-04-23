@@ -343,9 +343,10 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     val start = LocalDateTime.now()
     val end = start.plusMinutes(5)
+    val period = Period.create(start, end).get
     val preference = Preference.create(pref).get
 
-    Availability.create(start, end, preference).getOrElse(null)
+    Availability.create(period, preference).getOrElse(null)
   }
 
   def generateAvailabilities: List[Availability] = {
