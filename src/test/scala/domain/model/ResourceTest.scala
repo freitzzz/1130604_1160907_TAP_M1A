@@ -396,12 +396,17 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val periodWhichResourceIsAvailableOnEnd = endDateTimeX
 
+    val periodWhichResourceIsAvailableOn = Period
+      .create(
+        periodWhichResourceIsAvailableOnStart,
+        periodWhichResourceIsAvailableOnEnd
+      )
+      .get
+
     val external = External.create(id, name, availabilities, roles).get
 
-    val availabilityOnGivenPeriod = external.availabilityOn(
-      periodWhichResourceIsAvailableOnStart,
-      periodWhichResourceIsAvailableOnEnd
-    )
+    val availabilityOnGivenPeriod =
+      external.availabilityOn(periodWhichResourceIsAvailableOn)
 
     val expectedAvailability = availabilityX
 
@@ -457,12 +462,17 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val periodWhichResourceIsAvailableOnEnd = endDateTimeY
 
+    val periodWhichResourceIsAvailableOn = Period
+      .create(
+        periodWhichResourceIsAvailableOnStart,
+        periodWhichResourceIsAvailableOnEnd
+      )
+      .get
+
     val external = External.create(id, name, availabilities, roles).get
 
-    val availabilityOnGivenPeriod = external.availabilityOn(
-      periodWhichResourceIsAvailableOnStart,
-      periodWhichResourceIsAvailableOnEnd
-    )
+    val availabilityOnGivenPeriod =
+      external.availabilityOn(periodWhichResourceIsAvailableOn)
 
     // Assert
 
@@ -516,12 +526,17 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val periodWhichResourceIsAvailableOnEnd = endDateTimeX
 
+    val periodWhichResourceIsAvailableOn = Period
+      .create(
+        periodWhichResourceIsAvailableOnStart,
+        periodWhichResourceIsAvailableOnEnd
+      )
+      .get
+
     val external = External.create(id, name, availabilities, roles).get
 
-    val isAvailableOnGivenPeriod = external.isAvailableOn(
-      periodWhichResourceIsAvailableOnStart,
-      periodWhichResourceIsAvailableOnEnd
-    )
+    val isAvailableOnGivenPeriod =
+      external.isAvailableOn(periodWhichResourceIsAvailableOn)
 
     // Assert
 
@@ -575,12 +590,17 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val periodWhichResourceIsAvailableOnEnd = endDateTimeY
 
+    val periodWhichResourceIsAvailableOn = Period
+      .create(
+        periodWhichResourceIsAvailableOnStart,
+        periodWhichResourceIsAvailableOnEnd
+      )
+      .get
+
     val external = External.create(id, name, availabilities, roles).get
 
-    val isAvailableOnGivenPeriod = external.isAvailableOn(
-      periodWhichResourceIsAvailableOnStart,
-      periodWhichResourceIsAvailableOnEnd
-    )
+    val isAvailableOnGivenPeriod =
+      external.isAvailableOn(periodWhichResourceIsAvailableOn)
 
     // Assert
 

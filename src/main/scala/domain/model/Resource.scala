@@ -12,14 +12,13 @@ sealed abstract class Resource(id: NonEmptyString,
 
   def hasRole(role: Role): Boolean = this.roles.contains(role)
 
-  def isAvailableOn(start: LocalDateTime, end: LocalDateTime): Boolean =
-    availabilityOn(start, end).nonEmpty
+  def isAvailableOn(period: Period): Boolean =
+    availabilityOn(period).nonEmpty
 
-  def availabilityOn(start: LocalDateTime,
-                     end: LocalDateTime): Option[Availability] = {
+  def availabilityOn(period: Period): Option[Availability] = {
     availabilities.find(
       availability =>
-        start >= availability.period.start && end <= availability.period.end
+        period.start >= availability.period.start && period.end <= availability.period.end
     )
   }
 
