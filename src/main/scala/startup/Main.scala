@@ -10,7 +10,7 @@ import scala.xml.XML
 object Main {
   def main(args: Array[String]): Unit = {
 
-    /*println("Please insert the name of the file to read: ")
+    println("Please insert the name of the file to read: ")
 
     //val inputFile = scala.io.StdIn.readLine()
 
@@ -18,7 +18,7 @@ object Main {
     //val outputFileName = scala.io.StdIn.readLine()
 
     val fileLoader = FileIO.load(
-      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms01/valid_agenda_in.xml"
+      "C:\\tests\\tap\\1130604_1160907_tap_m1a\\files\\assessment\\ms01\\valid_agenda_in.xml"
     )
 
     val agenda = fileLoader.get
@@ -54,19 +54,14 @@ object Main {
         valueNode =>
           Teacher
             .create(
-              valueNode.attributes("id").toString(),
-              valueNode.attributes("name").toString(),
+              NonEmptyString.create(valueNode.attributes("id").toString()).get,
+              NonEmptyString.create(valueNode.attributes("name").toString()).get,
               (valueNode \ "availability")
                 .map(
                   childNode =>
-                    Availability
-                      .create(
-                        LocalDateTime
-                          .parse(childNode.attributes("start").toString()),
-                        LocalDateTime
-                          .parse(childNode.attributes("end").toString()),
-                        childNode.attributes("preference").toString().toInt
-                      )
+                    Availability.create(Period.create(LocalDateTime
+                      .parse(childNode.attributes("start").toString()),LocalDateTime
+                      .parse(childNode.attributes("end").toString())).get, Preference.create(childNode.attributes("preference").toString().toInt).get)
                       .get
                 )
                 .toList,
@@ -74,7 +69,7 @@ object Main {
                 .getOrElse(valueNode.attributes("id").toString(), List.empty)
                 .toList
           )
-      )
+      ).toList
 
     println(mappedTeachers)
 
@@ -86,19 +81,14 @@ object Main {
         valueNode =>
           External
             .create(
-              valueNode.attributes("id").toString(),
-              valueNode.attributes("name").toString(),
+              NonEmptyString.create(valueNode.attributes("id").toString()).get,
+              NonEmptyString.create(valueNode.attributes("name").toString()).get,
               (valueNode \ "availability")
                 .map(
                   childNode =>
-                    Availability
-                      .create(
-                        LocalDateTime
-                          .parse(childNode.attributes("start").toString()),
-                        LocalDateTime
-                          .parse(childNode.attributes("end").toString()),
-                        childNode.attributes("preference").toString().toInt
-                      )
+                    Availability.create(Period.create(LocalDateTime
+                      .parse(childNode.attributes("start").toString()),LocalDateTime
+                      .parse(childNode.attributes("end").toString())).get, Preference.create(childNode.attributes("preference").toString().toInt).get)
                       .get
                 )
                 .toList,
@@ -106,75 +96,73 @@ object Main {
                 .getOrElse(valueNode.attributes("id").toString(), List.empty)
                 .toList
           )
-      )
+      ).toList
     // TODO: There may exist teachers or externals that are not on vivas and the mapped results will indicate it as None
     // However None can also be indicated by an illegal state of a domain class which causes conflict to verify if the
     // domain is valid
 
     println(mappedExternals)
 
+
     //
 
-    println(vivasXML)
+   println(vivasXML)
     val xxx = vivasXML \ "president"
-    print(xxx)*/
-//    val vivas = vivasXML
-//      .map(
-//        node =>
-//          Viva
-//            .create(
-//              node.attributes("student").toString(),
-//              node.attributes("title").toString(),
-//              Jury
-//                .create(
-//                  president = mappedTeachers
-//                    .find(
-//                      p =>
-//                        p.id == (node \ "president")
-//                          .map(
-//                            childNode => childNode.attributes("id").toString()
-//                          )
-//                          .head
-//                    )
-//                    .get,
-//                  adviser = mappedTeachers
-//                    .find(
-//                      a =>
-//                        a.id == (node \ "adviser")
-//                          .map(
-//                            childNode => childNode.attributes("id").toString()
-//                          )
-//                          .head
-//                    )
-//                    .get,
-//                  supervisors = (node \ "supervisor")
-//                    .map(
-//                      childNode =>
-//                        mappedExternals
-//                          .find(
-//                            s => s.id == childNode.attributes("id").toString()
-//                          )
-//                          .get
-//                    )
-//                    .toList,
-//                  coAdvisers = (node \ "coadviser")
-//                    .map(
-//                      childNode =>
-//                        mappedExternals
-//                          .find(
-//                            s => s.id == childNode.attributes("id").toString()
-//                          )
-//                          .get
-//                    )
-//                    .toList
-//                )
-//                .get
-//            )
-//            .get
-//      )
-//      .toList
-
-    val x = 2
-
+    print(xxx)
+    val vivas = vivasXML
+      .map(
+        node =>
+          Viva
+            .create(
+              NonEmptyString.create(node.attributes("student").toString()).get,
+              NonEmptyString.create(node.attributes("title").toString()).get,
+              Jury
+                .create(
+                  president = mappedTeachers
+                    .find(
+                      p =>
+                       p._2.head.get.id == (node \ "president")
+                          .map(
+                            childNode => NonEmptyString.create(childNode.attributes("id").toString()).get
+                          )
+                          .head
+                    )
+                    .get._2.head.get,
+                  adviser = mappedTeachers
+                    .find(
+                      a =>
+                        a._2.head.get.id == (node \ "adviser")
+                          .map(
+                            childNode => NonEmptyString.create(childNode.attributes("id").toString()).get
+                          )
+                          .head
+                    )
+                    .get._2.head.get,
+                  supervisors = (node \ "supervisor")
+                    .map(
+                      childNode =>
+                        mappedExternals
+                          .find(
+                           s => s._2.head.get.id == NonEmptyString.create(childNode.attributes("id").toString()).get
+                          )
+                          .get._2.head.get
+                    )
+                    .toList,
+                  coAdvisers = (node \ "coadviser")
+                    .map(
+                      childNode =>
+                        mappedExternals
+                          .find(
+                           s => s._2.head.get.id == NonEmptyString.create(childNode.attributes("id").toString()).get
+                          )
+                          .get._2.head.get
+                   )
+                    .toList
+                )
+                .get
+            )
+            .get
+      )
+      .toList
   }
 }
