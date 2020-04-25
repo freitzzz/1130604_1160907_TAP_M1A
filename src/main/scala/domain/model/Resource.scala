@@ -1,13 +1,11 @@
 package domain.model
 
-import java.time.LocalDateTime
-
 import scala.math.Ordering.Implicits._
 import scala.util.{Failure, Success, Try}
 
 sealed abstract class Resource(id: NonEmptyString,
                                name: NonEmptyString,
-                               availabilities: List[Availability],
+                               val availabilities: List[Availability],
                                roles: List[Role]) {
 
   def hasRole(role: Role): Boolean = this.roles.contains(role)
@@ -51,7 +49,7 @@ object Resource {
 
 case class Teacher private (id: NonEmptyString,
                             name: NonEmptyString,
-                            availabilities: List[Availability],
+                            override val availabilities: List[Availability],
                             roles: List[Role])
     extends Resource(id, name, availabilities, roles)
 
@@ -77,7 +75,7 @@ object Teacher {
 
 case class External private (id: NonEmptyString,
                              name: NonEmptyString,
-                             availabilities: List[Availability],
+                             override val availabilities: List[Availability],
                              roles: List[Role])
     extends Resource(id, name, availabilities, roles)
 
