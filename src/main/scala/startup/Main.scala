@@ -66,6 +66,7 @@ object Main {
     // Retrieve teachers
     val teachersXML = agenda \ "resources" \ "teachers" \ "teacher"
     val mappedTeachers = teachersXML
+      .filter(node => mappedRoles.contains(node.attributes("id").toString()))
       .groupMap(keyNode => keyNode.attributes("id").toString())(
         valueNode =>
           Teacher
@@ -96,9 +97,7 @@ object Main {
                       .get
                 )
                 .toList,
-              roles = mappedRoles
-                .getOrElse(valueNode.attributes("id").toString(), List.empty)
-                .toList
+              roles = mappedRoles(valueNode.attributes("id").toString()).toList
           )
       )
       .toList
@@ -109,6 +108,7 @@ object Main {
     val externalsXML = agenda \ "resources" \ "externals" \ "external"
 
     val mappedExternals = externalsXML
+      .filter(node => mappedRoles.contains(node.attributes("id").toString()))
       .groupMap(keyNode => keyNode.attributes("id").toString())(
         valueNode =>
           External
@@ -139,15 +139,10 @@ object Main {
                       .get
                 )
                 .toList,
-              roles = mappedRoles
-                .getOrElse(valueNode.attributes("id").toString(), List.empty)
-                .toList
+              roles = mappedRoles(valueNode.attributes("id").toString()).toList
           )
       )
       .toList
-    // TODO: There may exist teachers or externals that are not on vivas and the mapped results will indicate it as None
-    // However None can also be indicated by an illegal state of a domain class which causes conflict to verify if the
-    // domain is valid
 
     println(mappedExternals)
 
