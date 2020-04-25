@@ -6,10 +6,11 @@ import java.time.LocalDateTime
 
 import xml.Validator
 
-import scala.util.{Failure, Try}
-import scala.xml.XML
+import scala.util.{Failure, Success, Try}
+import scala.xml.{Node, XML}
 
 object Main {
+
   def main(args: Array[String]): Unit = {
 
     println("Please insert the name of the file to read: ")
@@ -20,12 +21,11 @@ object Main {
     //val outputFileName = scala.io.StdIn.readLine()
 
     val xml = FileIO.load(
-      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms01/valid_agenda_in.xml"
+      "C:\\Tap\\1130604_1160907_tap_m1a\\files\\assessment\\ms01\\valid_agenda_in.xml"
     )
 
-    val schema = FileIO.load(
-      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/agenda.xsd"
-    )
+    val schema =
+      FileIO.load("C:\\Tap\\1130604_1160907_tap_m1a\\files\\agenda.xsd")
 
     assert(xml.isSuccess)
 
@@ -43,37 +43,35 @@ object Main {
     val vivasXML = agenda \ "vivas" \ "viva"
 
     val roles = vivasXML
-      .map(viva => viva.child)
+      .map(
+        viva => viva.descendant.filter(node => node.attribute("id").nonEmpty)
+      )
       .flatten
-      .filter(node => node.label != "#PCDATA")
       .map(
         node =>
-          (node.attributes("id").toString(), node.label match {
-            case "president"  => Some(President())
-            case "adviser"    => Some(Adviser())
-            case "coadviser"  => Some(CoAdviser())
-            case "supervisor" => Some(Supervisor())
-            case _            => None
+          (node \@ "id", node.label match {
+            case "president"  => President()
+            case "adviser"    => Adviser()
+            case "coadviser"  => CoAdviser()
+            case "supervisor" => Supervisor()
           })
       )
 
     val mappedRoles = roles
       .groupBy(role => role._1)
-      .map(entry => (entry._1, entry._2.map(tuple => tuple._2.get).distinct))
-
-    println(mappedRoles)
+      .map(entry => (entry._1, entry._2.map(tuple => tuple._2).distinct))
 
     // Retrieve teachers
     val teachersXML = agenda \ "resources" \ "teachers" \ "teacher"
     val mappedTeachers = teachersXML
-      .filter(node => mappedRoles.contains(node.attributes("id").toString()))
-      .groupMap(keyNode => keyNode.attributes("id").toString())(
+      .filter(node => mappedRoles.contains(node \@ "id"))
+      .groupMap(keyNode => keyNode \@ "id")(
         valueNode =>
           Teacher
             .create(
-              NonEmptyString.create(valueNode.attributes("id").toString()).get,
+              NonEmptyString.create(valueNode \@ "id").get,
               NonEmptyString
-                .create(valueNode.attributes("name").toString())
+                .create(valueNode \@ "name")
                 .get,
               (valueNode \ "availability")
                 .map(
@@ -83,39 +81,35 @@ object Main {
                         Period
                           .create(
                             LocalDateTime
-                              .parse(childNode.attributes("start").toString()),
+                              .parse(childNode \@ "start"),
                             LocalDateTime
-                              .parse(childNode.attributes("end").toString())
+                              .parse(childNode \@ "end")
                           )
                           .get,
                         Preference
-                          .create(
-                            childNode.attributes("preference").toString().toInt
-                          )
+                          .create((childNode \@ "preference").toInt)
                           .get
                       )
                       .get
                 )
                 .toList,
-              roles = mappedRoles(valueNode.attributes("id").toString()).toList
+              roles = mappedRoles(valueNode \@ "id").toList
           )
       )
       .toList
-
-    println(mappedTeachers)
 
     // Retrieve externals
     val externalsXML = agenda \ "resources" \ "externals" \ "external"
 
     val mappedExternals = externalsXML
-      .filter(node => mappedRoles.contains(node.attributes("id").toString()))
-      .groupMap(keyNode => keyNode.attributes("id").toString())(
+      .filter(node => mappedRoles.contains(node \@ "id"))
+      .groupMap(keyNode => keyNode \@ "id")(
         valueNode =>
           External
             .create(
-              NonEmptyString.create(valueNode.attributes("id").toString()).get,
+              NonEmptyString.create(valueNode \@ "id").get,
               NonEmptyString
-                .create(valueNode.attributes("name").toString())
+                .create(valueNode \@ "name")
                 .get,
               (valueNode \ "availability")
                 .map(
@@ -125,39 +119,30 @@ object Main {
                         Period
                           .create(
                             LocalDateTime
-                              .parse(childNode.attributes("start").toString()),
+                              .parse(childNode \@ "start"),
                             LocalDateTime
-                              .parse(childNode.attributes("end").toString())
+                              .parse(childNode \@ "end")
                           )
                           .get,
                         Preference
-                          .create(
-                            childNode.attributes("preference").toString().toInt
-                          )
+                          .create((childNode \@ "preference").toInt)
                           .get
                       )
                       .get
                 )
                 .toList,
-              roles = mappedRoles(valueNode.attributes("id").toString()).toList
+              roles = mappedRoles(valueNode \@ "id").toList
           )
       )
       .toList
 
-    println(mappedExternals)
-
-    //
-
-    println(vivasXML)
-    val xxx = vivasXML \ "president"
-    print(xxx)
     val vivas = vivasXML
       .map(
         node =>
           Viva
             .create(
-              NonEmptyString.create(node.attributes("student").toString()).get,
-              NonEmptyString.create(node.attributes("title").toString()).get,
+              NonEmptyString.create(node \@ "student").get,
+              NonEmptyString.create(node \@ "title").get,
               Jury
                 .create(
                   president = mappedTeachers
@@ -167,7 +152,7 @@ object Main {
                           .map(
                             childNode =>
                               NonEmptyString
-                                .create(childNode.attributes("id").toString())
+                                .create(childNode \@ "id")
                                 .get
                           )
                           .head
@@ -183,7 +168,7 @@ object Main {
                           .map(
                             childNode =>
                               NonEmptyString
-                                .create(childNode.attributes("id").toString())
+                                .create(childNode \@ "id")
                                 .get
                           )
                           .head
@@ -199,7 +184,7 @@ object Main {
                           .find(
                             s =>
                               s._2.head.get.id == NonEmptyString
-                                .create(childNode.attributes("id").toString())
+                                .create(childNode \@ "id")
                                 .get
                           )
                           .get
@@ -215,7 +200,7 @@ object Main {
                           .find(
                             s =>
                               s._2.head.get.id == NonEmptyString
-                                .create(childNode.attributes("id").toString())
+                                .create(childNode \@ "id")
                                 .get
                           )
                           .get
