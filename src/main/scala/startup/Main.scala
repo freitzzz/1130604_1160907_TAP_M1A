@@ -4,6 +4,8 @@ import domain.model._
 import io.FileIO
 import java.time.LocalDateTime
 
+import xml.Validator
+
 import scala.util.{Failure, Try}
 import scala.xml.XML
 
@@ -17,11 +19,25 @@ object Main {
     println("Please insert the name you want for the output file: ")
     //val outputFileName = scala.io.StdIn.readLine()
 
-    val fileLoader = FileIO.load(
-      "C:\\tests\\tap\\1130604_1160907_tap_m1a\\files\\assessment\\ms01\\valid_agenda_in.xml"
+    val xml = FileIO.load(
+      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms01/valid_agenda_in.xml"
     )
 
-    val agenda = fileLoader.get
+    val schema = FileIO.load(
+      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/agenda.xsd"
+    )
+
+    assert(xml.isSuccess)
+
+    assert(schema.isSuccess)
+
+    val agenda = xml.get
+
+    val agendaSchema = schema.get
+
+    val agendaCompliesWithSchema = Validator.validate(agenda, agendaSchema)
+
+    assert(agendaCompliesWithSchema.isSuccess)
 
     // Retrieve Vivas
     val vivasXML = agenda \ "vivas" \ "viva"
@@ -55,13 +71,28 @@ object Main {
           Teacher
             .create(
               NonEmptyString.create(valueNode.attributes("id").toString()).get,
-              NonEmptyString.create(valueNode.attributes("name").toString()).get,
+              NonEmptyString
+                .create(valueNode.attributes("name").toString())
+                .get,
               (valueNode \ "availability")
                 .map(
                   childNode =>
-                    Availability.create(Period.create(LocalDateTime
-                      .parse(childNode.attributes("start").toString()),LocalDateTime
-                      .parse(childNode.attributes("end").toString())).get, Preference.create(childNode.attributes("preference").toString().toInt).get)
+                    Availability
+                      .create(
+                        Period
+                          .create(
+                            LocalDateTime
+                              .parse(childNode.attributes("start").toString()),
+                            LocalDateTime
+                              .parse(childNode.attributes("end").toString())
+                          )
+                          .get,
+                        Preference
+                          .create(
+                            childNode.attributes("preference").toString().toInt
+                          )
+                          .get
+                      )
                       .get
                 )
                 .toList,
@@ -69,7 +100,8 @@ object Main {
                 .getOrElse(valueNode.attributes("id").toString(), List.empty)
                 .toList
           )
-      ).toList
+      )
+      .toList
 
     println(mappedTeachers)
 
@@ -82,13 +114,28 @@ object Main {
           External
             .create(
               NonEmptyString.create(valueNode.attributes("id").toString()).get,
-              NonEmptyString.create(valueNode.attributes("name").toString()).get,
+              NonEmptyString
+                .create(valueNode.attributes("name").toString())
+                .get,
               (valueNode \ "availability")
                 .map(
                   childNode =>
-                    Availability.create(Period.create(LocalDateTime
-                      .parse(childNode.attributes("start").toString()),LocalDateTime
-                      .parse(childNode.attributes("end").toString())).get, Preference.create(childNode.attributes("preference").toString().toInt).get)
+                    Availability
+                      .create(
+                        Period
+                          .create(
+                            LocalDateTime
+                              .parse(childNode.attributes("start").toString()),
+                            LocalDateTime
+                              .parse(childNode.attributes("end").toString())
+                          )
+                          .get,
+                        Preference
+                          .create(
+                            childNode.attributes("preference").toString().toInt
+                          )
+                          .get
+                      )
                       .get
                 )
                 .toList,
@@ -96,17 +143,17 @@ object Main {
                 .getOrElse(valueNode.attributes("id").toString(), List.empty)
                 .toList
           )
-      ).toList
+      )
+      .toList
     // TODO: There may exist teachers or externals that are not on vivas and the mapped results will indicate it as None
     // However None can also be indicated by an illegal state of a domain class which causes conflict to verify if the
     // domain is valid
 
     println(mappedExternals)
 
-
     //
 
-   println(vivasXML)
+    println(vivasXML)
     val xxx = vivasXML \ "president"
     print(xxx)
     val vivas = vivasXML
@@ -121,31 +168,49 @@ object Main {
                   president = mappedTeachers
                     .find(
                       p =>
-                       p._2.head.get.id == (node \ "president")
+                        p._2.head.get.id == (node \ "president")
                           .map(
-                            childNode => NonEmptyString.create(childNode.attributes("id").toString()).get
+                            childNode =>
+                              NonEmptyString
+                                .create(childNode.attributes("id").toString())
+                                .get
                           )
                           .head
                     )
-                    .get._2.head.get,
+                    .get
+                    ._2
+                    .head
+                    .get,
                   adviser = mappedTeachers
                     .find(
                       a =>
                         a._2.head.get.id == (node \ "adviser")
                           .map(
-                            childNode => NonEmptyString.create(childNode.attributes("id").toString()).get
+                            childNode =>
+                              NonEmptyString
+                                .create(childNode.attributes("id").toString())
+                                .get
                           )
                           .head
                     )
-                    .get._2.head.get,
+                    .get
+                    ._2
+                    .head
+                    .get,
                   supervisors = (node \ "supervisor")
                     .map(
                       childNode =>
                         mappedExternals
                           .find(
-                           s => s._2.head.get.id == NonEmptyString.create(childNode.attributes("id").toString()).get
+                            s =>
+                              s._2.head.get.id == NonEmptyString
+                                .create(childNode.attributes("id").toString())
+                                .get
                           )
-                          .get._2.head.get
+                          .get
+                          ._2
+                          .head
+                          .get
                     )
                     .toList,
                   coAdvisers = (node \ "coadviser")
@@ -153,10 +218,16 @@ object Main {
                       childNode =>
                         mappedExternals
                           .find(
-                           s => s._2.head.get.id == NonEmptyString.create(childNode.attributes("id").toString()).get
+                            s =>
+                              s._2.head.get.id == NonEmptyString
+                                .create(childNode.attributes("id").toString())
+                                .get
                           )
-                          .get._2.head.get
-                   )
+                          .get
+                          ._2
+                          .head
+                          .get
+                    )
                     .toList
                 )
                 .get
