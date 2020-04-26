@@ -15,6 +15,7 @@ import domain.model.{
 import domain.schedule._
 import xml.Parser
 
+import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 import scala.xml.Elem
 
@@ -38,9 +39,7 @@ object AssessmentMS01 extends Schedule {
     }
   }
 
-  private def scheduleVivas(
-    vivas: List[Viva]
-  ): Try[List[Try[ScheduledViva]]] = {
+  private def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
 
     /*def auxScheduleVivasa(
       headViva: Viva,
@@ -72,7 +71,11 @@ object AssessmentMS01 extends Schedule {
       }
     }*/
 
-    def auxScheduleVivas(vivas: List[Viva]): Try[List[Try[ScheduledViva]]] = {
+    @tailrec
+    def auxScheduleVivas(
+      vivas: List[Viva],
+      svivas: List[Try[ScheduledViva]]
+    ): List[Try[ScheduledViva]] = {
 
       vivas match {
         case ::(head, next) => {
@@ -88,28 +91,27 @@ object AssessmentMS01 extends Schedule {
 
             val updatedVivas = updateVivas(head.jury, next, period)
 
-            val recCall = auxScheduleVivas(updatedVivas)
+            val asd = ScheduledViva
+              .create(head, period)
 
-            recCall match {
-              case Failure(exception) => Failure(exception)
-              case Success(value) =>
-                Success(ScheduledViva.create(head, period) :: value)
-            }
+            auxScheduleVivas(updatedVivas, asd :: svivas)
 
           } else {
-            Failure(
-              new IllegalStateException(
-                "Not all Jury elements share a compatible availability"
+            List[Try[ScheduledViva]](
+              Failure(
+                new IllegalStateException(
+                  "Not all Jury elements share a compatible availability"
+                )
               )
             )
           }
         }
-        case Nil => Success(Nil)
+        case Nil => svivas.reverse
       }
 
     }
 
-    auxScheduleVivas(vivas)
+    auxScheduleVivas(vivas, List[Try[ScheduledViva]]())
   }
 
   private def findFirstPeriodWhichAllResourcesAreAvailable(
