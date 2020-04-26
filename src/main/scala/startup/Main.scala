@@ -4,6 +4,7 @@ import domain.model._
 import io.FileIO
 import java.time.LocalDateTime
 
+import assessment.AssessmentMS01
 import domain.model
 import xml.{Parser, Validator}
 
@@ -41,9 +42,7 @@ object Main {
 
     assert(agendaCompliesWithSchema.isSuccess)
 
-    val vivas = Parser.parse(agenda)
-
-    println(vivas)
+    AssessmentMS01.create(agenda)
 
   }
 }
