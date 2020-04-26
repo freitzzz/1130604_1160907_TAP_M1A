@@ -234,7 +234,7 @@ object Functions {
     val juryXML = serializeJury(scheduledViva.viva.jury)
 
     val xml =
-      <viva student={scheduledViva.viva.student.s} title={scheduledViva.viva.title.s} start={scheduledViva.period.start.toString} end={scheduledViva.period.end.toString} preference={scheduledViva.scheduledPreference.toString}>
+      <viva student={scheduledViva.viva.student.s} title={scheduledViva.viva.title.s} start={scheduledViva.period.start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} end={scheduledViva.period.end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} preference={scheduledViva.scheduledPreference.toString}>
         {juryXML}
       </viva>
 

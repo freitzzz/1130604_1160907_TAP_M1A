@@ -4,6 +4,8 @@ import assessment.AssessmentMS01
 import io.FileIO
 import xml.Functions
 
+import scala.util.{Failure, Success}
+
 object Main {
 
   def main(args: Array[String]): Unit = {
@@ -35,9 +37,13 @@ object Main {
 
     assert(agendaCompliesWithSchema.isSuccess)
 
-    val asd = AssessmentMS01.create(agenda)
+    val scheduledAgendaXML = AssessmentMS01.create(agenda)
 
-    println(asd)
+    scheduledAgendaXML match {
+      case Failure(exception) => Failure(exception)
+      case Success(value) =>
+        FileIO.save("/home/freitas/Desktop/output.xml", value)
+    }
 
   }
 }

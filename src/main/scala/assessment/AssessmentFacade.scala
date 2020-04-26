@@ -33,8 +33,6 @@ object AssessmentMS01 extends Schedule {
 
         val scheduledVivas = scheduleVivas(vivas)
 
-        println(scheduledVivas)
-
         scheduledVivas.find(_.isFailure) match {
           case Some(value) => Failure(value.failed.get)
           case None => {
