@@ -1,9 +1,12 @@
 package xml
 
-import java.time.LocalDateTime
+import java.io.ByteArrayInputStream
+import java.time.format.DateTimeFormatter
+import java.time.{Duration, LocalDateTime, LocalTime}
 
 import domain.model.{
   Adviser,
+  Agenda,
   Availability,
   CoAdviser,
   External,
@@ -14,17 +17,51 @@ import domain.model.{
   President,
   Resource,
   Role,
+  ScheduledViva,
   Supervisor,
   Teacher,
   Viva
 }
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
 
 import scala.util.{Failure, Success, Try}
-import scala.xml.{Elem, NodeSeq}
+import scala.xml.{Elem, Node, NodeSeq}
 
-object Parser {
+object Functions {
 
-  def parse(elem: Elem): Try[List[Viva]] = {
+  /**
+    * A no-side effect XML schema validation
+    * Returns a Try indicating whether the XML document passed by parameter is valid by a given XML Schema given by parameter
+    * Credits for this solution goes to:
+    *   - https://github.com/scala/scala-xml/wiki/XML-validation
+    *   - https://gist.github.com/ramn/725139/7b9f510adf385ece8f7c37e361c8ea4862def382
+    *   - https://gist.github.com/ramn/725139/7b9f510adf385ece8f7c37e361c8ea4862def382#gistcomment-991893
+    */
+  def validate(xml: Elem, schema: Elem): Try[Unit] = {
+
+    Try({
+      val schemaLang = javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI
+      val factory = SchemaFactory.newInstance(schemaLang)
+      val schemaSAX =
+        factory.newSchema(
+          new StreamSource(new ByteArrayInputStream(schema.toString.getBytes))
+        )
+      val validator = schemaSAX.newValidator()
+      validator.validate(
+        new StreamSource(new ByteArrayInputStream(xml.toString.getBytes))
+      )
+    })
+
+  }
+
+  def deserialize(elem: Elem): Try[List[Viva]] = {
+
+    val vivasDuration = Duration.between(
+      LocalTime.ofNanoOfDay(0),
+      LocalTime
+        .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
+    )
 
     // Retrieve Vivas
     val vivasXML = elem \ "vivas" \ "viva"
@@ -157,7 +194,8 @@ object Parser {
                       properties._5.toList,
                       properties._6.toList
                     )
-                    .get
+                    .get,
+                  vivasDuration
                 )
                 .get
           )
@@ -177,6 +215,46 @@ object Parser {
     } else {
       Failure(firstInvalidProperty.get.failed.get)
     }
+
+  }
+
+  def serialize(agenda: Agenda): Elem = {
+
+    val xml =
+      <schedule totalPreference={agenda.scheduledVivas.foldLeft(0)(_ + _.scheduledPreference).toString}>
+        {agenda.scheduledVivas.map(serializeScheduledViva)}
+      </schedule>
+
+    xml
+
+  }
+
+  private def serializeScheduledViva(scheduledViva: ScheduledViva): Node = {
+
+    val juryXML = serializeJury(scheduledViva.viva.jury)
+
+    val xml =
+      <viva student={scheduledViva.viva.student.s} title={scheduledViva.viva.title.s} start={scheduledViva.period.start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} end={scheduledViva.period.end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} preference={scheduledViva.scheduledPreference.toString}>
+        {juryXML}
+      </viva>
+
+    xml
+
+  }
+
+  private def serializeJury(jury: Jury): List[Node] = {
+
+    val presidentXML = <president name={jury.president.name.s}/>
+
+    val adviserXML = <adviser name={jury.adviser.name.s}/>
+
+    val supervisorsXML =
+      jury.supervisors.map(supervisor => <supervisor name={supervisor.name.s}/>)
+
+    val coAdvisersXML =
+      jury.coAdvisers.map(coAdviser => <coadviser name={coAdviser.name.s}/>)
+
+    List(presidentXML, adviserXML, supervisorsXML, coAdvisersXML).flatten
 
   }
 

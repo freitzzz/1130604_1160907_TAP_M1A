@@ -1,3 +1,11 @@
 package domain.model
 
-case class Agenda(vivas: List[Viva], resources: List[Resource])
+sealed case class Agenda private (scheduledVivas: List[ScheduledViva])
+
+object Agenda {
+
+  def create(scheduledVivas: List[ScheduledViva]): Agenda = {
+    new Agenda(scheduledVivas)
+  }
+
+}

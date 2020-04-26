@@ -10,8 +10,7 @@ sealed abstract case class Period private (start: LocalDateTime,
 object Period {
 
   def create(start: LocalDateTime, end: LocalDateTime): Try[Period] = {
-
-    if (end.isBefore(start))
+    if (end.isBefore(start) || end.isEqual(start))
       Failure(
         new IllegalArgumentException(
           "Period start date time cannot be after the end date time"

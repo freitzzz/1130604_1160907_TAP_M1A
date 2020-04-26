@@ -1,14 +1,10 @@
 package startup
 
-import domain.model._
+import assessment.AssessmentMS01
 import io.FileIO
-import java.time.LocalDateTime
+import xml.Functions
 
-import domain.model
-import xml.{Parser, Validator}
-
-import scala.util.{Failure, Success, Try}
-import scala.xml.{Node, XML}
+import scala.util.{Failure, Success}
 
 object Main {
 
@@ -37,13 +33,17 @@ object Main {
 
     val agendaSchema = schema.get
 
-    val agendaCompliesWithSchema = Validator.validate(agenda, agendaSchema)
+    val agendaCompliesWithSchema = Functions.validate(agenda, agendaSchema)
 
     assert(agendaCompliesWithSchema.isSuccess)
 
-    val vivas = Parser.parse(agenda)
+    val scheduledAgendaXML = AssessmentMS01.create(agenda)
 
-    println(vivas)
+    scheduledAgendaXML match {
+      case Failure(exception) => Failure(exception)
+      case Success(value) =>
+        FileIO.save("/home/freitas/Desktop/output.xml", value)
+    }
 
   }
 }

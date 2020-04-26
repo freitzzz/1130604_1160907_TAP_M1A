@@ -3,8 +3,8 @@ package domain.model
 import scala.math.Ordering.Implicits._
 import scala.util.{Failure, Success, Try}
 
-sealed abstract class Resource(id: NonEmptyString,
-                               name: NonEmptyString,
+sealed abstract class Resource(val id: NonEmptyString,
+                               val name: NonEmptyString,
                                val availabilities: List[Availability],
                                roles: List[Role]) {
 
@@ -19,6 +19,10 @@ sealed abstract class Resource(id: NonEmptyString,
         period.start >= availability.period.start && period.end <= availability.period.end
     )
   }
+
+  override def equals(o: Any): Boolean = this.hashCode() == o.hashCode()
+
+  override def hashCode(): Int = id.hashCode()
 
 }
 
@@ -47,8 +51,8 @@ object Resource {
 
 }
 
-case class Teacher private (id: NonEmptyString,
-                            name: NonEmptyString,
+case class Teacher private (override val id: NonEmptyString,
+                            override val name: NonEmptyString,
                             override val availabilities: List[Availability],
                             roles: List[Role])
     extends Resource(id, name, availabilities, roles)
@@ -73,8 +77,8 @@ object Teacher {
   }
 }
 
-case class External private (id: NonEmptyString,
-                             name: NonEmptyString,
+case class External private (override val id: NonEmptyString,
+                             override val name: NonEmptyString,
                              override val availabilities: List[Availability],
                              roles: List[Role])
     extends Resource(id, name, availabilities, roles)
