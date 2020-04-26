@@ -28,9 +28,9 @@ object AssessmentMS01 extends Schedule {
 
       val vivas = vivasParse.get
 
-      val asdsad = scheduleVivas(vivas)
+      val scheduledVivas = scheduleVivas(vivas)
 
-      println(asdsad)
+      println(scheduledVivas)
 
       Success(null)
 
@@ -41,72 +41,34 @@ object AssessmentMS01 extends Schedule {
 
   private def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
 
-    /*def auxScheduleVivasa(
-      headViva: Viva,
-      tailVivas: List[Viva]
-    ): Try[List[Try[ScheduledViva]]] = {
-      val periodOption = findFirstPeriodWhichAllResourcesAreAvailable(headViva)
-
-      periodOption match {
-        case Some(value) => {
-
-          val updatedVivas = updateVivas(headViva, tailVivas, value)
-
-          updatedVivas match {
-            case ::(head, next) =>
-              Success(
-                List(
-                  ScheduledViva
-                    .create(headViva, value)
-                ) ++ auxScheduleVivasa(head, next)
-              )
-          }
-        }
-        case None =>
-          Failure(
-            new IllegalStateException(
-              "Not all Jury elements share a compatible availability"
-            )
-          )
-      }
-    }*/
-
     @tailrec
     def auxScheduleVivas(
       vivas: List[Viva],
-      svivas: List[Try[ScheduledViva]]
+      scheduledVivas: List[Try[ScheduledViva]]
     ): List[Try[ScheduledViva]] = {
 
       vivas match {
-        case ::(head, next) => {
+        case ::(head, next) =>
           val periodOption = findFirstPeriodWhichAllResourcesAreAvailable(head)
 
-          if (periodOption.nonEmpty) {
+          periodOption match {
+            case Some(value) =>
+              val updatedVivas = updateVivas(head.jury, next, value)
 
-            val period = periodOption.get
+              val scheduledViva = ScheduledViva
+                .create(head, value)
 
-            println(period)
-
-            // TODO: VIVA TEM QUE PASSAR A TER UMA DURACAO E  COM BASE NESTA O PERIODO EM QUE OS RESOURCES TE MQ UEESTAR DISPONIVEIS É O COMEÇO DO PERIODO DESTES + DURACAO
-
-            val updatedVivas = updateVivas(head.jury, next, period)
-
-            val asd = ScheduledViva
-              .create(head, period)
-
-            auxScheduleVivas(updatedVivas, asd :: svivas)
-
-          } else {
-            List[Try[ScheduledViva]](
-              Failure(
-                new IllegalStateException(
-                  "Not all Jury elements share a compatible availability"
+              auxScheduleVivas(updatedVivas, scheduledViva :: scheduledVivas)
+            case None =>
+              List[Try[ScheduledViva]](
+                Failure(
+                  new IllegalStateException(
+                    "Not all Jury elements share a compatible availability"
+                  )
                 )
               )
-            )
           }
-        }
-        case Nil => svivas.reverse
+        case Nil => scheduledVivas.reverse
       }
 
     }
@@ -238,80 +200,4 @@ object AssessmentMS01 extends Schedule {
 object AssessmentMS03 extends Schedule {
   // TODO: Use the functions in your own code to implement the assessment of ms03
   def create(xml: Elem): Try[Elem] = ???
-}
-
-object asdasdsad {
-
-  def asdasdasdasd = {
-
-    /* val asda = vivas.map(
-      viva =>
-        viva.jury.asResourcesSet
-          .flatMap(resource => resource.availabilities)
-          .toList
-          .sortWith((a1, a2) => a1.period.start.isBefore(a2.period.start))
-          .map(availability => availability.period)
-          .map(
-            period =>
-              (
-                period,
-                viva.jury.asResourcesSet
-                  .forall(resource => resource.isAvailableOn(period))
-              )
-          )
-          .find(tuple => tuple._2)
-    )
-
-    val a = LocalDateTime.parse("2020-05-30T10:30:00")
-
-    val b = LocalDateTime.parse("2020-05-30T11:31:00")
-
-    val c = Period.create(a, b).get
-
-    val aa = LocalDateTime.parse("2020-05-30T10:30:00")
-
-    val bb = LocalDateTime.parse("2020-05-30T11:30:00")
-
-    val cc = Period.create(aa, bb).get
-
-    val a1 = Availability.create(c, Preference.create(1).get).get
-
-    val a2 = Availability.create(cc, Preference.create(1).get).get
-
-    val r1 = Teacher
-      .create(
-        NonEmptyString.create("asd").get,
-        NonEmptyString.create("asdasd").get,
-        List(a2),
-        List(President())
-      )
-      .get
-
-    println(r1.isAvailableOn(c))
-
-    println(asda)*/
-    /* val allResourceAvailabilitiesPeriodSortedByPeriodStartDateTime =
-      viva1.jury.asResourcesSet
-        .flatMap(resource => resource.availabilities)
-        .toList
-        .sortWith((a1, a2) => a1.period.start.isBefore(a2.period.start))
-        .map(availability => availability.period)
-
-    println(allResourceAvailabilitiesPeriodSortedByPeriodStartDateTime)
-
-    val firstPeriodWhichAllResourcesAreAvailableOn =
-      allResourceAvailabilitiesPeriodSortedByPeriodStartDateTime
-        .map(
-          period =>
-            (
-              period,
-              viva1.jury.asResourcesSet
-                .forall(resource => resource.isAvailableOn(period))
-          )
-        )
-        .find(tuple => tuple._2)
-
-    println(firstPeriodWhichAllResourcesAreAvailableOn)*/
-  }
-
 }
