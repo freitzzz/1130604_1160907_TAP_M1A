@@ -13,7 +13,7 @@ import domain.model.{
   Viva
 }
 import domain.schedule._
-import xml.Parser
+import xml.Functions
 
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
@@ -22,7 +22,7 @@ import scala.xml.Elem
 object AssessmentMS01 extends Schedule {
   // TODO: Use the functions in your own code to implement the assessment of ms01
   def create(xml: Elem): Try[Elem] = {
-    val vivasParse = Parser.parse(xml)
+    val vivasParse = Functions.parse(xml)
 
     if (vivasParse.isSuccess) {
 

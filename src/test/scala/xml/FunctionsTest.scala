@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.xml.XML
 
-class ValidatorTest extends AnyFunSuite with Matchers {
+class FunctionsTest extends AnyFunSuite with Matchers {
 
   test(
     "given an XML document that is not valid according to a XML schema, validation fails"
@@ -22,7 +22,7 @@ class ValidatorTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val validation = Validator.validate(xml, schema)
+    val validation = Functions.validate(xml, schema)
 
     // Arrange
 
@@ -47,7 +47,7 @@ class ValidatorTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val validation = Validator.validate(xml, schema)
+    val validation = Functions.validate(xml, schema)
 
     // Arrange
 

@@ -1,15 +1,8 @@
 package startup
 
-import domain.model._
-import io.FileIO
-import java.time.LocalDateTime
-
 import assessment.AssessmentMS01
-import domain.model
-import xml.{Parser, Validator}
-
-import scala.util.{Failure, Success, Try}
-import scala.xml.{Node, XML}
+import io.FileIO
+import xml.Functions
 
 object Main {
 
@@ -38,7 +31,7 @@ object Main {
 
     val agendaSchema = schema.get
 
-    val agendaCompliesWithSchema = Validator.validate(agenda, agendaSchema)
+    val agendaCompliesWithSchema = Functions.validate(agenda, agendaSchema)
 
     assert(agendaCompliesWithSchema.isSuccess)
 
