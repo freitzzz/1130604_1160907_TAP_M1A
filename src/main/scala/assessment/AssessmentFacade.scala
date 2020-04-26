@@ -42,6 +42,36 @@ object AssessmentMS01 extends Schedule {
     vivas: List[Viva]
   ): Try[List[Try[ScheduledViva]]] = {
 
+    /*def auxScheduleVivasa(
+      headViva: Viva,
+      tailVivas: List[Viva]
+    ): Try[List[Try[ScheduledViva]]] = {
+      val periodOption = findFirstPeriodWhichAllResourcesAreAvailable(headViva)
+
+      periodOption match {
+        case Some(value) => {
+
+          val updatedVivas = updateVivas(headViva, tailVivas, value)
+
+          updatedVivas match {
+            case ::(head, next) =>
+              Success(
+                List(
+                  ScheduledViva
+                    .create(headViva, value)
+                ) ++ auxScheduleVivasa(head, next)
+              )
+          }
+        }
+        case None =>
+          Failure(
+            new IllegalStateException(
+              "Not all Jury elements share a compatible availability"
+            )
+          )
+      }
+    }*/
+
     def auxScheduleVivas(vivas: List[Viva]): Try[List[Try[ScheduledViva]]] = {
 
       vivas match {
@@ -56,16 +86,15 @@ object AssessmentMS01 extends Schedule {
 
             // TODO: VIVA TEM QUE PASSAR A TER UMA DURACAO E  COM BASE NESTA O PERIODO EM QUE OS RESOURCES TE MQ UEESTAR DISPONIVEIS É O COMEÇO DO PERIODO DESTES + DURACAO
 
-            val updatedVivas = updateVivas(head, next, period)
+            val updatedVivas = updateVivas(head.jury, next, period)
 
-            val recCall = auxScheduleVivas(updatedVivas.tail)
+            val recCall = auxScheduleVivas(updatedVivas)
 
-            if (recCall.isSuccess)
-              Success(
-                ScheduledViva.create(updatedVivas.head, period) :: recCall.get
-              )
-            else
-              Failure(recCall.failed.get)
+            recCall match {
+              case Failure(exception) => Failure(exception)
+              case Success(value) =>
+                Success(ScheduledViva.create(head, period) :: value)
+            }
 
           } else {
             Failure(
@@ -106,36 +135,33 @@ object AssessmentMS01 extends Schedule {
 
   }
 
-  private def updateVivas(headViva: Viva,
+  private def updateVivas(jury: Jury,
                           tailVivas: List[Viva],
                           period: Period): List[Viva] = {
 
     val updatedPresident =
-      newResource(headViva.jury.president, period)
+      newResource(jury.president, period)
 
     val updatedAdviser =
-      newResource(headViva.jury.adviser, period)
+      newResource(jury.adviser, period)
 
     val updatedSupervisors =
-      headViva.jury.supervisors
+      jury.supervisors
         .map(supervisor => newResource(supervisor, period))
 
     val updatedCoAdvisers =
-      headViva.jury.coAdvisers
+      jury.coAdvisers
         .map(coAdviser => newResource(coAdviser, period))
 
     val vivaDuration = Duration.between(period.start, period.end)
-
-    val updatedHeadViva = headViva
 
     val allUpdatedResources =
       updatedSupervisors ++ updatedCoAdvisers ++ List(updatedPresident) ++ List(
         updatedAdviser
       )
 
-    val updatedVivas = updatedHeadViva :: tailVivas.map(
-      viva => updateViva(viva, allUpdatedResources, vivaDuration)
-    )
+    val updatedVivas =
+      tailVivas.map(viva => updateViva(viva, allUpdatedResources, vivaDuration))
 
     updatedVivas
 
