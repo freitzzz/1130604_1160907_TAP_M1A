@@ -1,6 +1,7 @@
 package xml
 
-import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.{Duration, LocalDateTime, LocalTime}
 
 import domain.model.{
   Adviser,
@@ -25,6 +26,12 @@ import scala.xml.{Elem, NodeSeq}
 object Parser {
 
   def parse(elem: Elem): Try[List[Viva]] = {
+
+    val vivasDuration = Duration.between(
+      LocalTime.ofNanoOfDay(0),
+      LocalTime
+        .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
+    )
 
     // Retrieve Vivas
     val vivasXML = elem \ "vivas" \ "viva"
@@ -157,7 +164,8 @@ object Parser {
                       properties._5.toList,
                       properties._6.toList
                     )
-                    .get
+                    .get,
+                  vivasDuration
                 )
                 .get
           )
