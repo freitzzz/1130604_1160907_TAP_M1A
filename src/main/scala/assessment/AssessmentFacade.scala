@@ -1,5 +1,7 @@
 package assessment
 
+import java.time.Duration
+
 import domain.model.{
   Availability,
   External,
@@ -41,16 +43,11 @@ object AssessmentMS01 extends Schedule {
 
       vivas match {
         case ::(head, next) => {
-          val periodOption = findFirstPeriodWhichAllResourcesAreAvailable(
-            head.jury
-          )
+          val periodOption = findFirstPeriodWhichAllResourcesAreAvailable(head)
 
           if (periodOption.nonEmpty) {
 
-            val perioda = periodOption.get
-
-            val period =
-              Period.create(perioda.start, perioda.start.plusHours(1)).get
+            val period = periodOption.get
 
             println(period)
 
@@ -82,25 +79,24 @@ object AssessmentMS01 extends Schedule {
   }
 
   private def findFirstPeriodWhichAllResourcesAreAvailable(
-    jury: Jury
+    viva: Viva
   ): Option[Period] = {
 
-    val ordPeriods = jury.asResourcesSet
+    val ordPeriods = viva.jury.asResourcesSet
       .flatMap(resource => resource.availabilities)
       .toList
       .sortWith((a1, a2) => a1.period.start.isBefore(a2.period.start))
       .map(availability => availability.period)
+      .map(
+        period =>
+          Period.create(period.start, period.start.plus(viva.duration)).get
+      )
 
     ordPeriods
       .find(
         period =>
-          jury.asResourcesSet
-            .forall(
-              resource =>
-                resource.isAvailableOn(
-                  Period.create(period.start, period.start.plusHours(1)).get
-              )
-          )
+          viva.jury.asResourcesSet
+            .forall(resource => resource.isAvailableOn(period))
       )
 
   }
@@ -123,6 +119,8 @@ object AssessmentMS01 extends Schedule {
       headViva.jury.coAdvisers
         .map(coAdviser => newResource(coAdviser, period))
 
+    val vivaDuration = Duration.between(period.start, period.end)
+
     val updatedHeadViva = Viva
       .create(
         headViva.student,
@@ -134,7 +132,8 @@ object AssessmentMS01 extends Schedule {
             updatedSupervisors,
             updatedCoAdvisers
           )
-          .get
+          .get,
+        vivaDuration
       )
       .get
 
@@ -145,7 +144,8 @@ object AssessmentMS01 extends Schedule {
           updatedPresident,
           updatedAdviser,
           updatedSupervisors,
-          updatedCoAdvisers
+          updatedCoAdvisers,
+          vivaDuration
       )
     )
 
@@ -157,7 +157,8 @@ object AssessmentMS01 extends Schedule {
                          updatedPresident: Resource,
                          updatedAdviser: Resource,
                          updatedSupervisors: List[Resource],
-                         updatedCoAdvisers: List[Resource]) = {
+                         updatedCoAdvisers: List[Resource],
+                         vivaDuration: Duration) = {
 
     val jury = viva.jury
 
@@ -183,7 +184,7 @@ object AssessmentMS01 extends Schedule {
       )
       .get
 
-    Viva.create(viva.student, viva.title, updatedJury).get
+    Viva.create(viva.student, viva.title, updatedJury, viva.duration).get
 
   }
 

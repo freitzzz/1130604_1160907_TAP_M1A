@@ -1,6 +1,6 @@
 package domain.model
 
-import java.time.LocalDateTime
+import java.time.{Duration, LocalDateTime}
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -75,7 +75,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val viva = Viva.create(student, title, jury).get
+    val viva = Viva.create(student, title, jury, Duration.ofHours(1)).get
 
     val scheduledVivaStartDateTime = presidentAvailabilityStartDateTime
 
@@ -164,7 +164,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val viva = Viva.create(student, title, jury).get
+    val viva = Viva.create(student, title, jury, Duration.ofHours(1)).get
 
     val scheduledVivaStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -254,7 +254,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val viva = Viva.create(student, title, jury).get
+    val viva = Viva.create(student, title, jury, Duration.ofHours(1)).get
 
     val scheduledVivaStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
