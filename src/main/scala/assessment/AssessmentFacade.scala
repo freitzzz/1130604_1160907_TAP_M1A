@@ -8,6 +8,7 @@ import domain.model.{
   Jury,
   Period,
   Resource,
+  ScheduledViva,
   Teacher,
   Viva
 }
@@ -37,9 +38,11 @@ object AssessmentMS01 extends Schedule {
     }
   }
 
-  private def scheduleVivas(vivas: List[Viva]): Try[List[Viva]] = {
+  private def scheduleVivas(
+    vivas: List[Viva]
+  ): Try[List[Try[ScheduledViva]]] = {
 
-    def auxScheduleVivas(vivas: List[Viva]): Try[List[Viva]] = {
+    def auxScheduleVivas(vivas: List[Viva]): Try[List[Try[ScheduledViva]]] = {
 
       vivas match {
         case ::(head, next) => {
@@ -58,7 +61,9 @@ object AssessmentMS01 extends Schedule {
             val recCall = auxScheduleVivas(updatedVivas.tail)
 
             if (recCall.isSuccess)
-              Success(updatedVivas.head :: recCall.get)
+              Success(
+                ScheduledViva.create(updatedVivas.head, period) :: recCall.get
+              )
             else
               Failure(recCall.failed.get)
 
@@ -121,32 +126,15 @@ object AssessmentMS01 extends Schedule {
 
     val vivaDuration = Duration.between(period.start, period.end)
 
-    val updatedHeadViva = Viva
-      .create(
-        headViva.student,
-        headViva.title,
-        Jury
-          .create(
-            updatedPresident,
-            updatedAdviser,
-            updatedSupervisors,
-            updatedCoAdvisers
-          )
-          .get,
-        vivaDuration
+    val updatedHeadViva = headViva
+
+    val allUpdatedResources =
+      updatedSupervisors ++ updatedCoAdvisers ++ List(updatedPresident) ++ List(
+        updatedAdviser
       )
-      .get
 
     val updatedVivas = updatedHeadViva :: tailVivas.map(
-      viva =>
-        updateViva(
-          viva,
-          updatedPresident,
-          updatedAdviser,
-          updatedSupervisors,
-          updatedCoAdvisers,
-          vivaDuration
-      )
+      viva => updateViva(viva, allUpdatedResources, vivaDuration)
     )
 
     updatedVivas
@@ -154,32 +142,24 @@ object AssessmentMS01 extends Schedule {
   }
 
   private def updateViva(viva: Viva,
-                         updatedPresident: Resource,
-                         updatedAdviser: Resource,
-                         updatedSupervisors: List[Resource],
-                         updatedCoAdvisers: List[Resource],
+                         updatedResources: List[Resource],
                          vivaDuration: Duration) = {
 
     val jury = viva.jury
 
-    val updatedResources = updatedSupervisors.toSet ++ updatedCoAdvisers.toSet ++ Set(
-      updatedPresident
-    ) ++ Set(updatedAdviser)
-
-    val asdsadsadsadsada = updatedResources
+    val updatedVivaJuryResources = updatedResources
       .filter(resource => jury.asResourcesSet.contains(resource))
-      .toList
 
-    val asd = jury.asResourcesSet.toList
-      .diff(asdsadsadsadsada) ++ asdsadsadsadsada
+    val newJuryVivaResources = jury.asResourcesSet.toList
+      .diff(updatedVivaJuryResources) ++ updatedVivaJuryResources
 
     val updatedJury = Jury
       .create(
-        asd.find(_.id == jury.president.id).get,
-        asd.find(_.id == jury.adviser.id).get,
-        asd
+        newJuryVivaResources.find(_.id == jury.president.id).get,
+        newJuryVivaResources.find(_.id == jury.adviser.id).get,
+        newJuryVivaResources
           .filter(resource => jury.supervisors.map(_.id).contains(resource.id)),
-        asd
+        newJuryVivaResources
           .filter(resource => jury.coAdvisers.map(_.id).contains(resource.id))
       )
       .get
@@ -188,70 +168,33 @@ object AssessmentMS01 extends Schedule {
 
   }
 
-  private def decideWhichResourceToUse(oldResource: Resource,
-                                       updatedResource: Resource): Resource = {
-
-    if (oldResource.id == updatedResource.id)
-      updatedResource
-    else
-      oldResource
-
-  }
-
-  private def decideWhichResourcesToUse(
-    oldResource: Resource,
-    updatedResources: List[Resource]
-  ): List[Resource] = {
-
-    updatedResources.map(
-      updatedResource => decideWhichResourceToUse(oldResource, updatedResource)
-    )
-
-  }
-
   private def newResource(resource: Resource, period: Period): Resource = {
     resource match {
       case Teacher(id, name, _, roles) =>
         Teacher
-          .create(
-            id,
-            name,
-            updateResourceAvailabilities(resource, period),
-            roles
-          )
+          .create(id, name, newResourceAvailabilities(resource, period), roles)
           .get
       case External(id, name, _, roles) =>
         External
-          .create(
-            id,
-            name,
-            updateResourceAvailabilities(resource, period),
-            roles
-          )
+          .create(id, name, newResourceAvailabilities(resource, period), roles)
           .get
     }
 
   }
 
-  private def updateResourceAvailabilities(
-    resource: Resource,
-    period: Period
-  ): List[Availability] = {
+  private def newResourceAvailabilities(resource: Resource,
+                                        period: Period): List[Availability] = {
 
     val availabilityOnPeriod = resource.availabilityOn(period).get
 
     val newAvailabilities =
-      updateAvailability(availabilityOnPeriod, period)
+      splitAvailability(availabilityOnPeriod, period)
 
-    val a = resource.availabilities.filter(_ != availabilityOnPeriod)
-
-    val b = resource.availabilities.filter(_ != availabilityOnPeriod) ++ newAvailabilities
-
-    b
+    resource.availabilities.filter(_ != availabilityOnPeriod) ++ newAvailabilities
   }
 
-  private def updateAvailability(availability: Availability,
-                                 period: Period): List[Availability] = {
+  private def splitAvailability(availability: Availability,
+                                period: Period): List[Availability] = {
 
     List(
       Period.create(availability.period.start, period.start),
