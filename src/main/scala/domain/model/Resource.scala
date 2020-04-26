@@ -4,7 +4,7 @@ import scala.math.Ordering.Implicits._
 import scala.util.{Failure, Success, Try}
 
 sealed abstract class Resource(val id: NonEmptyString,
-                               name: NonEmptyString,
+                               val name: NonEmptyString,
                                val availabilities: List[Availability],
                                roles: List[Role]) {
 
@@ -52,7 +52,7 @@ object Resource {
 }
 
 case class Teacher private (override val id: NonEmptyString,
-                            name: NonEmptyString,
+                            override val name: NonEmptyString,
                             override val availabilities: List[Availability],
                             roles: List[Role])
     extends Resource(id, name, availabilities, roles)
@@ -78,7 +78,7 @@ object Teacher {
 }
 
 case class External private (override val id: NonEmptyString,
-                             name: NonEmptyString,
+                             override val name: NonEmptyString,
                              override val availabilities: List[Availability],
                              roles: List[Role])
     extends Resource(id, name, availabilities, roles)

@@ -35,7 +35,9 @@ object Main {
 
     assert(agendaCompliesWithSchema.isSuccess)
 
-    AssessmentMS01.create(agenda)
+    val asd = AssessmentMS01.create(agenda)
+
+    println(asd)
 
   }
 }

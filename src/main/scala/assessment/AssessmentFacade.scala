@@ -3,6 +3,7 @@ package assessment
 import java.time.Duration
 
 import domain.model.{
+  Agenda,
   Availability,
   External,
   Jury,
@@ -22,20 +23,25 @@ import scala.xml.Elem
 object AssessmentMS01 extends Schedule {
   // TODO: Use the functions in your own code to implement the assessment of ms01
   def create(xml: Elem): Try[Elem] = {
-    val vivasParse = Functions.parse(xml)
+    val vivasParse = Functions.deserialize(xml)
 
-    if (vivasParse.isSuccess) {
+    vivasParse match {
+      case Failure(exception) => Failure(exception)
+      case Success(value) => {
 
-      val vivas = vivasParse.get
+        val vivas = value
 
-      val scheduledVivas = scheduleVivas(vivas)
+        val scheduledVivas = scheduleVivas(vivas)
 
-      println(scheduledVivas)
+        println(scheduledVivas)
 
-      Success(null)
-
-    } else {
-      Failure(vivasParse.failed.get)
+        scheduledVivas.find(_.isFailure) match {
+          case Some(value) => Failure(value.failed.get)
+          case None => {
+            Success(Functions.serialize(Agenda(scheduledVivas.map(_.get))))
+          }
+        }
+      }
     }
   }
 
