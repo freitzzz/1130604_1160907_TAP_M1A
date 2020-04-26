@@ -303,22 +303,22 @@ class JuryTest extends AnyFunSuite with Matchers {
     )
 
     val adviser = Teacher(
-      id = NonEmptyString.create("Teacher 001").get,
+      id = NonEmptyString.create("Teacher 002").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateAdviser())
     )
 
     val supervisor = External(
-      id = NonEmptyString.create("Teacher 001").get,
-      name = NonEmptyString.create("Fake Teacher").get,
+      id = NonEmptyString.create("External 001").get,
+      name = NonEmptyString.create("Fake External").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateSupervisor())
     )
 
     val coAdviser = External(
-      id = NonEmptyString.create("Teacher 001").get,
-      name = NonEmptyString.create("Fake Teacher").get,
+      id = NonEmptyString.create("External 002").get,
+      name = NonEmptyString.create("External Teacher").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateCoAdviser())
     )
@@ -346,7 +346,7 @@ class JuryTest extends AnyFunSuite with Matchers {
     val period = Period.create(start, end).get
     val preference = Preference.create(pref).get
 
-    Availability.create(period, preference).getOrElse(null)
+    Availability.create(period, preference)
   }
 
   def generateAvailabilities: List[Availability] = {

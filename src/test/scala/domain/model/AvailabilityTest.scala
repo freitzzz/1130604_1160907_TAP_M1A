@@ -20,7 +20,7 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
     // Act
 
     val availabilityHashCode =
-      Availability.create(period, preference).get.hashCode()
+      Availability.create(period, preference).hashCode()
 
     // Assert
 
@@ -46,9 +46,9 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val availabilityX = Availability.create(periodX, preferenceX).get
+    val availabilityX = Availability.create(periodX, preferenceX)
 
-    val availabilityY = Availability.create(periodY, preferenceY).get
+    val availabilityY = Availability.create(periodY, preferenceY)
 
     val availabilityXHashCode = availabilityX.hashCode()
 
@@ -82,9 +82,9 @@ class AvailabilityTest extends AnyFunSuite with Matchers {
 
     // Act
 
-    val availabilityX = Availability.create(periodX, preferenceX).get
+    val availabilityX = Availability.create(periodX, preferenceX)
 
-    val availabilityY = Availability.create(periodY, preferenceY).get
+    val availabilityY = Availability.create(periodY, preferenceY)
 
     val availabilityXHashCode = availabilityX.hashCode()
 

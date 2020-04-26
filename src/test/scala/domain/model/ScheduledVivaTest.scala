@@ -36,7 +36,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val presidentAvailability = Availability
       .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
-      .get
 
     val adviserAvailabilityStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -52,7 +51,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val adviserAvailability = Availability
       .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
-      .get
 
     val president = Teacher
       .create(
@@ -125,7 +123,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val presidentAvailability = Availability
       .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
-      .get
 
     val adviserAvailabilityStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -141,7 +138,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val adviserAvailability = Availability
       .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
-      .get
 
     val president = Teacher
       .create(
@@ -215,7 +211,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val presidentAvailability = Availability
       .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
-      .get
 
     val adviserAvailabilityStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -231,7 +226,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val adviserAvailability = Availability
       .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
-      .get
 
     val president = Teacher
       .create(

@@ -194,9 +194,7 @@ object AssessmentMS01 extends Schedule {
       Period.create(availability.period.start, period.start),
       Period.create(period.end, availability.period.end)
     ).filter(_.isSuccess)
-      .map(
-        period => Availability.create(period.get, availability.preference).get
-      )
+      .map(period => Availability.create(period.get, availability.preference))
   }
 
 }

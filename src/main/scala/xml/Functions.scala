@@ -119,8 +119,7 @@ object Functions {
                         .create(
                           availabilityTuple._1.get,
                           availabilityTuple._2.get
-                        )
-                        .get
+                      )
                   )
                   .toList,
                 tuple._2._4
@@ -143,8 +142,7 @@ object Functions {
                         .create(
                           availabilityTuple._1.get,
                           availabilityTuple._2.get
-                        )
-                        .get
+                      )
                   )
                   .toList,
                 tuple._2._4
