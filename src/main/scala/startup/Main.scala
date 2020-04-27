@@ -18,11 +18,11 @@ object Main {
     //val outputFileName = scala.io.StdIn.readLine()
 
     val xml = FileIO.load(
-      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms01/valid_agenda_in.xml"
+      "C:\\tests\\tap\\1130604_1160907_tap_m1a\\files\\assessment\\ms01\\invalid_agenda_01_in.xml"
     )
 
     val schema = FileIO.load(
-      "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/agenda.xsd"
+      "C:\\tests\\tap\\1130604_1160907_tap_m1a\\files\\agenda.xsd"
     )
 
     assert(xml.isSuccess)
@@ -42,7 +42,7 @@ object Main {
     scheduledAgendaXML match {
       case Failure(exception) => Failure(exception)
       case Success(value) =>
-        FileIO.save("/home/freitas/Desktop/output.xml", value)
+        FileIO.save("C:\\tests\\tap\\1130604_1160907_tap_m1a\\files\\outputGustavo.xml", value)
     }
 
   }

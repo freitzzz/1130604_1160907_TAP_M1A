@@ -218,6 +218,12 @@ object Functions {
 
   }
 
+  def serializeError(error: Throwable) : Elem = {
+    val errorXML =
+        <error xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../scheduleError.xsd" message={error.getMessage}  />
+    errorXML
+  }
+
   def serialize(agenda: Agenda): Elem = {
 
     val xml =
