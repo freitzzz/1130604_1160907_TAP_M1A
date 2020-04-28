@@ -1,9 +1,7 @@
 package domain.model
 
-import scala.util.{Success, Try}
-
-abstract case class Availability private (period: Period,
-                                          preference: Preference) {
+sealed abstract case class Availability private (period: Period,
+                                                 preference: Preference) {
 
   override def equals(o: Any): Boolean = this.hashCode() == o.hashCode()
 
@@ -12,6 +10,6 @@ abstract case class Availability private (period: Period,
 }
 
 object Availability {
-  def create(period: Period, preference: Preference): Try[Availability] =
-    Success(new Availability(period, preference) {})
+  def create(period: Period, preference: Preference): Availability =
+    new Availability(period, preference) {}
 }

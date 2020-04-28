@@ -91,7 +91,9 @@ object AssessmentMS01 extends Schedule {
       .map(availability => availability.period)
       .map(
         period =>
-          Period.create(period.start, period.start.plus(viva.duration)).get
+          Period
+            .create(period.start, period.start.plus(viva.duration.timeDuration))
+            .get
       )
 
     ordPeriods
@@ -158,7 +160,8 @@ object AssessmentMS01 extends Schedule {
       )
       .get
 
-    Viva.create(viva.student, viva.title, updatedJury, viva.duration).get
+    Viva
+      .create(viva.student, viva.title, updatedJury, viva.duration)
 
   }
 
@@ -194,9 +197,7 @@ object AssessmentMS01 extends Schedule {
       Period.create(availability.period.start, period.start),
       Period.create(period.end, availability.period.end)
     ).filter(_.isSuccess)
-      .map(
-        period => Availability.create(period.get, availability.preference).get
-      )
+      .map(period => Availability.create(period.get, availability.preference))
   }
 
 }

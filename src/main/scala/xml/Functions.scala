@@ -1,14 +1,16 @@
 package xml
 
 import java.io.ByteArrayInputStream
+import java.time
+import java.time.{LocalDateTime, LocalTime}
 import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDateTime, LocalTime}
 
 import domain.model.{
   Adviser,
   Agenda,
   Availability,
   CoAdviser,
+  Duration,
   External,
   Jury,
   NonEmptyString,
@@ -57,163 +59,171 @@ object Functions {
 
   def deserialize(elem: Elem): Try[List[Viva]] = {
 
-    val vivasDuration = Duration.between(
-      LocalTime.ofNanoOfDay(0),
-      LocalTime
-        .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
+    val vivasDurationTry = Duration.create(
+      time.Duration.between(
+        LocalTime.ofNanoOfDay(0),
+        LocalTime
+          .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
+      )
     )
 
-    // Retrieve Vivas
-    val vivasXML = elem \ "vivas" \ "viva"
+    vivasDurationTry match {
+      case Failure(exception)     => Failure(exception)
+      case Success(vivasDuration) =>
+        // Retrieve Vivas
+        val vivasXML = elem \ "vivas" \ "viva"
 
-    val mappedRoles = vivasXML
-      .map(
-        viva => viva.descendant.filter(node => node.attribute("id").nonEmpty)
-      )
-      .flatten
-      .map(
-        node =>
-          (node \@ "id", node.label match {
-            case "president"  => President()
-            case "adviser"    => Adviser()
-            case "coadviser"  => CoAdviser()
-            case "supervisor" => Supervisor()
-          })
-      )
-      .groupBy(role => role._1)
-      .map(entry => (entry._1, entry._2.map(tuple => tuple._2).distinct.toList))
-
-    // Retrieve teachers
-    val teachersXML = elem \ "resources" \ "teachers" \ "teacher"
-
-    val externalsXML = elem \ "resources" \ "externals" \ "external"
-
-    val teachersProperties = mapResourcesProperties(teachersXML, mappedRoles)
-
-    val externalsProperties = mapResourcesProperties(externalsXML, mappedRoles)
-
-    val resourcesProperties = teachersProperties ++ externalsProperties
-
-    val firstInvalidProperty = resourcesProperties.values
-      .flatMap[Try[Any]](
-        tuple =>
-          List(tuple._1, tuple._2) ++ tuple._3
-            .flatMap(innerTuple => List(innerTuple._1, innerTuple._2))
-      )
-      .find(_.isFailure)
-
-    if (firstInvalidProperty.isEmpty) {
-
-      val teachers = teachersProperties
-        .map(
-          tuple =>
-            (
-              tuple._1,
-              Teacher.create(
-                tuple._2._1.get,
-                tuple._2._2.get,
-                tuple._2._3
-                  .map(
-                    availabilityTuple =>
-                      Availability
-                        .create(
-                          availabilityTuple._1.get,
-                          availabilityTuple._2.get
-                        )
-                        .get
-                  )
-                  .toList,
-                tuple._2._4
-              )
+        val mappedRoles = vivasXML
+          .map(
+            viva =>
+              viva.descendant.filter(node => node.attribute("id").nonEmpty)
           )
-        )
-
-      val externals = externalsProperties
-        .map(
-          tuple =>
-            (
-              tuple._1,
-              External.create(
-                tuple._2._1.get,
-                tuple._2._2.get,
-                tuple._2._3
-                  .map(
-                    availabilityTuple =>
-                      Availability
-                        .create(
-                          availabilityTuple._1.get,
-                          availabilityTuple._2.get
-                        )
-                        .get
-                  )
-                  .toList,
-                tuple._2._4
-              )
+          .flatten
+          .map(
+            node =>
+              (node \@ "id", node.label match {
+                case "president"  => President()
+                case "adviser"    => Adviser()
+                case "coadviser"  => CoAdviser()
+                case "supervisor" => Supervisor()
+              })
           )
-        )
+          .groupBy(role => role._1)
+          .map(
+            entry => (entry._1, entry._2.map(tuple => tuple._2).distinct.toList)
+          )
 
-      val resources = teachers ++ externals
+        // Retrieve teachers
+        val teachersXML = elem \ "resources" \ "teachers" \ "teacher"
 
-      val firstInvalidResource = resources.values.find(_.isFailure)
+        val externalsXML = elem \ "resources" \ "externals" \ "external"
 
-      if (firstInvalidResource.isEmpty) {
+        val teachersProperties =
+          mapResourcesProperties(teachersXML, mappedRoles)
 
-        val resourcess = resources.map(tuple => (tuple._1, tuple._2.get))
+        val externalsProperties =
+          mapResourcesProperties(externalsXML, mappedRoles)
 
-        val vivasProperties = mapVivasProperties(vivasXML, resourcess)
+        val resourcesProperties = teachersProperties ++ externalsProperties
 
-        val firstInvalidVivaProperty = vivasProperties
-          .flatMap(
-            properties =>
-              List(
-                properties._1,
-                properties._2,
-                Jury
-                  .create(
-                    properties._3,
-                    properties._4,
-                    properties._5.toList,
-                    properties._6.toList
-                  )
-            )
+        val firstInvalidProperty = resourcesProperties.values
+          .flatMap[Try[Any]](
+            tuple =>
+              List(tuple._1, tuple._2) ++ tuple._3
+                .flatMap(innerTuple => List(innerTuple._1, innerTuple._2))
           )
           .find(_.isFailure)
 
-        if (firstInvalidVivaProperty.isEmpty) {
+        if (firstInvalidProperty.isEmpty) {
 
-          val vivas = vivasProperties.map(
-            properties =>
-              Viva
-                .create(
-                  properties._1.get,
-                  properties._2.get,
-                  Jury
-                    .create(
-                      properties._3,
-                      properties._4,
-                      properties._5.toList,
-                      properties._6.toList
-                    )
-                    .get,
-                  vivasDuration
+          val teachers = teachersProperties
+            .map(
+              tuple =>
+                (
+                  tuple._1,
+                  Teacher.create(
+                    tuple._2._1.get,
+                    tuple._2._2.get,
+                    tuple._2._3
+                      .map(
+                        availabilityTuple =>
+                          Availability
+                            .create(
+                              availabilityTuple._1.get,
+                              availabilityTuple._2.get
+                          )
+                      )
+                      .toList,
+                    tuple._2._4
+                  )
+              )
+            )
+
+          val externals = externalsProperties
+            .map(
+              tuple =>
+                (
+                  tuple._1,
+                  External.create(
+                    tuple._2._1.get,
+                    tuple._2._2.get,
+                    tuple._2._3
+                      .map(
+                        availabilityTuple =>
+                          Availability
+                            .create(
+                              availabilityTuple._1.get,
+                              availabilityTuple._2.get
+                          )
+                      )
+                      .toList,
+                    tuple._2._4
+                  )
+              )
+            )
+
+          val resources = teachers ++ externals
+
+          val firstInvalidResource = resources.values.find(_.isFailure)
+
+          if (firstInvalidResource.isEmpty) {
+
+            val resourcess = resources.map(tuple => (tuple._1, tuple._2.get))
+
+            val vivasProperties = mapVivasProperties(vivasXML, resourcess)
+
+            val firstInvalidVivaProperty = vivasProperties
+              .flatMap(
+                properties =>
+                  List(
+                    properties._1,
+                    properties._2,
+                    Jury
+                      .create(
+                        properties._3,
+                        properties._4,
+                        properties._5.toList,
+                        properties._6.toList
+                      )
                 )
-                .get
-          )
+              )
+              .find(_.isFailure)
 
-          Success(vivas.toList)
+            if (firstInvalidVivaProperty.isEmpty) {
+
+              val vivas = vivasProperties.map(
+                properties =>
+                  Viva
+                    .create(
+                      properties._1.get,
+                      properties._2.get,
+                      Jury
+                        .create(
+                          properties._3,
+                          properties._4,
+                          properties._5.toList,
+                          properties._6.toList
+                        )
+                        .get,
+                      vivasDuration
+                  )
+              )
+
+              Success(vivas.toList)
+
+            } else {
+
+              Failure(firstInvalidVivaProperty.get.failed.get)
+
+            }
+
+          } else {
+            Failure(firstInvalidResource.get.failed.get)
+          }
 
         } else {
-
-          Failure(firstInvalidVivaProperty.get.failed.get)
-
+          Failure(firstInvalidProperty.get.failed.get)
         }
-
-      } else {
-        Failure(firstInvalidResource.get.failed.get)
-      }
-
-    } else {
-      Failure(firstInvalidProperty.get.failed.get)
     }
 
   }
