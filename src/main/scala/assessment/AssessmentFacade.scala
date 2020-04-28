@@ -34,8 +34,7 @@ object AssessmentMS01 extends Schedule {
         val scheduledVivas = scheduleVivas(vivas)
 
         scheduledVivas.find(_.isFailure) match {
-          //case Some(value) => Failure(value.failed.get)
-          case Some(value) => Success(Functions.serializeError(value.failed.get))
+          case Some(value) => Failure(value.failed.get)
           case None => {
             Success(Functions.serialize(Agenda(scheduledVivas.map(_.get))))
           }
