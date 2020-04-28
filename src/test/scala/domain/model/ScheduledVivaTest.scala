@@ -1,6 +1,7 @@
 package domain.model
 
-import java.time.{Duration, LocalDateTime}
+import java.time
+import java.time.LocalDateTime
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -36,7 +37,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val presidentAvailability = Availability
       .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
-      .get
 
     val adviserAvailabilityStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -52,7 +52,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val adviserAvailability = Availability
       .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
-      .get
 
     val president = Teacher
       .create(
@@ -75,7 +74,9 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val viva = Viva.create(student, title, jury, Duration.ofHours(1)).get
+    val vivaDuration = Duration.create(time.Duration.ofHours(1)).get
+
+    val viva = Viva.create(student, title, jury, vivaDuration)
 
     val scheduledVivaStartDateTime = presidentAvailabilityStartDateTime
 
@@ -125,7 +126,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val presidentAvailability = Availability
       .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
-      .get
 
     val adviserAvailabilityStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -141,7 +141,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val adviserAvailability = Availability
       .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
-      .get
 
     val president = Teacher
       .create(
@@ -164,7 +163,9 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val viva = Viva.create(student, title, jury, Duration.ofHours(1)).get
+    val vivaDuration = Duration.create(time.Duration.ofHours(1)).get
+
+    val viva = Viva.create(student, title, jury, vivaDuration)
 
     val scheduledVivaStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -215,7 +216,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val presidentAvailability = Availability
       .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
-      .get
 
     val adviserAvailabilityStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)
@@ -231,7 +231,6 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val adviserAvailability = Availability
       .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
-      .get
 
     val president = Teacher
       .create(
@@ -254,7 +253,9 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val viva = Viva.create(student, title, jury, Duration.ofHours(1)).get
+    val vivaDuration = Duration.create(time.Duration.ofHours(1)).get
+
+    val viva = Viva.create(student, title, jury, vivaDuration)
 
     val scheduledVivaStartDateTime =
       presidentAvailabilityStartDateTime.plusMinutes(5)

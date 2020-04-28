@@ -20,7 +20,6 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val availability = Availability
       .create(period, Preference.create(5).get)
-      .get
 
     val duplicateAvailability = availability
 
@@ -54,7 +53,6 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val availability = Availability
       .create(period, Preference.create(5).get)
-      .get
 
     val availabilities = List[Availability](availability)
 
@@ -84,7 +82,6 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val availability = Availability
       .create(period, Preference.create(5).get)
-      .get
 
     val role = President()
 
@@ -120,7 +117,6 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
     val availability = Availability
       .create(period, Preference.create(5).get)
-      .get
 
     val role = President()
 
@@ -373,7 +369,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val periodX = Period.create(startDateTimeX, endDateTimeX).get
 
     val availabilityX =
-      Availability.create(periodX, preferenceX).get
+      Availability.create(periodX, preferenceX)
 
     val startDateTimeY = startDateTimeX.plusMinutes(6)
 
@@ -384,7 +380,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceY = Preference.create(5).get
 
     val availabilityY =
-      Availability.create(periodY, preferenceY).get
+      Availability.create(periodY, preferenceY)
 
     val availabilities = List[Availability](availabilityX, availabilityY)
 
@@ -439,7 +435,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceX = Preference.create(5).get
 
     val availabilityX =
-      Availability.create(periodX, preferenceX).get
+      Availability.create(periodX, preferenceX)
 
     val startDateTimeY = startDateTimeX.plusMinutes(6)
 
@@ -450,7 +446,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceY = Preference.create(5).get
 
     val availabilityY =
-      Availability.create(periodY, preferenceY).get
+      Availability.create(periodY, preferenceY)
 
     val availabilities = List[Availability](availabilityX, availabilityY)
 
@@ -503,7 +499,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceX = Preference.create(5).get
 
     val availabilityX =
-      Availability.create(periodX, preferenceX).get
+      Availability.create(periodX, preferenceX)
 
     val startDateTimeY = startDateTimeX.plusMinutes(6)
 
@@ -514,7 +510,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceY = Preference.create(5).get
 
     val availabilityY =
-      Availability.create(periodY, preferenceY).get
+      Availability.create(periodY, preferenceY)
 
     val availabilities = List[Availability](availabilityX, availabilityY)
 
@@ -567,7 +563,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceX = Preference.create(5).get
 
     val availabilityX =
-      Availability.create(periodX, preferenceX).get
+      Availability.create(periodX, preferenceX)
 
     val startDateTimeY = startDateTimeX.plusMinutes(6)
 
@@ -578,7 +574,7 @@ class ResourceTest extends AnyFunSuite with Matchers {
     val preferenceY = Preference.create(5).get
 
     val availabilityY =
-      Availability.create(periodY, preferenceY).get
+      Availability.create(periodY, preferenceY)
 
     val availabilities = List[Availability](availabilityX, availabilityY)
 
