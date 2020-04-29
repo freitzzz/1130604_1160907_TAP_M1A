@@ -166,7 +166,7 @@ object Functions {
 
           val firstInvalidResource = resources.values.find(_.isFailure)
 
-          if (firstInvalidResource.isEmpty) {
+          if (firstInvalidResource.isEmpty && teachers.size == 0) {
 
             val resourcess = resources.map(tuple => (tuple._1, tuple._2.get))
 
@@ -197,9 +197,23 @@ object Functions {
                     )
                 )
 
-                Success(vivas.toList)
+                vivas.size match {
+                  case 0 =>
+                    Failure(
+                      new IllegalStateException(
+                        "Node Vivas is undefined. Vivas are required."
+                      )
+                    )
+                  case _ => Success(vivas.toList)
+                }
             }
 
+          } else if (resources.size == 0) {
+            Failure(
+              new IllegalStateException(
+                "Node Resources is undefined. Resources are required."
+              )
+            )
           } else {
             Failure(firstInvalidResource.get.failed.get)
           }
@@ -339,7 +353,5 @@ object Functions {
             .map(_.get._2)
       )
     )
-
   }
-
 }
