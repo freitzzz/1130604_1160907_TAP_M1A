@@ -30,6 +30,11 @@ To improve the quality of the software being produced, one must adopt and define
 
 ## Domain Concepts
 
+After reading the project statement, it is possible to understand that the problem domain based on the scheduling of MSc Disserations Defenses, also known as Vivas. To schedule a Viva, one must take into account its properties, or else two viva schedules may overlap in their realization period. A Viva is held by a student and addresses a certain topic. This topic is known as the viva title. The viva is assesed by a Jury, that implies the existence of at least two elements: the president of the jury and the adviser. Additonally the jury can also be composed by more elements, the 
+
+
+The diagram below depicts these domain concepts in UML classes and relationships
+
 ## Vivas Scheduling Algorithm (MS01)
 
 ## Domain Correctness Assurance with Property-Based Testing (MS02)
