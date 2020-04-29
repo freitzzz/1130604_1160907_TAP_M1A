@@ -231,12 +231,18 @@ object Functions {
   def serialize(agenda: Agenda): Elem = {
 
     val xml =
-      <schedule totalPreference={agenda.scheduledVivas.foldLeft(0)(_ + _.scheduledPreference).toString}>
+      <schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" totalPreference={agenda.scheduledVivas.foldLeft(0)(_ + _.scheduledPreference).toString}>
         {agenda.scheduledVivas.map(serializeScheduledViva)}
       </schedule>
 
     xml
 
+  }
+
+  def serializeError(error: Throwable): Elem = {
+    val errorXML =
+      <error xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" message={error.getMessage}  />
+    errorXML
   }
 
   private def serializeScheduledViva(scheduledViva: ScheduledViva): Node = {
