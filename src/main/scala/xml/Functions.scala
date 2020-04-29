@@ -172,49 +172,32 @@ object Functions {
 
             val vivasProperties = mapVivasProperties(vivasXML, resourcess)
 
-            val firstInvalidVivaProperty = vivasProperties
-              .flatMap(
-                properties =>
-                  List(
-                    properties._1,
-                    properties._2,
-                    Jury
-                      .create(
-                        properties._3,
-                        properties._4,
-                        properties._5.toList,
-                        properties._6.toList
-                      )
-                )
-              )
+            val vivasPropertiesFailures = vivasProperties
+              .flatMap(ps => List(ps._1, ps._2, ps._3, ps._4))
               .find(_.isFailure)
 
-            if (firstInvalidVivaProperty.isEmpty) {
+            vivasPropertiesFailures match {
+              case Some(value) => Failure(value.failed.get)
+              case None =>
+                val vivas = vivasProperties.map(
+                  properties =>
+                    Viva
+                      .create(
+                        properties._1.get,
+                        properties._2.get,
+                        Jury
+                          .create(
+                            properties._3.get,
+                            properties._4.get,
+                            properties._5.toList,
+                            properties._6.toList
+                          )
+                          .get,
+                        vivasDuration
+                    )
+                )
 
-              val vivas = vivasProperties.map(
-                properties =>
-                  Viva
-                    .create(
-                      properties._1.get,
-                      properties._2.get,
-                      Jury
-                        .create(
-                          properties._3,
-                          properties._4,
-                          properties._5.toList,
-                          properties._6.toList
-                        )
-                        .get,
-                      vivasDuration
-                  )
-              )
-
-              Success(vivas.toList)
-
-            } else {
-
-              Failure(firstInvalidVivaProperty.get.failed.get)
-
+                Success(vivas.toList)
             }
 
           } else {
@@ -317,8 +300,8 @@ object Functions {
                                  resources: Map[String, Resource]): Seq[
     (Try[NonEmptyString],
      Try[NonEmptyString],
-     Resource,
-     Resource,
+     Try[Resource],
+     Try[Resource],
      Seq[Resource],
      Seq[Resource])
   ] = {
@@ -330,14 +313,24 @@ object Functions {
           NonEmptyString.create(node \@ "title"),
           (node \ "president")
             .map(p => resources.find(_._1 == p \@ "id"))
-            .head
-            .get
-            ._2,
+            .headOption
+            .fold[Try[Resource]](
+              Failure(
+                new IllegalStateException(
+                  "Node president is empty/undefined in viva"
+                )
+              )
+            )(p => Success(p.get._2)),
           (node \ "adviser")
             .map(p => resources.find(_._1 == p \@ "id"))
-            .head
-            .get
-            ._2,
+            .headOption
+            .fold[Try[Resource]](
+              Failure(
+                new IllegalStateException(
+                  "Node adviser is empty/undefined in viva"
+                )
+              )
+            )(p => Success(p.get._2)),
           (node \ "supervisor")
             .map(p => resources.find(_._1 == p \@ "id"))
             .map(_.get._2),
