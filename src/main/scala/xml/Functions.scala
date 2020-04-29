@@ -94,8 +94,8 @@ object Functions {
             entry => (entry._1, entry._2.map(tuple => tuple._2).distinct.toList)
           )
 
-        mappedRoles.size match {
-          case 0 =>
+        mappedRoles.isEmpty match {
+          case true =>
             Failure(
               new IllegalStateException(
                 "Node Vivas is undefined. Vivas are required."
@@ -173,8 +173,8 @@ object Functions {
 
               val resources = teachers ++ externals
 
-              resources.size match {
-                case 0 =>
+              resources.isEmpty match {
+                case true =>
                   Failure(
                     new IllegalStateException(
                       "Node Resources is undefined. Resources are required."
