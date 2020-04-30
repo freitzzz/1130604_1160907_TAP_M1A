@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<schedule totalPreference="32" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <viva 
+    student="Joao" title="Milestone 1 TAP Aluno 1" start="2020-05-31T09:30:00" end="2020-05-31T10:30:00" preference="4">
+        <president name="John"/>
+        <adviser name="Richard"/>
+        <supervisor name="Amsterdam Governor"/>
+        <supervisor name="Microsoft CEO"/>
+        <coadviser name="FEUP"/>
+</viva>
+    <viva 
+    student="Gustavo" title="Milestone 1 TAP Aluno 2" start="2020-05-31T10:30:00" end="2020-05-31T11:30:00" preference="5">
+        <president name="Adrian"/>
+        <adviser name="Armin"/>
+        <supervisor name="Amsterdam Governor"/>
+        <coadviser name="FEUP"/>
+</viva>
+    <viva 
+    student="Pedro" title="Milestone 1 TAP Aluno 3" start="2020-05-31T09:30:00" end="2020-05-31T10:30:00" preference="1">
+        <president name="Jose"/>
+        <adviser name="Kylie"/>
+        <supervisor name="External Person"/>
+        <coadviser name="Udacity CEO"/>
+</viva>
+    <viva 
+    student="Maria" title="Milestone 1 TAP Aluno 4" start="2020-05-31T10:30:00" end="2020-05-31T11:30:00" preference="5">
+        <president name="Richard"/>
+        <adviser name="Marie"/>
+        <supervisor name="Facebook CEO"/>
+        <coadviser name="Microsoft CEO"/>
+</viva>
+    <viva 
+    student="Laura" title="Milestone 1 TAP Aluno 5" start="2020-05-31T10:30:00" end="2020-05-31T11:30:00" preference="2">
+        <president name="Allen"/>
+        <adviser name="Jose"/>
+        <supervisor name="Apple CTO"/>
+        <coadviser name="External 20"/>
+</viva>
+    <viva 
+    student="Jose" title="Milestone 1 TAP Aluno 6" start="2020-05-31T09:30:00" end="2020-05-31T10:30:00" preference="2">
+        <president name="Marie"/>
+        <adviser name="Adrian"/>
+        <supervisor name="Not a company CEO"/>
+        <coadviser name="External 16"/>
+</viva>
+    <viva 
+    student="Higor" title="Milestone 1 TAP Aluno 7" start="2020-05-31T11:30:00" end="2020-05-31T12:30:00" preference="5">
+        <president name="Adrian"/>
+        <adviser name="John"/>
+        <supervisor name="Unknown startup"/>
+        <coadviser name="ISEP Teacher"/>
+</viva>
+    <viva 
+    student="David" title="Milestone 1 TAP Aluno 8" start="2020-05-31T11:30:00" end="2020-05-31T12:30:00" preference="3">
+        <president name="Jose"/>
+        <adviser name="Kylie"/>
+        <supervisor name="Udacity CEO"/>
+        <coadviser name="External 19"/>
+</viva>
+    <viva 
+    student="Joana" title="Milestone 1 TAP Aluno 9" start="2020-05-31T09:30:00" end="2020-05-31T10:30:00" preference="3">
+        <president name="Allen"/>
+        <adviser name="Joao"/>
+        <supervisor name="External 19"/>
+        <coadviser name="External 17"/>
+</viva>
+    <viva 
+    student="Nuno" title="Milestone 1 TAP Aluno 10" start="2020-05-31T11:30:00" end="2020-05-31T12:30:00" preference="2">
+        <president name="Louise"/>
+        <adviser name="Allen"/>
+        <supervisor name="Amsterdam Governor"/>
+        <coadviser name="Microsoft CEO"/>
+</viva>
+</schedule>

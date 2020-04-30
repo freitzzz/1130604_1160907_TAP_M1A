@@ -27,6 +27,7 @@ import domain.model.{
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
 
+import scala.collection.View.Empty
 import scala.util.{Failure, Success, Try}
 import scala.xml.{Elem, Node, NodeSeq}
 
@@ -93,139 +94,138 @@ object Functions {
             entry => (entry._1, entry._2.map(tuple => tuple._2).distinct.toList)
           )
 
-        // Retrieve teachers
-        val teachersXML = elem \ "resources" \ "teachers" \ "teacher"
-
-        val externalsXML = elem \ "resources" \ "externals" \ "external"
-
-        val teachersProperties =
-          mapResourcesProperties(teachersXML, mappedRoles)
-
-        val externalsProperties =
-          mapResourcesProperties(externalsXML, mappedRoles)
-
-        val resourcesProperties = teachersProperties ++ externalsProperties
-
-        val firstInvalidProperty = resourcesProperties.values
-          .flatMap[Try[Any]](
-            tuple =>
-              List(tuple._1, tuple._2) ++ tuple._3
-                .flatMap(innerTuple => List(innerTuple._1, innerTuple._2))
-          )
-          .find(_.isFailure)
-
-        if (firstInvalidProperty.isEmpty) {
-
-          val teachers = teachersProperties
-            .map(
-              tuple =>
-                (
-                  tuple._1,
-                  Teacher.create(
-                    tuple._2._1.get,
-                    tuple._2._2.get,
-                    tuple._2._3
-                      .map(
-                        availabilityTuple =>
-                          Availability
-                            .create(
-                              availabilityTuple._1.get,
-                              availabilityTuple._2.get
-                          )
-                      )
-                      .toList,
-                    tuple._2._4
-                  )
+        mappedRoles.isEmpty match {
+          case true =>
+            Failure(
+              new IllegalStateException(
+                "Node Vivas is undefined. Vivas are required."
               )
             )
+          case _ =>
+            // Retrieve teachers
+            val teachersXML = elem \ "resources" \ "teachers" \ "teacher"
 
-          val externals = externalsProperties
-            .map(
-              tuple =>
-                (
-                  tuple._1,
-                  External.create(
-                    tuple._2._1.get,
-                    tuple._2._2.get,
-                    tuple._2._3
-                      .map(
-                        availabilityTuple =>
-                          Availability
-                            .create(
-                              availabilityTuple._1.get,
-                              availabilityTuple._2.get
-                          )
-                      )
-                      .toList,
-                    tuple._2._4
-                  )
-              )
-            )
+            val externalsXML = elem \ "resources" \ "externals" \ "external"
 
-          val resources = teachers ++ externals
+            val teachersProperties =
+              mapResourcesProperties(teachersXML, mappedRoles)
 
-          val firstInvalidResource = resources.values.find(_.isFailure)
+            val externalsProperties =
+              mapResourcesProperties(externalsXML, mappedRoles)
 
-          if (firstInvalidResource.isEmpty) {
+            val resourcesProperties = teachersProperties ++ externalsProperties
 
-            val resourcess = resources.map(tuple => (tuple._1, tuple._2.get))
-
-            val vivasProperties = mapVivasProperties(vivasXML, resourcess)
-
-            val firstInvalidVivaProperty = vivasProperties
-              .flatMap(
-                properties =>
-                  List(
-                    properties._1,
-                    properties._2,
-                    Jury
-                      .create(
-                        properties._3,
-                        properties._4,
-                        properties._5.toList,
-                        properties._6.toList
-                      )
-                )
+            val firstInvalidProperty = resourcesProperties.values
+              .flatMap[Try[Any]](
+                tuple =>
+                  List(tuple._1, tuple._2) ++ tuple._3
+                    .flatMap(innerTuple => List(innerTuple._1, innerTuple._2))
               )
               .find(_.isFailure)
 
-            if (firstInvalidVivaProperty.isEmpty) {
+            if (firstInvalidProperty.isEmpty) {
 
-              val vivas = vivasProperties.map(
-                properties =>
-                  Viva
-                    .create(
-                      properties._1.get,
-                      properties._2.get,
-                      Jury
-                        .create(
-                          properties._3,
-                          properties._4,
-                          properties._5.toList,
-                          properties._6.toList
-                        )
-                        .get,
-                      vivasDuration
+              val teachers = teachersProperties
+                .map(
+                  tuple =>
+                    (
+                      tuple._1,
+                      Teacher.create(
+                        tuple._2._1.get,
+                        tuple._2._2.get,
+                        tuple._2._3
+                          .map(
+                            availabilityTuple =>
+                              Availability
+                                .create(
+                                  availabilityTuple._1.get,
+                                  availabilityTuple._2.get
+                              )
+                          )
+                          .toList,
+                        tuple._2._4
+                      )
                   )
-              )
+                )
 
-              Success(vivas.toList)
+              val externals = externalsProperties
+                .map(
+                  tuple =>
+                    (
+                      tuple._1,
+                      External.create(
+                        tuple._2._1.get,
+                        tuple._2._2.get,
+                        tuple._2._3
+                          .map(
+                            availabilityTuple =>
+                              Availability
+                                .create(
+                                  availabilityTuple._1.get,
+                                  availabilityTuple._2.get
+                              )
+                          )
+                          .toList,
+                        tuple._2._4
+                      )
+                  )
+                )
 
+              val resources = teachers ++ externals
+
+              resources.isEmpty match {
+                case true =>
+                  Failure(
+                    new IllegalStateException(
+                      "Node Resources is undefined. Resources are required."
+                    )
+                  )
+                case _ =>
+                  val firstInvalidResource = resources.values.find(_.isFailure)
+
+                  if (firstInvalidResource.isEmpty) {
+
+                    val resourcess =
+                      resources.map(tuple => (tuple._1, tuple._2.get))
+
+                    val vivasProperties =
+                      mapVivasProperties(vivasXML, resourcess)
+
+                    val vivasPropertiesFailures = vivasProperties
+                      .flatMap(ps => List(ps._1, ps._2, ps._3, ps._4))
+                      .find(_.isFailure)
+
+                    vivasPropertiesFailures match {
+                      case Some(value) => Failure(value.failed.get)
+                      case None =>
+                        val vivas = vivasProperties.map(
+                          properties =>
+                            Viva
+                              .create(
+                                properties._1.get,
+                                properties._2.get,
+                                Jury
+                                  .create(
+                                    properties._3.get,
+                                    properties._4.get,
+                                    properties._5.toList,
+                                    properties._6.toList
+                                  )
+                                  .get,
+                                vivasDuration
+                            )
+                        )
+                        Success(vivas.toList)
+                    }
+                  } else {
+                    Failure(firstInvalidResource.get.failed.get)
+                  }
+              }
             } else {
-
-              Failure(firstInvalidVivaProperty.get.failed.get)
-
+              Failure(firstInvalidProperty.get.failed.get)
             }
-
-          } else {
-            Failure(firstInvalidResource.get.failed.get)
-          }
-
-        } else {
-          Failure(firstInvalidProperty.get.failed.get)
         }
     }
-
   }
 
   def serialize(agenda: Agenda): Elem = {
@@ -317,8 +317,8 @@ object Functions {
                                  resources: Map[String, Resource]): Seq[
     (Try[NonEmptyString],
      Try[NonEmptyString],
-     Resource,
-     Resource,
+     Try[Resource],
+     Try[Resource],
      Seq[Resource],
      Seq[Resource])
   ] = {
@@ -330,14 +330,24 @@ object Functions {
           NonEmptyString.create(node \@ "title"),
           (node \ "president")
             .map(p => resources.find(_._1 == p \@ "id"))
-            .head
-            .get
-            ._2,
+            .headOption
+            .fold[Try[Resource]](
+              Failure(
+                new IllegalStateException(
+                  "Node president is empty/undefined in viva"
+                )
+              )
+            )(p => Success(p.get._2)),
           (node \ "adviser")
             .map(p => resources.find(_._1 == p \@ "id"))
-            .head
-            .get
-            ._2,
+            .headOption
+            .fold[Try[Resource]](
+              Failure(
+                new IllegalStateException(
+                  "Node adviser is empty/undefined in viva"
+                )
+              )
+            )(p => Success(p.get._2)),
           (node \ "supervisor")
             .map(p => resources.find(_._1 == p \@ "id"))
             .map(_.get._2),
@@ -346,7 +356,5 @@ object Functions {
             .map(_.get._2)
       )
     )
-
   }
-
 }

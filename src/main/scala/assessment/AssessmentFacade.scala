@@ -67,7 +67,7 @@ object AssessmentMS01 extends Schedule {
               List[Try[ScheduledViva]](
                 Failure(
                   new IllegalStateException(
-                    "Not all Jury elements share a compatible availability"
+                    s"Not all Jury elements share a compatible availability. Viva ${head.title.s} could not be scheduled."
                   )
                 )
               )
