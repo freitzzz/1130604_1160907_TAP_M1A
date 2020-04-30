@@ -36,9 +36,47 @@ Once the vivas are defined, the algorithm can now be applied in order to schedul
 
 ![domain_diagram](documentation/diagrams/domain.png)
 
-<center>Figure 1 - Domain Model represented in an UML Diagram</center>
+<center>Figure 1 - Domain Model represented in an UML Class Diagram</center>
 
 ## Vivas XML Document Parse
+
+In order to schedule the vivas, one must have these as input in the first place. For this current project milestone, the intended vivas input was a XML document with a specific schema as seen in code snippet 1.
+
+```
+<agenda duration="HH:MM:SS">
+  <vivas>
+    <viva student="string" title="string">
+      <president id="ID"/>
+      <adviser id="ID"/>
+      ...
+      <supervisor id="ID"/>
+      ...
+      <coadviser id="ID"/>
+      ...
+    </viva>
+  </vivas>
+  <resources>
+    <teachers>
+      <teacher id="ID" name="string">
+        <availability start="YYYY-MM-DDTHH:MM:SS" end="YYYY-MM-DDTHH:MM:SS" preference="integer ∈ [1, 5]"/>
+      </teacher>
+  </teachers>
+    <externals>
+      <external id="ID" name="string">
+        <availability start="YYYY-MM-DDTHH:MM:SS" end="YYYY-MM-DDTHH:MM:SS" preference="integer ∈ [1, 5]"/>
+      </external>
+    </externals>
+  </resources>
+</agenda>
+```
+
+<center>Code Snippet 1 - Vivas input XML document structure</center>
+
+In order to deserialize the input XML document as a list of vivas, it is first necessary to analyze the document elements composition. As seen in the code snippet above, first is declared the vivas to be scheduled, with their jury elements and then the resources information that correspond to the vivas jury elements. From this we can affirm that there is a dependency between the viva jury elements and the declared resources elements, as the jury elements are referencing the resources roles. From the domain design, we can also affirm that there is a dependency between vivas and resources, as to create a viva, one must know before the resouces that compose the viva jury. This means that, before deserializing the vivas, first we need to deserialize the resources elements and to deserialize these we need to deserialize the jury elements (`Vivas <- Resources <- Jury elements`). Also, as the information of the XML document may not comply with the domain rules, it is also necessary to take into account the failure states. As we are taking advantage of smart constructors that give us instances of `Try` objects, we easily check the state of each parsing phase using pattern matching. As seen in Figure 2, the parser starts by retrieving the vivas duration string and deserializes it as a `Duration` instance. We do this as its a required input for each viva, that must be parsed before their deserialization. Once the duration state is verified, we can go proceed to the next phase, which is the deserialization of the vivas jury elements as role instances. Using scala-xml API this is easily achieved by traversing the XML viva nodes, and then based on the descendant elements label of each node, we can use pattern matching to identify and instantiate the respective role. We map each of these roles by the `id` attribute, so we can later identify the roles of each resource. Having the roles of the resources identified, we can now move on to the next phase which is the resources deserialization. Following the same approach as roles phase, the `teachers` and `externals` nodes are traversed. The first step is to collect and validate their remaining properties. Once all of these properties are validated, they are mapped into `Teacher` and `External` instances. As more validations are necessary on instance creation, these mapped instances are also validated. Finally we move on to the last phase, which is to deserialize the vivas nodes and map the gathered resources to the respective vivas in which they participate as part of the jury. If these instances are valid, the parser completes with success, returning the list of vivas to be scheduled.
+
+![vivas_parser_flow_chart](documentation/diagrams/vivas_parser_flow_chart.png)
+
+<center>Figure 2 - Vivas XML Document Parse Flow Chart represented in a General Purpose Diagram</center>
 
 ## Vivas Scheduling Algorithm (MS01)
 
