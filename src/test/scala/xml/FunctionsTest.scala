@@ -27,7 +27,6 @@ class FunctionsTest extends AnyFunSuite with Matchers {
     // Arrange
 
     validation.isFailure shouldBe true
-
   }
 
   test(
@@ -52,6 +51,5 @@ class FunctionsTest extends AnyFunSuite with Matchers {
     // Arrange
 
     validation.isSuccess shouldBe true
-
   }
 }

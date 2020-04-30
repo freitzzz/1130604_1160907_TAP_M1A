@@ -27,19 +27,16 @@ object AssessmentMS01 extends Schedule {
 
     vivasParse match {
       case Failure(exception) => Failure(exception)
-      case Success(value) => {
-
+      case Success(value) =>
         val vivas = value
 
         val scheduledVivas = scheduleVivas(vivas)
 
         scheduledVivas.find(_.isFailure) match {
           case Some(value) => Failure(value.failed.get)
-          case None => {
+          case None =>
             Success(Functions.serialize(Agenda(scheduledVivas.map(_.get))))
-          }
         }
-      }
     }
   }
 
@@ -67,7 +64,7 @@ object AssessmentMS01 extends Schedule {
               List[Try[ScheduledViva]](
                 Failure(
                   new IllegalStateException(
-                    "Not all Jury elements share a compatible availability"
+                    s"Not all Jury elements share a compatible availability. Viva ${head.title.s} could not be scheduled."
                   )
                 )
               )
