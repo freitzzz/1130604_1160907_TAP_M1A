@@ -27,7 +27,6 @@ import domain.model.{
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
 
-import scala.collection.View.Empty
 import scala.util.{Failure, Success, Try}
 import scala.xml.{Elem, Node, NodeSeq}
 
@@ -94,8 +93,8 @@ object Functions {
             entry => (entry._1, entry._2.map(tuple => tuple._2).distinct.toList)
           )
 
-        mappedRoles.isEmpty match {
-          case true =>
+        mappedRoles.headOption match {
+          case None =>
             Failure(
               new IllegalStateException(
                 "Node Vivas is undefined. Vivas are required."
@@ -115,8 +114,8 @@ object Functions {
 
             val resourcesProperties = teachersProperties ++ externalsProperties
 
-            resourcesProperties.isEmpty match {
-              case true =>
+            resourcesProperties.headOption match {
+              case None =>
                 Failure(
                   new IllegalStateException(
                     "Node Resources is undefined. Resources are required."
@@ -133,8 +132,9 @@ object Functions {
                   )
                   .find(_.isFailure)
 
-                firstInvalidProperty.isEmpty match {
-                  case true =>
+                firstInvalidProperty match {
+                  case Some(value) => Failure(value.failed.get)
+                  case _ =>
                     val teachers = teachersProperties
                       .map(
                         tuple =>
@@ -186,8 +186,9 @@ object Functions {
                     val firstInvalidResource =
                       resources.values.find(_.isFailure)
 
-                    firstInvalidResource.isEmpty match {
-                      case true =>
+                    firstInvalidResource match {
+                      case Some(value) => Failure(value.failed.get)
+                      case _ =>
                         val resourcess =
                           resources.map(tuple => (tuple._1, tuple._2.get))
 
@@ -220,9 +221,7 @@ object Functions {
                             )
                             Success(vivas.toList)
                         }
-                      case _ => Failure(firstInvalidResource.get.failed.get)
                     }
-                  case _ => Failure(firstInvalidProperty.get.failed.get)
                 }
             }
         }

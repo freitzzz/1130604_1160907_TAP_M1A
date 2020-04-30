@@ -31,13 +31,13 @@ object Jury {
     if (!president.hasRole(President())) {
       Failure(
         new IllegalArgumentException(
-          s"Jury cannot be constituted without a president. The sent president: ${president} does not have the associated role."
+          s"Jury cannot be constituted without a president. The sent president: $president does not have the associated role."
         )
       )
     } else if (!adviser.hasRole(Adviser())) {
       Failure(
         new IllegalArgumentException(
-          s"Jury cannot be constituted without an adviser. The sent adviser ${adviser} does not have the associated role."
+          s"Jury cannot be constituted without an adviser. The sent adviser $adviser does not have the associated role."
         )
       )
     } else if (!supervisors.forall(s => s.hasRole(Supervisor()))) {
