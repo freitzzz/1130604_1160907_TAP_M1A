@@ -38,6 +38,21 @@ Once the vivas are defined, the algorithm can now be applied in order to schedul
 
 <center>Figure 1 - Domain Model represented in an UML Class Diagram</center>
 
+## Domain validations
+
+Having the domain concepts defined, we can start to translate these as scala classes. As stated in the coding guidelines, in order to enhance and reinforce the domain identity, we design these classes as algebraic data types and validate the domain classes using smart constructors that instead of returning directly the instance of the domain object, they return a monad that indicates whether the domain was complied or failed. This is achieved by using `Try` class. Additionally classes are declared using the sealed constructor, which grants that all extensions of the classes are done in the file they are declared. With this we can restrain our domain by locking the contract of each concept.
+
+The following table depicts the domain classes conceived and the validations associated to them:
+
+|Class|Validations|
+|-----|-----------|
+|`Availability`| - Period length must be greater than zero - Preference must range between 1 and 5|
+|`Teacher`| - ID must not be null or empty - Name must not be null or empty - Must not have duplicate availabilities - Must have at least one role - Must not have duplicate roles - Must not have the supervisor role|
+|`External`| - ID must not be null or empty - Name must not be null or empty - Must not have duplicate availabilities - Must have at least one role - Must not have duplicate roles - Must not have the president role - Must not have the adviser role|
+|`Jury`|- President resource must have the role of president - Adviser resource must have the role of adviser - Supervisor resources must have the role of supervisor - Coadviser resources must have the role of co adviser - Input resources must be unique|
+|`Viva`| - Student name must not be null or empty - Title must not be null or empty - Duration length must not be negative or zero|
+|`Scheduled Viva`| - Period length must be greater than zero - All viva resources must be available on the viva realization period|
+
 ## Vivas XML Document Parse
 
 In order to schedule the vivas, one must have these as input in the first place. For this current project milestone, the intended vivas input was a XML document with a specific schema as seen in code snippet 1.
