@@ -52,7 +52,31 @@ object Jury {
           "Illegal list of co advisers to constitute the jury. Not all resources have the role of co advisor."
         )
       )
+    } else if (HasDuplicatedResources(
+                 president,
+                 adviser,
+                 supervisors,
+                 coAdvisers
+               )) {
+      Failure(
+        new IllegalArgumentException(
+          "Illegal list of resources. Duplicated elements have been found."
+        )
+      )
     } else
       Success(new Jury(president, adviser, supervisors, coAdvisers) {})
+  }
+
+  private def HasDuplicatedResources(president: Resource,
+                                     adviser: Resource,
+                                     supervisors: List[Resource],
+                                     coAdvisers: List[Resource]): Boolean = {
+
+    val allResources =
+      adviser :: president :: supervisors ::: coAdvisers
+
+    val distinctResources = allResources.distinct
+
+    allResources.size != distinctResources.size
   }
 }

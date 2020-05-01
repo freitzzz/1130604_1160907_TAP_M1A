@@ -139,21 +139,21 @@ class JuryTest extends AnyFunSuite with Matchers {
     jury.isFailure shouldBe true
   }
 
-  test("jury with correct elements should be constituted") {
+  test("jury with duplicated elements should not be constituted") {
 
     // Arrange
     val president = Teacher(
       id = NonEmptyString.create("Teacher 001").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
-      roles = List[Role](generatePresident())
+      roles = List[Role](generatePresident(), generateAdviser())
     )
 
     val adviser = Teacher(
       id = NonEmptyString.create("Teacher 001").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
-      roles = List[Role](generateAdviser())
+      roles = List[Role](generatePresident(), generateAdviser())
     )
 
     val supervisor = External(
@@ -165,6 +165,51 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     val coAdviser = External(
       id = NonEmptyString.create("Teacher 001").get,
+      name = NonEmptyString.create("Fake Teacher").get,
+      availabilities = generateAvailabilities,
+      roles = List[Role](generateCoAdviser())
+    )
+
+    // Act
+
+    val jury =
+      Jury.create(
+        president,
+        adviser,
+        List[Resource](supervisor),
+        List[Resource](coAdviser)
+      )
+
+    //Assert
+    jury.isFailure shouldBe true
+  }
+
+  test("jury with correct elements should be constituted") {
+
+    // Arrange
+    val president = Teacher(
+      id = NonEmptyString.create("Teacher 001").get,
+      name = NonEmptyString.create("Fake Teacher1").get,
+      availabilities = generateAvailabilities,
+      roles = List[Role](generatePresident())
+    )
+
+    val adviser = Teacher(
+      id = NonEmptyString.create("Teacher 002").get,
+      name = NonEmptyString.create("Fake Teacher2").get,
+      availabilities = generateAvailabilities,
+      roles = List[Role](generateAdviser())
+    )
+
+    val supervisor = External(
+      id = NonEmptyString.create("Teacher 003").get,
+      name = NonEmptyString.create("Fake Teacher").get,
+      availabilities = generateAvailabilities,
+      roles = List[Role](generateSupervisor())
+    )
+
+    val coAdviser = External(
+      id = NonEmptyString.create("Teacher 004").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateCoAdviser())
@@ -197,21 +242,21 @@ class JuryTest extends AnyFunSuite with Matchers {
     )
 
     val adviser = Teacher(
-      id = NonEmptyString.create("Teacher 001").get,
+      id = NonEmptyString.create("Teacher 002").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateAdviser())
     )
 
     val supervisor = External(
-      id = NonEmptyString.create("Teacher 001").get,
+      id = NonEmptyString.create("Teacher 003").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateSupervisor())
     )
 
     val coAdviser = External(
-      id = NonEmptyString.create("Teacher 001").get,
+      id = NonEmptyString.create("Teacher 004").get,
       name = NonEmptyString.create("Fake Teacher").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateCoAdviser())
@@ -245,14 +290,14 @@ class JuryTest extends AnyFunSuite with Matchers {
 
     // Arrange
     val presidentX = Teacher(
-      id = NonEmptyString.create("Teacher X").get,
+      id = NonEmptyString.create("Teacher X1").get,
       name = NonEmptyString.create("Fake Teacher X").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generatePresident())
     )
 
     val adviserX = Teacher(
-      id = NonEmptyString.create("Teacher X").get,
+      id = NonEmptyString.create("Teacher X2").get,
       name = NonEmptyString.create("Fake Teacher X").get,
       availabilities = generateAvailabilities,
       roles = List[Role](generateAdviser())
