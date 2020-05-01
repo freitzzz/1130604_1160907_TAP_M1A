@@ -40,7 +40,7 @@ Once the vivas are defined, the algorithm can now be applied in order to schedul
 
 ## Domain validations
 
-Having the domain concepts defined, we can start to translate these as Scala classes. As stated in the coding guidelines, in order to enhance and reinforce the domain identity, we design these classes as algebraic data types and validate the domain classes using smart constructors that instead of returning directly the instance of the domain object, they return a monad that indicates whether the domain was complied or failed. This is achieved by using `Try` class. Additionally classes are declared using the sealed constructor, which grants that all extensions of the classes are done in the file they are declared. With this we can restrain our domain by locking the contract of each concept.
+Having the domain concepts defined, we can start to translate these as Scala classes. As stated in the coding guidelines, in order to enhance and reinforce the domain identity, we design these classes as algebraic data types and validate the domain classes using smart constructors that instead of returning directly the instance of the domain object, they return a monad that indicates whether the domain was complied. This is achieved by using `Try` class. Additionally classes are declared using the `sealed` construct, which grants that all extensions of the classes are done in the file they are declared. With this we can restrain our domain by locking the contract of each concept.
 
 The following table depicts the domain classes conceived and the validations associated to them:
 
