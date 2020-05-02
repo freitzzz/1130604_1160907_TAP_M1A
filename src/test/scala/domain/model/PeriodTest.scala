@@ -43,4 +43,50 @@ class PeriodTest extends AnyFunSuite with Matchers {
 
   }
 
+  test(
+    "given a period that overlaps with another period of time, overlaps method returns true"
+  ) {
+
+    // Arrange
+
+    val start = LocalDateTime.now()
+    val end = start.plusMinutes(5)
+
+    val periodX = Period.create(start, end).get
+
+    val periodY = Period.create(start.plusMinutes(2), end.plusMinutes(1)).get
+
+    // Act
+
+    val overlaps = periodX.overlaps(periodY)
+
+    // Assert
+
+    overlaps shouldBe true
+
+  }
+
+  test(
+    "given a period that does not overlap with another period of time, overlaps method returns false"
+  ) {
+
+    // Arrange
+
+    val start = LocalDateTime.now()
+    val end = start.plusMinutes(5)
+
+    val periodX = Period.create(start, end).get
+
+    val periodY = Period.create(start.plusMinutes(6), end.plusMinutes(2)).get
+
+    // Act
+
+    val overlaps = periodX.overlaps(periodY)
+
+    // Assert
+
+    overlaps shouldBe false
+
+  }
+
 }
