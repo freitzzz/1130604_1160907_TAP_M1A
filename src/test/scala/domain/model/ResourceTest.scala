@@ -40,6 +40,57 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
   }
 
+  test(
+    "a resource is not valid if it contains overlapping availability periods"
+  ) {
+
+    // Arrange
+
+    val id = NonEmptyString.create("1").get
+
+    val name = NonEmptyString.create("John").get
+
+    val periodX =
+      Period.create(LocalDateTime.now, LocalDateTime.now.plusMinutes(10)).get
+
+    val periodY =
+      Period.create(periodX.end.plusMinutes(1), periodX.end.plusMinutes(2)).get
+
+    val overlappingPeriod =
+      Period
+        .create(periodY.start.plusMinutes(1), periodY.end.plusMinutes(2))
+        .get
+
+    val availabilityX = Availability
+      .create(periodX, Preference.create(5).get)
+
+    val availabilityY = Availability
+      .create(periodY, Preference.create(5).get)
+
+    val availabilityWithOverlappingPeriod = Availability
+      .create(overlappingPeriod, Preference.create(5).get)
+
+    val role = President()
+
+    val availabilities = List[Availability](
+      availabilityX,
+      availabilityY,
+      availabilityWithOverlappingPeriod
+    )
+
+    val roles = List[Role](role)
+
+    // Act
+
+    val isValid =
+      Resource.validResource(id, name, availabilities, roles).isSuccess
+
+    // Assert
+
+    isValid shouldBe false
+
+  }
+
   test("a resource is not valid if it does not have roles") {
 
     // Arrange

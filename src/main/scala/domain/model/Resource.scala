@@ -39,6 +39,12 @@ object Resource {
           "Resource cannot have duplicate availabilities"
         )
       )
+    else if (overlappingPeriodsExist(availabilities))
+      Failure(
+        new IllegalArgumentException(
+          "Resource cannot have overlapping availability periods"
+        )
+      )
     else if (roles.isEmpty)
       Failure(new IllegalArgumentException("Resource needs at least one role"))
     else if (roles.distinct.size != roles.size)
@@ -47,6 +53,23 @@ object Resource {
       )
     else
       Success(null)
+  }
+
+  private def overlappingPeriodsExist(
+    availabilities: List[Availability]
+  ): Boolean = {
+    val orderedPeriods = availabilities
+      .map(_.period)
+      .sortWith((p1, p2) => p1.start.isBefore(p2.start))
+
+    orderedPeriods
+      .flatMap(
+        p1 =>
+          orderedPeriods
+            .filter(_.start.isAfter(p1.start))
+            .filter(p2 => p1.overlaps(p2))
+      )
+      .nonEmpty
   }
 
 }
