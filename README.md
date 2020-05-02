@@ -47,8 +47,8 @@ The following table depicts the domain classes conceived and the validations ass
 |Class|Validations|
 |-----|-----------|
 |`Availability`| - Period length must be greater than zero - Preference must range between 1 and 5|
-|`Teacher`| - ID must not be null or empty - Name must not be null or empty - Must not have duplicate availabilities - Must have at least one role - Must not have duplicate roles - Must not have the supervisor role|
-|`External`| - ID must not be null or empty - Name must not be null or empty - Must not have duplicate availabilities - Must have at least one role - Must not have duplicate roles - Must not have the president role - Must not have the adviser role|
+|`Teacher`| - ID must not be null or empty - Name must not be null or empty - Must not have duplicate availability periods - Must not have overlapping availability periods - Must have at least one role - Must not have duplicate roles - Must not have the supervisor role|
+|`External`| - ID must not be null or empty - Name must not be null or empty - Must not have duplicate availability periods - Must not have overlapping availability periods - Must have at least one role - Must not have duplicate roles - Must not have the president role - Must not have the adviser role|
 |`Jury`|- President resource must have the role of president - Adviser resource must have the role of adviser - Supervisor resources must have the role of supervisor - Coadviser resources must have the role of co adviser - Input resources must be unique|
 |`Viva`| - Student name must not be null or empty - Title must not be null or empty - Duration length must not be negative or zero|
 |`Scheduled Viva`| - Period length must be greater than zero - All viva resources must be available on the viva realization period|
