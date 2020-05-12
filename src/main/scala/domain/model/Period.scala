@@ -28,5 +28,4 @@ object Period {
     else
       Success(new Period(start, end) {})
   }
-
 }
