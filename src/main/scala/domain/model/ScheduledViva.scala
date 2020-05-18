@@ -20,7 +20,7 @@ object ScheduledViva {
         )
       )
     } else {
-      val sumOfPreferences = vivaJuryAsResourcesSet
+      val sumOfPreferences = vivaJuryAsResourcesSet.toListcelar
         .flatMap(resource => resource.availabilityOn(period))
         .foldLeft(0)(_ + _.preference.value)
 
