@@ -130,12 +130,16 @@ class Assessment01PropertyBasedTesting extends Properties("") {
     availabilities <- Gen.listOf(genAvailability)
   } yield External.create(id, name, availabilities, List(CoAdviser())).get
 
+  val genTeacherRoles = Gen[List[Role]] = for {
+    d <- Gen.pick(2, List(1,2,3,4))
+  } yield
+
   val genTeacher: Gen[Teacher] = for {
     id <- genNonEmptyString
     name <- genNonEmptyString
     availabilities <- Gen.listOf(genAvailability)
-    roles <- Gen.pick(2, Gen.listOf(genTeacherRole))
-  } yield Teacher.create(id, name, availabilities, roles).get
+    roles <- Gen.pick(2, List(genTeacherRole, genTeacherRole))
+  } yield Teacher.create(id, name, availabilities, roles.map(x => x.sample.get).toList).get
 
   val genValidExternal: Gen[External] = for {
     id <- genNonEmptyString
