@@ -1,6 +1,6 @@
 package property
 
-import java.time.temporal.ChronoUnit
+import java.time.temporal.{ChronoUnit, TemporalUnit}
 import java.time.{Duration, LocalDateTime, ZoneOffset}
 
 import domain.model.Period
@@ -104,19 +104,30 @@ object Generators {
     time <- Gen.chooseNum(1, Long.MaxValue)
   } yield java.time.Duration.ZERO.plusNanos(time)
 
-  def convertLDiffToLInst(start: LocalDateTime,
-                          ld: List[Int]): List[LocalDateTime] =
-    ld.foldLeft[(LocalDateTime, List[LocalDateTime])](start, Nil) {
-        case ((i, li), d) =>
-          val ni = i.plus(d, ChronoUnit.MINUTES)
-          (ni, li :+ ni)
-      }
-      ._2
-
-  def getInstants(start: LocalDateTime): Gen[List[LocalDateTime]] =
+  def temporalSequenceFrom(
+    start: LocalDateTime,
+    temporalUnit: TemporalUnit
+  ): Gen[List[LocalDateTime]] =
     for {
       n <- Gen.chooseNum(0, 9)
-      ld <- Gen.listOfN(n, Gen.chooseNum(10, 60))
-    } yield convertLDiffToLInst(start, 0 :: ld)
+      temporalNumbers <- Gen.listOfN(n, Gen.chooseNum(10, 60))
+    } yield
+      foldTemporalNumbersToTemporalSequence(
+        start,
+        0 :: temporalNumbers,
+        temporalUnit
+      )
 
+  def foldTemporalNumbersToTemporalSequence(
+    start: LocalDateTime,
+    temporalNumbers: List[Int],
+    temporalUnit: TemporalUnit
+  ): List[LocalDateTime] =
+    temporalNumbers
+      .foldLeft[(LocalDateTime, List[LocalDateTime])](start, Nil) {
+        case ((temporal, temporalList), temporalNumber) =>
+          val nextTemporal = temporal.plus(temporalNumber, temporalUnit)
+          (nextTemporal, temporalList :+ nextTemporal)
+      }
+      ._2
 }
