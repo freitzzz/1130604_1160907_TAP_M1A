@@ -1,5 +1,6 @@
 package property
 
+import java.time.temporal.ChronoUnit
 import java.time.{Duration, LocalDateTime, ZoneOffset}
 
 import domain.model.Period
@@ -102,5 +103,20 @@ object Generators {
   val genGreaterThanZeroJavaTimeDuration: Gen[Duration] = for {
     time <- Gen.chooseNum(1, Long.MaxValue)
   } yield java.time.Duration.ZERO.plusNanos(time)
+
+  def convertLDiffToLInst(start: LocalDateTime,
+                          ld: List[Int]): List[LocalDateTime] =
+    ld.foldLeft[(LocalDateTime, List[LocalDateTime])](start, Nil) {
+        case ((i, li), d) =>
+          val ni = i.plus(d, ChronoUnit.MINUTES)
+          (ni, li :+ ni)
+      }
+      ._2
+
+  def getInstants(start: LocalDateTime): Gen[List[LocalDateTime]] =
+    for {
+      n <- Gen.chooseNum(0, 9)
+      ld <- Gen.listOfN(n, Gen.chooseNum(10, 60))
+    } yield convertLDiffToLInst(start, 0 :: ld)
 
 }
