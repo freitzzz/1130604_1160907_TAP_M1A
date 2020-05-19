@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 
 class Assessment01PropertyBasedTesting extends Properties("") {
 
-  val genNonEmptyString: Gen[NonEmptyString] = for {
+  /*val genNonEmptyString: Gen[NonEmptyString] = for {
     s <- Gen.asciiPrintableStr
     if (!s.isEmpty)
   } yield NonEmptyString.create(s).get
@@ -164,5 +164,11 @@ class Assessment01PropertyBasedTesting extends Properties("") {
     Resource
       .validResource(id, name, availabilities, roles)
       .get
-      .asInstanceOf[Resource]
+      .asInstanceOf[Resource]*/
+
+  property(
+    "all viva must be scheduled in the time intervals in which its resources are available"
+  ) = ???
+
+  property("one resource cannot be overlapped in two scheduled viva") = ???
 }
