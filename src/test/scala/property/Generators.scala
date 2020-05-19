@@ -1,11 +1,9 @@
 package property
 
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{Duration, LocalDateTime, ZoneOffset}
 
 import domain.model.Period
 import org.scalacheck.Gen
-
-import scala.util.Try
 
 object Generators {
 
@@ -96,5 +94,13 @@ object Generators {
   val genPeriod: Gen[Period] = for {
     positivePeriod <- genPositivePeriodOfTime
   } yield Period.create(positivePeriod._1, positivePeriod._2).get
+
+  val genNegativeJavaTimeDuration: Gen[Duration] = for {
+    time <- Gen.chooseNum(1, Long.MaxValue)
+  } yield java.time.Duration.ZERO.minusNanos(time)
+
+  val genGreaterThanZeroJavaTimeDuration: Gen[Duration] = for {
+    time <- Gen.chooseNum(1, Long.MaxValue)
+  } yield java.time.Duration.ZERO.plusNanos(time)
 
 }

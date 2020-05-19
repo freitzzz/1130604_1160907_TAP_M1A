@@ -2,7 +2,7 @@ package property
 
 import domain.model.Duration
 import org.scalacheck.Prop._
-import org.scalacheck.{Gen, Properties}
+import org.scalacheck.Properties
 
 object DurationPropertyBasedTesting extends Properties("duration") {
 
