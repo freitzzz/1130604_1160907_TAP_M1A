@@ -1,11 +1,23 @@
-import org.scalacheck.Properties
+import java.time.LocalDateTime
 
-package object property extends Properties("ScheduledViva") {
+import domain.model.{Period, ScheduledViva}
+import org.scalacheck.{Prop, Properties}
+import property.Generators
+
+object ScheduledVivaPropertyBasedTesting extends Properties("ScheduledViva") {
 
   property(
     "when resources of a viva are available on the period of the viva, then a scheduled viva is always created"
   ) = {
-    true
+    val asd = LocalDateTime.now()
+    val period = Period
+      .create(asd, asd.plusMinutes(11))
+      .get
+
+    Prop.forAll(Generators.genVivaForPeriod(period)) { (viva) =>
+      ScheduledViva.create(viva, period).isSuccess
+    }
+
   }
 
   property(
