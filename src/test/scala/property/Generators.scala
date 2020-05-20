@@ -1,12 +1,33 @@
 package property
 
 import java.time.temporal.{ChronoUnit, TemporalUnit}
-import java.time.{Duration, LocalDateTime, ZoneOffset}
+import java.time.{LocalDateTime, ZoneOffset}
 
-import domain.model.{Availability, Period}
+import domain.model.{
+  Adviser,
+  Availability,
+  CoAdviser,
+  Duration,
+  External,
+  Jury,
+  NonEmptyString,
+  Period,
+  Preference,
+  President,
+  Resource,
+  Role,
+  Supervisor,
+  Teacher,
+  Viva
+}
 import org.scalacheck.Gen
 
 object Generators {
+
+  val genNonEmptyString: Gen[NonEmptyString] = for {
+    s <- Gen.asciiPrintableStr
+    if (!s.isEmpty)
+  } yield NonEmptyString.create(s).get
 
   val genNegativePeriodOfTime: Gen[(LocalDateTime, LocalDateTime)] = for {
     start <- Gen.choose(
@@ -96,27 +117,109 @@ object Generators {
     positivePeriod <- genPositivePeriodOfTime
   } yield Period.create(positivePeriod._1, positivePeriod._2).get
 
-  val genNegativeJavaTimeDuration: Gen[Duration] = for {
+  val genNegativeJavaTimeDuration: Gen[java.time.Duration] = for {
     time <- Gen.chooseNum(1, Long.MaxValue)
   } yield java.time.Duration.ZERO.minusNanos(time)
 
-  val genGreaterThanZeroJavaTimeDuration: Gen[Duration] = for {
+  val genGreaterThanZeroJavaTimeDuration: Gen[java.time.Duration] = for {
     time <- Gen.chooseNum(1, Long.MaxValue)
   } yield java.time.Duration.ZERO.plusNanos(time)
 
-  val genAvailabilitySequence: Gen[Availability] = for {
-    startPeriod <- genPositivePeriodOfTime
-    startTemporalSequenceFromStartPeriod <- temporalSequenceFrom(startPeriod._1)
-    endTemporalSequenceFromEndPeriod <- temporalSequenceFrom(startPeriod._2)
-  } yield Availability.
-
-  def temporalSequenceFrom(
-    start: LocalDateTime,
-    temporalUnit: TemporalUnit,
-    numberOfTemporals: Int
-  ): Gen[List[LocalDateTime]] =
+  def genPreferences(numberOfPreferences: Int): Gen[List[Preference]] =
     for {
-      temporalNumbers <- Gen.listOfN(n, Gen.chooseNum(10, 60))
+      preferenceValues <- Gen.listOfN(numberOfPreferences, Gen.chooseNum(1, 5))
+    } yield preferenceValues.flatMap(value => Preference.create(value).toOption)
+
+  def genAvailabilitySequenceOf(
+    numberOfAvailability: Int,
+    startDateTime: LocalDateTime
+  ): Gen[List[Availability]] =
+    for {
+      temporalSequence <- temporalSequenceFrom(
+        startDateTime,
+        ChronoUnit.MINUTES,
+        numberOfAvailability * 2
+      )
+      preferences <- genPreferences(numberOfAvailability)
+      periods <- List(
+        temporalSequence
+          .grouped(2)
+          .flatMap(pair => Period.create(pair(0), pair(1)).toOption)
+      )
+      group <- periods
+        .zip(preferences)
+        .map(pair => Availability.create(pair._1, pair._2))
+        .toList
+    } yield group
+  /*
+  def genTeachersWith(availabilities: List[Availability], roles: List[Role], percentageFactor: Double) = for {
+    chunkSize <- availabilities.size * percentageFactor
+    ids <- Gen.listOfN(chunkSize, genNonEmptyString)
+    names <- Gen.listOfN(chunkSize, genNonEmptyString)
+    teachers <- Gen.listOf(genTeacherWith(availabilities, roles))
+  } yield teachers*/
+
+  def genTeacherWith(availabilities: List[Availability],
+                     roles: List[Role]): Gen[Teacher] =
+    for {
+      id <- genNonEmptyString
+      name <- genNonEmptyString
+    } yield Teacher.create(id, name, availabilities, roles).get
+
+  def genExternalWith(availabilities: List[Availability],
+                      roles: List[Role]): Gen[External] =
+    for {
+      id <- genNonEmptyString
+      name <- genNonEmptyString
+    } yield External.create(id, name, availabilities, roles).get
+
+  def genJuryForViva(startDateTime: LocalDateTime): Gen[Jury] = {
+    val availabilities = for {
+
+      presidentAvailabilities <- genAvailabilitySequenceOf(5, startDateTime)
+      adviserAvailabilities <- genAvailabilitySequenceOf(5, startDateTime)
+      coAdviserAvailabilities <- genAvailabilitySequenceOf(5, startDateTime)
+      supervisorAvailabilities <- genAvailabilitySequenceOf(5, startDateTime)
+    } yield
+      (
+        presidentAvailabilities,
+        adviserAvailabilities,
+        coAdviserAvailabilities,
+        supervisorAvailabilities
+      )
+
+    for {
+      availabilities <- availabilities
+      president <- genTeacherWith(availabilities._1, List(President()))
+      adviser <- genTeacherWith(availabilities._2, List(Adviser()))
+      coAdviser <- genTeacherWith(availabilities._3, List(CoAdviser()))
+      supervisor <- genExternalWith(availabilities._4, List(Supervisor()))
+
+    } yield
+      Jury.create(president, adviser, List(supervisor), List(coAdviser)).get
+
+  }
+
+  def genVivaForPeriod(period: Period): Gen[Viva] = {
+
+    val duration =
+      Duration.create(java.time.Duration.between(period.start, period.end)).get
+
+    for {
+      jury <- genJuryForViva(period.start)
+      student <- genNonEmptyString
+      title <- genNonEmptyString
+    } yield Viva.create(student, title, jury, duration)
+  }
+
+  def temporalSequenceFrom(start: LocalDateTime,
+                           temporalUnit: TemporalUnit,
+                           numberOfTemporal: Int): Gen[List[LocalDateTime]] =
+    for {
+      temporalNumbers <- Gen.listOfN(
+        numberOfTemporal - 1,
+        Gen.chooseNum(10, 60)
+      )
     } yield
       foldTemporalNumbersToTemporalSequence(
         start,
