@@ -239,6 +239,34 @@ object Functions {
 
   }
 
+  def serialize(duration: Duration,
+                vivas: List[Viva],
+                resources: List[Resource]): Elem = {
+
+    val vivasXML = serializeVivas(vivas)
+
+    val teachersXML = serializeTeachers(vivas)
+
+    val externalsXML = serializeExternals(vivas)
+
+    val root = <agenda duration={duration.timeDuration.toString}>
+    <vivas>
+    {vivasXML}
+    </vivas>
+    <resources>
+    <teachers>
+    {teachersXML}
+    </teachers>
+    <externals>
+    {externalsXML}
+    </externals>
+    </resources>
+    </agenda>
+
+    root
+
+  }
+
   def serializeError(error: Throwable): Elem = {
     val errorXML =
       <error xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" message={error.getMessage}  />
