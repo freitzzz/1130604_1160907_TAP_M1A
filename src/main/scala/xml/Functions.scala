@@ -239,17 +239,19 @@ object Functions {
 
   }
 
-  def serialize(
-    duration: Duration,
-    vivas: List[Viva], //let's chnage this to duration, vivas, teachers and externals and make life easier for us?
-    resources: List[Resource]
-  ): Elem = {
+  def serialize(duration: Duration,
+                vivas: List[Viva],
+                resources: List[Resource]): Elem = {
 
     val vivasXML = serializeVivas(vivas)
 
-    val teachersXML = serializeTeachers(vivas)
+    val teachersXML = serializeTeachers(
+      resources.filter(x => x.isInstanceOf[Teacher])
+    )
 
-    val externalsXML = serializeExternals(vivas)
+    val externalsXML = serializeExternals(
+      resources.filter(x => x.isInstanceOf[External])
+    )
 
     val root = <agenda duration={duration.timeDuration.toString}>
     <vivas>
@@ -281,6 +283,13 @@ object Functions {
     xml
   }
 
+  private def serializeVivas(vivas: List[Viva]): List[Node] = {
+
+    val vivasXml = vivas.map(v => serializeViva(v))
+
+    vivasXml
+  }
+
   private def serializeAvailability(availability: Availability): Node = {
 
     val xml =
@@ -290,7 +299,7 @@ object Functions {
     xml
   }
 
-  private def serializeTeacher(teacher: Teacher): Node = {
+  private def serializeTeacher(teacher: Resource): Node = {
 
     val availabilitiesXml = teacher.availabilities.map(
       availability => serializeAvailability(availability)
@@ -304,21 +313,21 @@ object Functions {
     xml
   }
 
-  private def serializeTeachers(teachers: List[Teacher]): List[Node] = {
+  private def serializeTeachers(teachers: List[Resource]): List[Node] = {
 
     val teachersXml = teachers.map(t => serializeTeacher(t))
 
     teachersXml
   }
 
-  private def serializeExternal(externals: List[External]): List[Node] = {
+  private def serializeExternals(externals: List[Resource]): List[Node] = {
 
     val externalsXml = externals.map(e => serializeExternal(e))
 
     externalsXml
   }
 
-  private def serializeExternal(external: External): Node = {
+  private def serializeExternal(external: Resource): Node = {
 
     val availabilitiesXml = external.availabilities.map(
       availability => serializeAvailability(availability)
