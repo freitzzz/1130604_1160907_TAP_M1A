@@ -306,7 +306,7 @@ object Functions {
     )
 
     val xml =
-      <teacher id={teacher.id.toString} name={teacher.name}>
+      <teacher id={teacher.id.toString} name={teacher.name.s}>
         {availabilitiesXml}
       </teacher>
 
@@ -334,7 +334,7 @@ object Functions {
     )
 
     val xml =
-      <external id={external.id.toString} name={external.name}>
+      <external id={external.id.toString} name={external.name.s}>
         {availabilitiesXml}
       </external>
 
