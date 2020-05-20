@@ -3,7 +3,7 @@ package property
 import java.time.temporal.{ChronoUnit, TemporalUnit}
 import java.time.{Duration, LocalDateTime, ZoneOffset}
 
-import domain.model.Period
+import domain.model.{Availability, Period}
 import org.scalacheck.Gen
 
 object Generators {
@@ -104,12 +104,18 @@ object Generators {
     time <- Gen.chooseNum(1, Long.MaxValue)
   } yield java.time.Duration.ZERO.plusNanos(time)
 
+  val genAvailabilitySequence: Gen[Availability] = for {
+    startPeriod <- genPositivePeriodOfTime
+    startTemporalSequenceFromStartPeriod <- temporalSequenceFrom(startPeriod._1)
+    endTemporalSequenceFromEndPeriod <- temporalSequenceFrom(startPeriod._2)
+  } yield Availability.
+
   def temporalSequenceFrom(
     start: LocalDateTime,
-    temporalUnit: TemporalUnit
+    temporalUnit: TemporalUnit,
+    numberOfTemporals: Int
   ): Gen[List[LocalDateTime]] =
     for {
-      n <- Gen.chooseNum(0, 9)
       temporalNumbers <- Gen.listOfN(n, Gen.chooseNum(10, 60))
     } yield
       foldTemporalNumbersToTemporalSequence(
