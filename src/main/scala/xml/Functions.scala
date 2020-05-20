@@ -239,9 +239,11 @@ object Functions {
 
   }
 
-  def serialize(duration: Duration,
-                vivas: List[Viva],
-                resources: List[Resource]): Elem = {
+  def serialize(
+    duration: Duration,
+    vivas: List[Viva], //let's chnage this to duration, vivas, teachers and externals and make life easier for us?
+    resources: List[Resource]
+  ): Elem = {
 
     val vivasXML = serializeVivas(vivas)
 
@@ -265,6 +267,69 @@ object Functions {
 
     root
 
+  }
+
+  private def serializeViva(viva: Viva): Node = {
+
+    val juryXml = serializeJury(viva.jury)
+
+    val xml =
+      <viva student={viva.student.s} title={viva.title.s}>
+        {juryXml}
+      </viva>
+
+    xml
+  }
+
+  private def serializeAvailability(availability: Availability): Node = {
+
+    val xml =
+      <availability start={availability.period.start.toString()} end={availability.period.end.toString()} preference={availability.preference.toString}>
+      </availability>
+
+    xml
+  }
+
+  private def serializeTeacher(teacher: Teacher): Node = {
+
+    val availabilitiesXml = teacher.availabilities.map(
+      availability => serializeAvailability(availability)
+    )
+
+    val xml =
+      <teacher id={teacher.id.toString()} name={teacher.name}>
+        {availabilitiesXml}
+      </teacher>
+
+    xml
+  }
+
+  private def serializeTeachers(teachers: List[Teacher]): List[Node] = {
+
+    val teachersXml = teachers.map(t => serializeTeacher(t))
+
+    teachersXml
+  }
+
+  private def serializeExternal(externals: List[External]): List[Node] = {
+
+    val externalsXml = externals.map(e => serializeExternal(e))
+
+    externalsXml
+  }
+
+  private def serializeExternal(external: External): Node = {
+
+    val availabilitiesXml = external.availabilities.map(
+      availability => serializeAvailability(availability)
+    )
+
+    val xml =
+      <external id={external.id.toString()} name={external.name}>
+        {availabilitiesXml}
+      </external>
+
+    xml
   }
 
   def serializeError(error: Throwable): Elem = {
