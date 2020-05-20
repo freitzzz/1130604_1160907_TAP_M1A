@@ -273,7 +273,7 @@ object Functions {
 
   private def serializeViva(viva: Viva): Node = {
 
-    val juryXml = serializeJury(viva.jury)
+    val juryXml = serializeJuryIn(viva.jury)
 
     val xml =
       <viva student={viva.student.s} title={viva.title.s}>
@@ -306,7 +306,7 @@ object Functions {
     )
 
     val xml =
-      <teacher id={teacher.id.toString()} name={teacher.name}>
+      <teacher id={teacher.id.toString} name={teacher.name}>
         {availabilitiesXml}
       </teacher>
 
@@ -334,7 +334,7 @@ object Functions {
     )
 
     val xml =
-      <external id={external.id.toString()} name={external.name}>
+      <external id={external.id.toString} name={external.name}>
         {availabilitiesXml}
       </external>
 
@@ -349,7 +349,7 @@ object Functions {
 
   private def serializeScheduledViva(scheduledViva: ScheduledViva): Node = {
 
-    val juryXML = serializeJury(scheduledViva.viva.jury)
+    val juryXML = serializeJuryOut(scheduledViva.viva.jury)
 
     val xml =
       <viva student={scheduledViva.viva.student.s} title={scheduledViva.viva.title.s} start={scheduledViva.period.start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} end={scheduledViva.period.end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} preference={scheduledViva.scheduledPreference.toString}>
@@ -360,7 +360,7 @@ object Functions {
 
   }
 
-  private def serializeJury(jury: Jury): List[Node] = {
+  private def serializeJuryOut(jury: Jury): List[Node] = {
 
     val presidentXML = <president name={jury.president.name.s}/>
 
@@ -371,6 +371,22 @@ object Functions {
 
     val coAdvisersXML =
       jury.coAdvisers.map(coAdviser => <coadviser name={coAdviser.name.s}/>)
+
+    List(presidentXML, adviserXML, supervisorsXML, coAdvisersXML).flatten
+
+  }
+
+  private def serializeJuryIn(jury: Jury): List[Node] = {
+
+    val presidentXML = <president id={jury.president.id.s}/>
+
+    val adviserXML = <adviser id={jury.adviser.id.s}/>
+
+    val supervisorsXML =
+      jury.supervisors.map(supervisor => <supervisor id={supervisor.id.s}/>)
+
+    val coAdvisersXML =
+      jury.coAdvisers.map(coAdviser => <coadviser id={coAdviser.id.s}/>)
 
     List(presidentXML, adviserXML, supervisorsXML, coAdvisersXML).flatten
 
