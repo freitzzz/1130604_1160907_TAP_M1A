@@ -253,7 +253,8 @@ object Functions {
       resources.filter(x => x.isInstanceOf[External])
     )
 
-    val root = <agenda duration={duration.timeDuration.toString}>
+    val root =
+      <agenda duration={DateTimeFormatter.ISO_LOCAL_TIME.format(duration.timeDuration.addTo(LocalTime.of(0,0)))}>
     <vivas>
     {vivasXML}
     </vivas>
@@ -266,6 +267,8 @@ object Functions {
     </externals>
     </resources>
     </agenda>
+
+    //println(root)
 
     root
 
@@ -293,8 +296,7 @@ object Functions {
   private def serializeAvailability(availability: Availability): Node = {
 
     val xml =
-      <availability start={availability.period.start.toString()} end={availability.period.end.toString()} preference={availability.preference.toString}>
-      </availability>
+      <availability start={availability.period.start.toString} end={availability.period.end.toString} preference={availability.preference.value.toString}/>
 
     xml
   }
@@ -306,7 +308,7 @@ object Functions {
     )
 
     val xml =
-      <teacher id={teacher.id.toString} name={teacher.name.s}>
+      <teacher id={teacher.id.s} name={teacher.name.s}>
         {availabilitiesXml}
       </teacher>
 
@@ -334,7 +336,7 @@ object Functions {
     )
 
     val xml =
-      <external id={external.id.toString} name={external.name.s}>
+      <external id={external.id.s} name={external.name.s}>
         {availabilitiesXml}
       </external>
 
