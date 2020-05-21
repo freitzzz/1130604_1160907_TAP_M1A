@@ -11,10 +11,10 @@ object ScheduledVivaPropertyBasedTesting extends Properties("ScheduledViva") {
   ) = {
     val asd = LocalDateTime.now()
     val period = Period
-      .create(asd, asd.plusMinutes(11))
+      .create(asd, asd.plusMinutes(1))
       .get
 
-    Prop.forAll(Generators.genVivaForPeriod(period)) { (viva) =>
+    Prop.forAll(Generators.genVivaWith(period, 1)) { (viva) =>
       ScheduledViva.create(viva, period).isSuccess
     }
 
