@@ -2,8 +2,8 @@ package xml
 
 import java.io.ByteArrayInputStream
 import java.time
-import java.time.{LocalDateTime, LocalTime}
-import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, LocalTime, ZoneOffset}
+import java.time.format.{DateTimeFormatter, ResolverStyle}
 
 import domain.model.{
   Adviser,
@@ -59,13 +59,23 @@ object Functions {
 
   def deserialize(elem: Elem): Try[List[Viva]] = {
 
-    val vivasDurationTry = Duration.create(
-      time.Duration.between(
-        LocalTime.ofNanoOfDay(0),
-        LocalTime
-          .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
-      )
-    )
+    val durationText = elem \@ "duration"
+
+    val timeDuration =
+      if (durationText == "24:00:00")
+        java.time.Duration.between(
+          LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC),
+          LocalDateTime.ofEpochSecond(86400, 0, ZoneOffset.UTC)
+        )
+      else
+        time.Duration.between(
+          LocalTime.ofNanoOfDay(0),
+          LocalTime
+            .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
+        )
+
+    val vivasDurationTry =
+      Duration.create(timeDuration)
 
     vivasDurationTry match {
       case Failure(exception)     => Failure(exception)
@@ -253,8 +263,15 @@ object Functions {
       resources.filter(x => x.isInstanceOf[External])
     )
 
+    val durationString =
+      if (duration.timeDuration.getSeconds == 86400L) "24:00:00"
+      else
+        DateTimeFormatter.ISO_LOCAL_TIME.format(
+          duration.timeDuration.addTo(LocalTime.of(0, 0))
+        )
+
     val root =
-      <agenda duration={DateTimeFormatter.ISO_LOCAL_TIME.format(duration.timeDuration.addTo(LocalTime.of(0,0)))}>
+      <agenda duration={durationString}>
     <vivas>
     {vivasXML}
     </vivas>
@@ -267,8 +284,6 @@ object Functions {
     </externals>
     </resources>
     </agenda>
-
-    //println(root)
 
     root
 
