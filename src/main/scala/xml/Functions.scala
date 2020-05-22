@@ -238,7 +238,7 @@ object Functions {
     }
   }
 
-  def desrializeTotalPreferenceAndIndividualPreferences(
+  def deserializeTotalPreferenceAndIndividualPreferences(
     vivas: Elem
   ): (Int, List[Int]) = {
     val vivasXML = vivas \ "viva"

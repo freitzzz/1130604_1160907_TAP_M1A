@@ -345,7 +345,7 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           )
 
         val collectedPreferences =
-          Functions.desrializeTotalPreferenceAndIndividualPreferences(
+          Functions.deserializeTotalPreferenceAndIndividualPreferences(
             scheduledVivasXml.get
           )
 
