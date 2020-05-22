@@ -178,17 +178,17 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   property(
     "all viva must be scheduled in the time intervals in which its resources are available"
   ) = {
-    /*val vivasDuration = for {
-      durationPeriod <- Generators.genPositivePeriodOfTime
-      duration <- Duration.create(java.time.Duration.ofHours(1))
-    } yield duration*/
-
-    val duration = Duration.create(java.time.Duration.ofHours(1))
+    val vivasDuration = for {
+      durationPeriod <- Generators.genAtMost24HPeriodOfTime
+      duration <- Duration.create(
+        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
+      )
+    } yield duration
 
     val dateTimeNow = LocalDateTime.now()
 
     val vivasToScheduleGenerator = for {
-      // duration <- vivasDuration
+      duration <- vivasDuration
       availabilities <- Generators.genAvailabilitySequenceOf(
         10,
         dateTimeNow,
@@ -220,14 +220,28 @@ object Assessment01PropertyBasedTesting extends Properties("") {
       vivasToScheduleGenerator,
       Generators.genName,
       Generators.genName
-    ) { (arguments, student, title) =>
+    ) { (arguments2, student, title) =>
       {
+        val arguments = arguments2
+
+        println(s"=>>>>>>: ${arguments._1.timeDuration}")
+
         println(s"Presidents: ${arguments._2}")
 
         println(s"Advisers: ${arguments._3}")
 
-        val resources = arguments._2.zipWithIndex
-          .map(pair => (pair._1, arguments._3(pair._2)))
+        val lessResourcesGeneratedLength =
+          if (arguments._2.length < arguments._3.length) arguments._2.length
+          else arguments._3.length
+
+        println(s"Length: $lessResourcesGeneratedLength")
+
+        val resources = (0 until lessResourcesGeneratedLength).map(
+          index => (arguments._2(index), arguments._3(index))
+        )
+
+        println(s"And?: $resources")
+
         val vivas = resources.map(
           pair =>
             Viva.create(
@@ -238,24 +252,25 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           )
         )
 
-        println(s"=>>>> Resources: $resources")
-        println(s"=>>>> Vivas: $vivas")
-
         val asd = AssessmentMS01
           .create(
             Functions.serialize(
               arguments._1,
-              vivas,
+              vivas.toList,
               arguments._2 ++ arguments._3 ++ arguments._4 ++ arguments._5
             )
           )
 
-        // println(asd.failed)
-        true
-        //asd.isSuccess
+        println(asd)
+
+        asd.isSuccess
       }
     }
   }
 
   //property("one resource cannot be overlapped in two scheduled viva") = ???
+
+  /*property(
+    "even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available"
+  ) = ???*/
 }

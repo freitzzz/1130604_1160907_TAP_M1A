@@ -74,6 +74,24 @@ object Generators {
       LocalDateTime.ofEpochSecond(end, 0, ZoneOffset.UTC)
     )
 
+  val genAtMost24HPeriodOfTime: Gen[(LocalDateTime, LocalDateTime)] = for {
+    start <- Gen.choose(
+      LocalDateTime.MIN.toEpochSecond(ZoneOffset.UTC),
+      LocalDateTime.MAX.toEpochSecond(ZoneOffset.UTC)
+    )
+    end <- Gen.choose(
+      start,
+      LocalDateTime
+        .ofEpochSecond(start, 0, ZoneOffset.UTC)
+        .plusHours(24)
+        .toEpochSecond(ZoneOffset.UTC)
+    )
+  } yield
+    (
+      LocalDateTime.ofEpochSecond(start, 0, ZoneOffset.UTC),
+      LocalDateTime.ofEpochSecond(end, 0, ZoneOffset.UTC)
+    )
+
   def genPeriodOfTimeLowerThan(
     localDateTime: LocalDateTime
   ): Gen[(LocalDateTime, LocalDateTime)] = {
@@ -176,8 +194,7 @@ object Generators {
                        roles: List[Role],
                        minNumberOfResources: Int = 1): Gen[List[Resource]] = {
 
-    genTeachersWith(availabilities, roles, minNumberOfResources)
-    /*if (roles.contains(Supervisor())) {
+    if (roles.contains(Supervisor())) {
       genExternalsWith(availabilities, roles, minNumberOfResources)
     } else {
       genTeachersWith(availabilities, roles, minNumberOfResources)
@@ -191,7 +208,7 @@ object Generators {
         // TODO: missing roles check
         //genExternalsWith(availabilities, roles, minNumberOfResources)
         genTeachersWith(availabilities, roles, minNumberOfResources)*/
-    }*/
+    }
 
   }
 
