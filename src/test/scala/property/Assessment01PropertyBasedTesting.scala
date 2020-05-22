@@ -268,6 +268,93 @@ object Assessment01PropertyBasedTesting extends Properties("") {
     }
   }
 
+  property(
+    "totalPreference of scheduled vivas must always be equal to the sum of the individual vivas"
+  ) = {
+    val vivasDuration = for {
+      durationPeriod <- Generators.genAtMost24HPeriodOfTime
+      duration <- Duration.create(
+        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
+      )
+    } yield duration
+
+    val dateTimeNow = LocalDateTime.now()
+
+    val vivasToScheduleGenerator = for {
+      duration <- vivasDuration
+      availabilities <- Generators.genAvailabilitySequenceOf(
+        10,
+        dateTimeNow,
+        duration.get.timeDuration
+      )
+      presidents <- Generators.genResourcesWith(
+        availabilities,
+        List(President()),
+        2
+      )
+      advisers <- Generators.genResourcesWith(
+        availabilities,
+        List(Adviser()),
+        2
+      )
+      coAdvisers <- Generators.genResourcesWith(
+        availabilities,
+        List(Adviser()),
+        1
+      )
+      supervisors <- Generators.genResourcesWith(
+        availabilities,
+        List(Adviser()),
+        1
+      )
+    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
+
+    Prop.forAll(
+      vivasToScheduleGenerator,
+      Generators.genName,
+      Generators.genName
+    ) { (arguments2, student, title) =>
+      {
+        val arguments = arguments2
+
+        val lessResourcesGeneratedLength =
+          if (arguments._2.length < arguments._3.length) arguments._2.length
+          else arguments._3.length
+
+        val resources = (0 until lessResourcesGeneratedLength).map(
+          index => (arguments._2(index), arguments._3(index))
+        )
+
+        val vivas = resources.map(
+          pair =>
+            Viva.create(
+              student,
+              title,
+              Jury.create(pair._1, pair._2, List(), List()).get,
+              arguments._1
+          )
+        )
+
+        val scheduledVivasXml = AssessmentMS01
+          .create(
+            Functions.serialize(
+              arguments._1,
+              vivas.toList,
+              arguments._2 ++ arguments._3 ++ arguments._4 ++ arguments._5
+            )
+          )
+
+        val collectedPreferences =
+          Functions.desrializeTotalPreferenceAndIndividualPreferences(
+            scheduledVivasXml.get
+          )
+
+        collectedPreferences._1 == collectedPreferences._2.foldLeft(0)(_ + _)
+
+      }
+    }
+  }
+
   //property("one resource cannot be overlapped in two scheduled viva") = ???
 
   /*property(

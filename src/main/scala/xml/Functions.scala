@@ -238,6 +238,23 @@ object Functions {
     }
   }
 
+  def desrializeTotalPreferenceAndIndividualPreferences(
+    vivas: Elem
+  ): (Int, List[Int]) = {
+    val vivasXML = vivas \ "viva"
+
+    val totalPreferenceString = vivas \@ "totalPreference".toString()
+
+    val totalPreference = totalPreferenceString.toInt
+
+    val preferences =
+      vivasXML.map(x => x.attribute("preference").get.toString.toInt).toList
+
+    val totalPreferencesAndPreference = (totalPreference, preferences)
+
+    totalPreferencesAndPreference
+  }
+
   def serialize(agenda: Agenda): Elem = {
 
     val xml =
