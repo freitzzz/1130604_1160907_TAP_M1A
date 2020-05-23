@@ -177,7 +177,7 @@ object Assessment01PropertyBasedTesting extends Properties("") {
       .get
       .asInstanceOf[Resource]*/
 
-  override def overrideParameters(p: Parameters) =
+  override def overrideParameters(p: Parameters): Parameters =
     p.withMinSuccessfulTests(1000)
 
   property(
@@ -219,11 +219,11 @@ object Assessment01PropertyBasedTesting extends Properties("") {
       )
       coAdvisers <- Gen.listOfN(
         coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 1)
+        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
       )
       supervisors <- Gen.listOfN(
         supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 1)
+        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
       )
     } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
@@ -244,16 +244,8 @@ object Assessment01PropertyBasedTesting extends Properties("") {
 
         val supervisors = arguments._5
 
-        println(s"=>>>>>>: ${arguments._1.timeDuration}")
-
-        println(s"Presidents: ${arguments._2}")
-
-        println(s"Advisers: ${arguments._3}")
-
         val lessResourcesGeneratedLength =
           Math.min(presidents.length, advisers.length)
-
-        println(s"Length: $lessResourcesGeneratedLength")
 
         val resources = (0 until lessResourcesGeneratedLength).map(
           index =>
@@ -265,8 +257,6 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           )
         )
 
-        println(s"And?: $resources")
-
         val vivas = resources.map(
           pair =>
             Viva.create(
@@ -277,15 +267,7 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           )
         )
 
-        val xml = Functions.serialize(
-          vivasDuration,
-          vivas.toList,
-          presidents ++ advisers ++ coAdvisers.flatten ++ supervisors.flatten
-        )
-
-        println(xml)
-
-        val asd = AssessmentMS01
+        val schedule = AssessmentMS01
           .create(
             Functions.serialize(
               vivasDuration,
@@ -294,14 +276,12 @@ object Assessment01PropertyBasedTesting extends Properties("") {
             )
           )
 
-        println(asd)
-
-        asd.isSuccess
+        schedule.isSuccess
       }
     }
   }
 
-  /*property(
+  property(
     "totalPreference of scheduled vivas must always be equal to the sum of the individual vivas"
   ) = {
     val vivasDuration = for {
@@ -330,32 +310,52 @@ object Assessment01PropertyBasedTesting extends Properties("") {
         List(Adviser()),
         2
       )
-      coAdvisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        1
+      coAdvisersLength <- Gen.chooseNum(
+        0,
+        Math.min(presidents.length, advisers.length)
       )
-      supervisors <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        1
+      supervisorsLength <- Gen.chooseNum(
+        0,
+        Math.min(presidents.length, advisers.length)
       )
+      coAdvisers <- Gen.listOfN(
+        coAdvisersLength,
+        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
+      )
+      supervisors <- Gen.listOfN(
+        supervisorsLength,
+        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
+      )
+
     } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
       vivasToScheduleGenerator,
       Generators.genName,
       Generators.genName
-    ) { (arguments2, student, title) =>
+    ) { (arguments, student, title) =>
       {
-        val arguments = arguments2
+        val vivasDuration = arguments._1
+
+        val presidents = arguments._2
+
+        val advisers = arguments._3
+
+        val coAdvisers = arguments._4
+
+        val supervisors = arguments._5
 
         val lessResourcesGeneratedLength =
-          if (arguments._2.length < arguments._3.length) arguments._2.length
-          else arguments._3.length
+          Math.min(presidents.length, advisers.length)
 
         val resources = (0 until lessResourcesGeneratedLength).map(
-          index => (arguments._2(index), arguments._3(index))
+          index =>
+            (
+              presidents(index),
+              advisers(index),
+              supervisors.lift(index).getOrElse(List()),
+              coAdvisers.lift(index).getOrElse(List())
+          )
         )
 
         val vivas = resources.map(
@@ -363,17 +363,17 @@ object Assessment01PropertyBasedTesting extends Properties("") {
             Viva.create(
               student,
               title,
-              Jury.create(pair._1, pair._2, List(), List()).get,
-              arguments._1
+              Jury.create(pair._1, pair._2, pair._3, pair._4).get,
+              vivasDuration
           )
         )
 
         val scheduledVivasXml = AssessmentMS01
           .create(
             Functions.serialize(
-              arguments._1,
+              vivasDuration,
               vivas.toList,
-              arguments._2 ++ arguments._3 ++ arguments._4 ++ arguments._5
+              presidents ++ advisers ++ coAdvisers.flatten ++ supervisors.flatten
             )
           )
 
@@ -382,11 +382,11 @@ object Assessment01PropertyBasedTesting extends Properties("") {
             scheduledVivasXml.get
           )
 
-        collectedPreferences._1 == collectedPreferences._2.foldLeft(0)(_ + _)
+        collectedPreferences._1 == collectedPreferences._2.sum
 
       }
     }
-  }*/
+  }
 
   //property("one resource cannot be overlapped in two scheduled viva") = ???
 
