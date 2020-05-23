@@ -175,8 +175,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
       .get
       .asInstanceOf[Resource]*/
 
-  property(
-    "all viva must be scheduled in the time intervals in which its resources are available"
+  propertyWithSeed(
+    "all viva must be scheduled in the time intervals in which its resources are available",
+    Some("paVvgX16sTpUyTqVbx_sWFpn9YeBmVn39EfwOaV2cuA=")
   ) = {
     val vivasDuration = for {
       durationPeriod <- Generators.genAtMost24HPeriodOfTime
@@ -251,6 +252,14 @@ object Assessment01PropertyBasedTesting extends Properties("") {
               arguments._1
           )
         )
+
+        val xml = Functions.serialize(
+          arguments._1,
+          vivas.toList,
+          arguments._2 ++ arguments._3 ++ arguments._4 ++ arguments._5
+        )
+
+        println(xml)
 
         val asd = AssessmentMS01
           .create(
