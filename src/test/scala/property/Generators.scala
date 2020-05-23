@@ -82,8 +82,26 @@ object Generators {
     end <- Gen.choose(
       start + 1,
       LocalDateTime
-        .ofEpochSecond(start, 0, ZoneOffset.UTC)
+        .ofEpochSecond(start + 1, 0, ZoneOffset.UTC)
         .plusHours(24)
+        .toEpochSecond(ZoneOffset.UTC)
+    )
+  } yield
+    (
+      LocalDateTime.ofEpochSecond(start, 0, ZoneOffset.UTC),
+      LocalDateTime.ofEpochSecond(end, 0, ZoneOffset.UTC)
+    )
+
+  val genAtMost60SPeriodOfTime: Gen[(LocalDateTime, LocalDateTime)] = for {
+    start <- Gen.choose(
+      LocalDateTime.MIN.toEpochSecond(ZoneOffset.UTC),
+      LocalDateTime.MAX.toEpochSecond(ZoneOffset.UTC) - 60
+    )
+    end <- Gen.choose(
+      start + 1,
+      LocalDateTime
+        .ofEpochSecond(start + 1, 0, ZoneOffset.UTC)
+        .plusSeconds(60)
         .toEpochSecond(ZoneOffset.UTC)
     )
   } yield
