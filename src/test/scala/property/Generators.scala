@@ -77,10 +77,10 @@ object Generators {
   val genAtMost24HPeriodOfTime: Gen[(LocalDateTime, LocalDateTime)] = for {
     start <- Gen.choose(
       LocalDateTime.MIN.toEpochSecond(ZoneOffset.UTC),
-      LocalDateTime.MAX.toEpochSecond(ZoneOffset.UTC)
+      LocalDateTime.MAX.toEpochSecond(ZoneOffset.UTC) - 86400
     )
     end <- Gen.choose(
-      start,
+      start + 1,
       LocalDateTime
         .ofEpochSecond(start, 0, ZoneOffset.UTC)
         .plusHours(24)
