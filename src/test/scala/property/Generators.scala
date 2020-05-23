@@ -166,10 +166,10 @@ object Generators {
     for {
       temporalSequence <- temporalSequenceFrom(
         startDateTime,
-        ChronoUnit.MINUTES,
+        ChronoUnit.SECONDS,
         numberOfAvailability * 2,
-        duration.toMinutes,
-        duration.toMinutes * 60
+        duration.getSeconds,
+        duration.getSeconds * 3600
       )
       preferences <- genPreferences(numberOfAvailability)
       periods <- List(
