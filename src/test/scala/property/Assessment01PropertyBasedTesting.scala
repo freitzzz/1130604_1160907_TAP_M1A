@@ -604,4 +604,105 @@ object Assessment01PropertyBasedTesting extends Properties("") {
       }
     }
   }
+
+  property("all scheduled vivas duration must be equal to vivas duration") = {
+    val vivasDuration = for {
+      durationPeriod <- Generators.genAtMost24HPeriodOfTime
+      duration <- Duration.create(
+        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
+      )
+    } yield duration
+
+    val dateTimeNow = LocalDateTime.now()
+
+    val vivasToScheduleGenerator = for {
+      duration <- vivasDuration
+      availabilities <- Generators.genAvailabilitySequenceOf(
+        10,
+        dateTimeNow,
+        duration.get.timeDuration
+      )
+      presidents <- Generators.genResourcesWith(
+        availabilities,
+        List(President()),
+        2
+      )
+      advisers <- Generators.genResourcesWith(
+        availabilities,
+        List(Adviser()),
+        2
+      )
+      coAdvisersLength <- Gen.chooseNum(
+        0,
+        Math.min(presidents.length, advisers.length)
+      )
+      supervisorsLength <- Gen.chooseNum(
+        0,
+        Math.min(presidents.length, advisers.length)
+      )
+      coAdvisers <- Gen.listOfN(
+        coAdvisersLength,
+        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
+      )
+      supervisors <- Gen.listOfN(
+        supervisorsLength,
+        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
+      )
+
+    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
+
+    Prop.forAll(
+      vivasToScheduleGenerator,
+      Generators.genName,
+      Generators.genName
+    ) { (arguments, student, title) =>
+      {
+        val vivasDuration = arguments._1
+
+        val presidents = arguments._2
+
+        val advisers = arguments._3
+
+        val coAdvisers = arguments._4
+
+        val supervisors = arguments._5
+
+        val lessResourcesGeneratedLength =
+          Math.min(presidents.length, advisers.length)
+
+        val resources = (0 until lessResourcesGeneratedLength).map(
+          index =>
+            (
+              presidents(index),
+              advisers(index),
+              supervisors.lift(index).getOrElse(List()),
+              coAdvisers.lift(index).getOrElse(List())
+          )
+        )
+
+        val vivas = resources.map(
+          pair =>
+            Viva.create(
+              student,
+              title,
+              Jury.create(pair._1, pair._2, pair._3, pair._4).get,
+              vivasDuration
+          )
+        )
+
+        val scheduledVivasTry =
+          MS01Scheduler.generateScheduledVivas(vivas.toList)
+
+        val scheduledVivas = scheduledVivasTry.map(x => x.get)
+
+        scheduledVivas.forall(scheduledViva => {
+          val period = scheduledViva.period
+
+          java.time.Duration
+            .between(period.start, period.end)
+            .equals(vivasDuration.timeDuration)
+        })
+      }
+    }
+  }
 }

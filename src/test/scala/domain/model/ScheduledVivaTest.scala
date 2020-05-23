@@ -280,4 +280,94 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     scheduledViva.scheduledPreference shouldBe expectedScheduledVivaPreference
   }
+
+  test(
+    "if the period of the scheduled viva has a different duration from the viva that is being scheduled, creation should fail"
+  ) {
+
+    // Arrange
+
+    val student = NonEmptyString.create("Doe").get
+
+    val title =
+      NonEmptyString
+        .create(
+          "Understanding Parallelism Programming with Functional Programming Paradigm"
+        )
+        .get
+
+    val presidentAvailabilityStartDateTime = LocalDateTime.now()
+
+    val presidentAvailabilityEndDateTime =
+      presidentAvailabilityStartDateTime.plusMinutes(10)
+
+    val presidentAvailabilityPeriod = Period
+      .create(
+        presidentAvailabilityStartDateTime,
+        presidentAvailabilityEndDateTime
+      )
+      .get
+
+    val presidentAvailabilityPreference = Preference.create(5).get
+
+    val presidentAvailability = Availability
+      .create(presidentAvailabilityPeriod, presidentAvailabilityPreference)
+
+    val adviserAvailabilityStartDateTime =
+      presidentAvailabilityStartDateTime.plusMinutes(5)
+
+    val adviserAvailabilityEndDateTime =
+      presidentAvailabilityStartDateTime.plusMinutes(15)
+
+    val adviserAvailabilityPeriod = Period
+      .create(adviserAvailabilityStartDateTime, adviserAvailabilityEndDateTime)
+      .get
+
+    val adviserAvailabilityPreference = Preference.create(3).get
+
+    val adviserAvailability = Availability
+      .create(adviserAvailabilityPeriod, adviserAvailabilityPreference)
+
+    val president = Teacher
+      .create(
+        NonEmptyString.create("1").get,
+        NonEmptyString.create("John").get,
+        List(presidentAvailability),
+        List(President())
+      )
+      .get
+
+    val adviser =
+      Teacher
+        .create(
+          NonEmptyString.create("2").get,
+          NonEmptyString.create("Doe").get,
+          List(adviserAvailability),
+          List(Adviser())
+        )
+        .get
+
+    val jury = Jury.create(president, adviser, List.empty, List.empty).get
+
+    val vivaDuration = Duration.create(time.Duration.ofHours(1)).get
+
+    val viva = Viva.create(student, title, jury, vivaDuration)
+
+    val scheduledVivaStartDateTime =
+      presidentAvailabilityStartDateTime.plusMinutes(5)
+
+    val scheduledVivaEndDateTime =
+      scheduledVivaStartDateTime.plusMinutes(200)
+
+    val scheduledVivaPeriod =
+      Period.create(scheduledVivaStartDateTime, scheduledVivaEndDateTime).get
+
+    // Act
+
+    val scheduledViva = ScheduledViva.create(viva, scheduledVivaPeriod)
+
+    // Assert
+
+    scheduledViva.isFailure shouldBe true
+  }
 }
