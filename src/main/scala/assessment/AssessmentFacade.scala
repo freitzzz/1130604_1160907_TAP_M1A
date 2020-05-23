@@ -14,7 +14,7 @@ import domain.model.{
   Viva
 }
 import domain.schedule._
-import domainSchedulerImpl.BasicScheduler
+import domainSchedulerImpl.MS01Scheduler
 import xml.Functions
 
 import scala.annotation.tailrec
@@ -31,7 +31,7 @@ object AssessmentMS01 extends Schedule {
       case Success(value) =>
         val vivas = value
 
-        val basicScheduler = new BasicScheduler()
+        val basicScheduler = MS01Scheduler
 
         val scheduledVivas = basicScheduler.generateScheduledVivas(vivas)
 

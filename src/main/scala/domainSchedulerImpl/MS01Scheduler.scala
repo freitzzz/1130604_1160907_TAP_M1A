@@ -19,7 +19,7 @@ import xml.Functions
 import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
-class BasicScheduler extends DomainScheduler {
+object MS01Scheduler extends DomainScheduler {
   override def generateScheduledVivas(
     vivas: List[Viva]
   ): List[Try[ScheduledViva]] = {
