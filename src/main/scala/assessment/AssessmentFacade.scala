@@ -31,9 +31,7 @@ object AssessmentMS01 extends Schedule {
       case Success(value) =>
         val vivas = value
 
-        val basicScheduler = MS01Scheduler
-
-        val scheduledVivas = basicScheduler.generateScheduledVivas(vivas)
+        val scheduledVivas = MS01Scheduler.generateScheduledVivas(vivas)
 
         scheduledVivas.find(_.isFailure) match {
           case Some(value) => Failure(value.failed.get)
