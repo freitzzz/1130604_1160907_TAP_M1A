@@ -11,9 +11,8 @@ sealed abstract case class Period private (start: LocalDateTime,
 
   // Check whether a given period of time overlaps with the called Period instance
   def overlaps(period: Period): Boolean = {
-    period.start >= this.start && period.start <= this.end
+    (this.end >= period.start && this.end <= period.end) || (this.start <= period.start && this.end >= period.end)
   }
-
 }
 
 object Period {
