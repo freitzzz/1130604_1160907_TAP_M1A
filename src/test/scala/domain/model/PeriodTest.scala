@@ -21,7 +21,6 @@ class PeriodTest extends AnyFunSuite with Matchers {
     // Assert
 
     period.isFailure shouldBe true
-
   }
 
   test(
@@ -89,4 +88,100 @@ class PeriodTest extends AnyFunSuite with Matchers {
 
   }
 
+  test(
+    "given a period from 13:00 to 17:00 and another from 14:00 to 16:00, the overlap should return true"
+  ) {
+    // Arrange
+
+    val start1 = LocalDateTime.of(2020, 5, 20, 13, 0, 0)
+    val end1 = LocalDateTime.of(2020, 5, 20, 17, 0, 0)
+    //val end = start.plusMinutes(5)
+
+    val start2 = LocalDateTime.of(2020, 5, 20, 14, 0, 0)
+    val end2 = LocalDateTime.of(2020, 5, 20, 16, 0, 0)
+
+    val periodX = Period.create(start1, end1).get
+
+    val periodY = Period.create(start2, end2).get
+
+    // Act
+
+    val overlaps = periodX.overlaps(periodY)
+
+    // Assert
+
+    overlaps shouldBe true
+  }
+
+  test(
+    "given a period from 14:00 to 16:00 and another from 13:00 to 17:00, the overlap should return true"
+  ) {
+    // Arrange
+
+    val start1 = LocalDateTime.of(2020, 5, 20, 14, 0, 0)
+    val end1 = LocalDateTime.of(2020, 5, 20, 16, 0, 0)
+
+    val start2 = LocalDateTime.of(2020, 5, 20, 13, 0, 0)
+    val end2 = LocalDateTime.of(2020, 5, 20, 17, 0, 0)
+
+    val periodX = Period.create(start1, end1).get
+
+    val periodY = Period.create(start2, end2).get
+
+    // Act
+
+    val overlaps = periodX.overlaps(periodY)
+
+    // Assert
+
+    overlaps shouldBe true
+  }
+
+  test(
+    "given a period from 13:00 to 17:00 and another from 13:00 to 17:00, the overlap should return true"
+  ) {
+    // Arrange
+
+    val start1 = LocalDateTime.of(2020, 5, 20, 13, 0, 0)
+    val end1 = LocalDateTime.of(2020, 5, 20, 17, 0, 0)
+
+    val start2 = LocalDateTime.of(2020, 5, 20, 13, 0, 0)
+    val end2 = LocalDateTime.of(2020, 5, 20, 17, 0, 0)
+
+    val periodX = Period.create(start1, end1).get
+
+    val periodY = Period.create(start2, end2).get
+
+    // Act
+
+    val overlaps = periodX.overlaps(periodY)
+
+    // Assert
+
+    overlaps shouldBe true
+  }
+
+  test(
+    "given a period from 13:00 to 17:00 and another from 13:00 to 18:00, the overlap should return true"
+  ) {
+    // Arrange
+
+    val start1 = LocalDateTime.of(2020, 5, 20, 13, 0, 0)
+    val end1 = LocalDateTime.of(2020, 5, 20, 17, 0, 0)
+
+    val start2 = LocalDateTime.of(2020, 5, 20, 13, 0, 0)
+    val end2 = LocalDateTime.of(2020, 5, 20, 18, 0, 0)
+
+    val periodX = Period.create(start1, end1).get
+
+    val periodY = Period.create(start2, end2).get
+
+    // Act
+
+    val overlaps = periodX.overlaps(periodY)
+
+    // Assert
+
+    overlaps shouldBe true
+  }
 }

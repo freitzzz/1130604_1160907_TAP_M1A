@@ -71,7 +71,6 @@ object Resource {
       )
       .nonEmpty
   }
-
 }
 
 case class Teacher private (override val id: NonEmptyString,

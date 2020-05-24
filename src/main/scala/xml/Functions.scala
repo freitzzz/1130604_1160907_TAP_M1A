@@ -2,8 +2,8 @@ package xml
 
 import java.io.ByteArrayInputStream
 import java.time
-import java.time.{LocalDateTime, LocalTime}
-import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, LocalTime, ZoneOffset}
+import java.time.format.{DateTimeFormatter, ResolverStyle}
 
 import domain.model.{
   Adviser,
@@ -59,13 +59,23 @@ object Functions {
 
   def deserialize(elem: Elem): Try[List[Viva]] = {
 
-    val vivasDurationTry = Duration.create(
-      time.Duration.between(
-        LocalTime.ofNanoOfDay(0),
-        LocalTime
-          .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
-      )
-    )
+    val durationText = elem \@ "duration"
+
+    val timeDuration =
+      if (durationText == "24:00:00")
+        java.time.Duration.between(
+          LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC),
+          LocalDateTime.ofEpochSecond(86400, 0, ZoneOffset.UTC)
+        )
+      else
+        time.Duration.between(
+          LocalTime.ofNanoOfDay(0),
+          LocalTime
+            .parse(elem \@ "duration", DateTimeFormatter.ISO_LOCAL_TIME),
+        )
+
+    val vivasDurationTry =
+      Duration.create(timeDuration)
 
     vivasDurationTry match {
       case Failure(exception)     => Failure(exception)
@@ -228,6 +238,23 @@ object Functions {
     }
   }
 
+  def deserializeTotalPreferenceAndIndividualPreferences(
+    vivas: Elem
+  ): (Int, List[Int]) = {
+    val vivasXML = vivas \ "viva"
+
+    val totalPreferenceString = vivas \@ "totalPreference".toString()
+
+    val totalPreference = totalPreferenceString.toInt
+
+    val preferences =
+      vivasXML.map(x => x.attribute("preference").get.toString.toInt).toList
+
+    val totalPreferencesAndPreference = (totalPreference, preferences)
+
+    totalPreferencesAndPreference
+  }
+
   def serialize(agenda: Agenda): Elem = {
 
     val xml =
@@ -239,6 +266,115 @@ object Functions {
 
   }
 
+  def serialize(duration: Duration,
+                vivas: List[Viva],
+                resources: List[Resource]): Elem = {
+
+    val vivasXML = serializeVivas(vivas)
+
+    val teachersXML = serializeTeachers(
+      resources.filter(x => x.isInstanceOf[Teacher])
+    )
+
+    val externalsXML = serializeExternals(
+      resources.filter(x => x.isInstanceOf[External])
+    )
+
+    val durationString =
+      if (duration.timeDuration.getSeconds == 86400L) "24:00:00"
+      else
+        DateTimeFormatter.ISO_LOCAL_TIME.format(
+          duration.timeDuration.addTo(LocalTime.of(0, 0))
+        )
+
+    val root =
+      <agenda duration={durationString}>
+    <vivas>
+    {vivasXML}
+    </vivas>
+    <resources>
+    <teachers>
+    {teachersXML}
+    </teachers>
+    <externals>
+    {externalsXML}
+    </externals>
+    </resources>
+    </agenda>
+
+    root
+
+  }
+
+  private def serializeViva(viva: Viva): Node = {
+
+    val juryXml = serializeJuryIn(viva.jury)
+
+    val xml =
+      <viva student={viva.student.s} title={viva.title.s}>
+        {juryXml}
+      </viva>
+
+    xml
+  }
+
+  private def serializeVivas(vivas: List[Viva]): List[Node] = {
+
+    val vivasXml = vivas.map(v => serializeViva(v))
+
+    vivasXml
+  }
+
+  private def serializeAvailability(availability: Availability): Node = {
+
+    val xml =
+      <availability start={availability.period.start.toString} end={availability.period.end.toString} preference={availability.preference.value.toString}/>
+
+    xml
+  }
+
+  private def serializeTeacher(teacher: Resource): Node = {
+
+    val availabilitiesXml = teacher.availabilities.map(
+      availability => serializeAvailability(availability)
+    )
+
+    val xml =
+      <teacher id={teacher.id.s} name={teacher.name.s}>
+        {availabilitiesXml}
+      </teacher>
+
+    xml
+  }
+
+  private def serializeTeachers(teachers: List[Resource]): List[Node] = {
+
+    val teachersXml = teachers.map(t => serializeTeacher(t))
+
+    teachersXml
+  }
+
+  private def serializeExternals(externals: List[Resource]): List[Node] = {
+
+    val externalsXml = externals.map(e => serializeExternal(e))
+
+    externalsXml
+  }
+
+  private def serializeExternal(external: Resource): Node = {
+
+    val availabilitiesXml = external.availabilities.map(
+      availability => serializeAvailability(availability)
+    )
+
+    val xml =
+      <external id={external.id.s} name={external.name.s}>
+        {availabilitiesXml}
+      </external>
+
+    xml
+  }
+
   def serializeError(error: Throwable): Elem = {
     val errorXML =
       <error xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" message={error.getMessage}  />
@@ -247,7 +383,7 @@ object Functions {
 
   private def serializeScheduledViva(scheduledViva: ScheduledViva): Node = {
 
-    val juryXML = serializeJury(scheduledViva.viva.jury)
+    val juryXML = serializeJuryOut(scheduledViva.viva.jury)
 
     val xml =
       <viva student={scheduledViva.viva.student.s} title={scheduledViva.viva.title.s} start={scheduledViva.period.start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} end={scheduledViva.period.end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)} preference={scheduledViva.scheduledPreference.toString}>
@@ -258,7 +394,7 @@ object Functions {
 
   }
 
-  private def serializeJury(jury: Jury): List[Node] = {
+  private def serializeJuryOut(jury: Jury): List[Node] = {
 
     val presidentXML = <president name={jury.president.name.s}/>
 
@@ -269,6 +405,22 @@ object Functions {
 
     val coAdvisersXML =
       jury.coAdvisers.map(coAdviser => <coadviser name={coAdviser.name.s}/>)
+
+    List(presidentXML, adviserXML, supervisorsXML, coAdvisersXML).flatten
+
+  }
+
+  private def serializeJuryIn(jury: Jury): List[Node] = {
+
+    val presidentXML = <president id={jury.president.id.s}/>
+
+    val adviserXML = <adviser id={jury.adviser.id.s}/>
+
+    val supervisorsXML =
+      jury.supervisors.map(supervisor => <supervisor id={supervisor.id.s}/>)
+
+    val coAdvisersXML =
+      jury.coAdvisers.map(coAdviser => <coadviser id={coAdviser.id.s}/>)
 
     List(presidentXML, adviserXML, supervisorsXML, coAdvisersXML).flatten
 
