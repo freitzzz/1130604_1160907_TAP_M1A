@@ -118,6 +118,7 @@ To summarize this introductory section, we can say that properties are general r
 
 In the vivas scheduling project for the milestone 1, we have already done some model validation by writing unit tests for our model.
 Tests written include:
+
 - Availability tests
 - Duration tests
 - Jury tests
@@ -126,18 +127,23 @@ Tests written include:
 - Preferences tests
 - Resources tests
 - ScheduledViva tests
+
 These tests are great for model validation, however, each and every test written required a manual input value. It was impracticable to test every possible value this way.
 Furthermore, although these tests are great to validate each domain model class individually, these tests are short to test the following:
+
 - Every possible edge case scenario for domain input
 - Operations that occur outside smart constructors
 - Algorithm scheduling validation
 - Relationship between domain concepts that occur outside the domain.
+
 In practical terms, we didn’t have tests for more complex scenarios that cannot be easily translated to a unit test.
 We want to assure that unrealistic scheduling are created, and that the scheduled vivas will always the realised on time and everyone will be available. So, in very generic terms, we want to validate that:
+
 - The resources are always available in the period vivas are being scheduled.
 - Resources are not required in 2 or more scheduled vivas in periods of that time that overlap.
 - Preferences summation is always accurate for analytical purposes
 - Vivas are scheduled in a first come first served order.
+
 In the next section these concepts were translated into properties and explained in more detail.
 
 ### Diagram and explain properties
@@ -151,17 +157,21 @@ The following diagrams provides a visual help to understand the full picture of 
 
 Every time new vivas are requited to be scheduled, the scheduling algorithm is filled with the following:
 Duration of a viva
+
 - Title of a viva
 - Student to present the viva
 - Jury evaluating the viva
+
 We want to ensure that whatever comes from the left side of the scheduler, the output on the right side will be a scheduler viva that is correctly created. Correctly created, in this context, means:
+
 - The duration of the scheduled viva is the same as the one initially provided.
 - The tile of the scheduled viva is the same as the one initially proved.
 - The scheduled viva is going to be presented by the student that request in first place.
 - The elements of the jury are the ones specified
-	-Elements of the jury are unique
-	-Are available in the specified time period
-	-Elements of the jury will not be present in other vivas even if the overlap of time  is just one second.
+	- Elements of the jury are unique
+	- Are available in the specified time period
+	- Elements of the jury will not be present in other vivas even if the overlap of time  is just one second.
+	
 In the following section we will go through the implemented properties, and further details will be given to explain how the above was achieved.
 
 ### Implemented properties and explanation
