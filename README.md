@@ -107,6 +107,123 @@ Looking ahead into feature developments, we consider that further improvements c
 
 ## Domain Correctness Assurance with Property-Based Testing (MS02)
 
+### Introduction to Property Base Testing (PBT)
+In the previous milestone, we included unit tests to validate our model and program accuracy. 
+These types of tests are called example-based testing, and do not consider all possible domain values (function inputs), and it’s possible that we may fail to anticipate edge cases that cause errors in the application. 
+Property-based testing does not need concrete examples of what is expected of the function under test.
+Property-based testing stretches the boundaries of the inputs to the limit, possibly uncovering failing behaviour.
+To summarize this introductory section, we can say that properties are general rules that describe a program’s behaviour. Whatever the input is, the defined property condition must be true at all times.
+
+### Where PBT is used in the project
+
+In the vivas scheduling project for the milestone 1, we have already done some model validation by writing unit tests for our model.
+Tests written include:
+•	Availability tests
+•	Duration tests
+•	Jury tests
+•	NonEmptyString tests
+•	Period tests
+•	Preferences tests
+•	Resources tests
+•	ScheduledViva tests
+These tests are great for model validation, however, each and every test written required a manual input value. It was impracticable to test every possible value this way.
+Furthermore, although these tests are great to validate each domain model class individually, these tests are short to test the following:
+•	Every possible edge case scenario for domain input
+•	Operations that occur outside smart constructors
+•	Algorithm scheduling validation
+•	Relationship between domain concepts that occur outside the domain.
+In practical terms, we didn’t have tests for more complex scenarios that cannot be easily translated to a unit test.
+We want to assure that unrealistic scheduling are created, and that the scheduled vivas will always the realised on time and everyone will be available. So, in very generic terms, we want to validate that:
+•	The resources are always available in the period vivas are being scheduled.
+•	Resources are not required in 2 or more scheduled vivas in periods of that time that overlap.
+•	Preferences summation is always accurate for analytical purposes
+•	Vivas are scheduled in a first come first served order.
+In the next section these concepts were translated into properties and explained in more detail.
+
+### Diagram and explain properties
+
+As already mentioned, one thin that is missing from the unit tests implemented before, is the interaction between domain models. There is no exact testing covering the scheduler itself.
+The following diagrams provides a visual help to understand the full picture of the program.
+
+![properties_under_test_algorithm_visualizer](documentation/diagrams/properties_under_test_algorithm_visualizer.png)
+
+<center>Figure 4 - Properties under testing digram</center>
+
+Every time new vivas are requited to be scheduled, the scheduling algorithm is filled with the following:
+•	Duration of a viva
+•	Title of a viva
+•	Student to present the viva
+•	Jury evaluating the viva
+We want to ensure that whatever comes from the left side of the scheduler, the output on the right side will be a scheduler viva that is correctly created. Correctly created, in this context, means:
+•	The duration of the scheduled viva is the same as the one initially provided.
+•	The tile of the scheduled viva is the same as the one initially proved.
+•	The scheduled viva is going to be presented by the student that request in first place.
+•	The elements of the jury are the ones specified
+o	Elements of the jury are unique
+o	Are available in the specified time period
+o	Elements of the jury will not be present in other vivas even if the overlap of time  is just one second.
+In the following section we will go through the implemented properties, and further details will be given to explain how the above was achieved.
+
+### Implemented properties and explanation
+
+In this section the implemented properties are listed and details about it’s implementation are explained.
+Implementing these properties required the creation of generators that are common to most properties below. These generators are used simultaneously in some of the properties, and are the ones responsible to generate the input data that will run on tests. Here we mostly concerned about the condition for the test to pass.
+•	“all viva must be scheduled in the time intervals in which its resources are available”.
+o	This property is the entirety of the algorithm. Given a set vivas and resources to be scheduled, every single viva should be transformed in a scheduled viva. The unavailability to scheduled only one viva should cause the algorithm to stop and not schedule any viva. After taking advantage of the generators to obtain all the required data to create unscheduled vivas and resources, the algorithm from milestone 01 is called. This property validates that given a set of vivas and resources that always have conditions to fill all the vivas, the scheduled vivas are created.
+
+•	“totalPreference of scheduled vivas must always be equal to the sum of the individual vivas”.
+o	When the algorithm schedules the vivas, a total preference value is saved. By business requirements, we know that this preference value should always be obtained by summing all the individual preferences values from each scheduled viva. Because it is very hard to validate this via unit tests, we decided to write a PBT for this.
+
+•	“one resource cannot be overlapped in two scheduled viva”.
+o	This property describes a relationship between domain classes that cannot be catched or tested via unit testing, so it makes perfect sense to include a PBT for this. We want to make sure that resources are never allocated to scheduled vivas that will occur simultaneously.
+
+•	“even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available”.
+•	“vivas scheduled should be in a First Come First Serve order”.
+•	“after schedule vivas update, all vivas resources should be the same (same id)”
+•	“after schedule vivas update, all vivas resources should have different availabilities, except the first schedule viva”
+•	“all scheduled vivas duration must be equal to vivas duration”.
+•	“when resources of a viva are available on the period of the viva, then a scheduled viva is always created”.
+
+### Bugs found and actions steps to fix them
+
+During the development for this milestone 02, property based testing was at the core of our focus.
+The following properties showed some issues with our domain for the previous milestones, and really corroborate the importance of using property based tests.
+We defined the following property: 
+•	“One resource cannot be overlapped in two scheduled viva”.
+The name is self explanatory, but we can dive into the details and say that in any circumstance the same resource can be simultaneously participating in two or more vivas.
+Following Allen’s linear algebra interval, our MS01 was correct but not covering all possible interception scenarios, leading to some failures during property based testing.
+Our code was covering overlapping scenarios, such as the following:
+
+![properties_under_test_algorithm_visualizer](documentation/allenAlgebra/starts.png)
+
+<center>Figure 5 - Allen's linear algebra definition of a start with overlap.</center>
+
+In the image above, X is Viva 1 and Y is Viva 2.
+This scenario was covered by MS01 implementation was unit tested.
+
+![properties_under_test_algorithm_visualizer](documentation/allenAlgebra/finished.png)
+
+<center>Figure 6 - Allen's linear algebra definition of a finish with overlap.</center>
+ 
+This second scenario is similar to the first one, except that now we test the end of the period of the vivas.
+Another scenario that was covered is the most common one in a real world scenario, as explained the image below.
+
+![properties_under_test_algorithm_visualizer](documentation/allenAlgebra/overlaps.png)
+
+<center>Figure 7 - Allen's linear algebra definition of an overlaps.</center>
+ 
+However, the following scenario was not covered.
+
+![properties_under_test_algorithm_visualizer](documentation/allenAlgebra/during.png)
+
+<center>Figure 8 - Allen's linear algebra definition of a contained overlap period.</center>
+ 
+In practical terms, when assessing the availability of the resources, the algorithm add a bug and would not consider a fully contained period as an intersection.
+The issue was fixed, and unit tests to cover this scenario were added.
+We took the decision to keep this scenario as a property based testing because as we found a bug from it, we consider it is valuable to remain as one for future development of the platform.
+Future requirements might require that we allocation of time periods is changed, and as a side effect another intersection issue would be inserted in the code without noticing. 
+We consider the presence of this property base test a good safety net with regards to the time period allocation for the resources.
+
 ## Scheduling Algorithm Refinement with Resource Availability Preference Optimization (MS03)
 
 ### Team Members
