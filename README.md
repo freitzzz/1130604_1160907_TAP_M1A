@@ -108,9 +108,9 @@ Looking ahead into feature developments, we consider that further improvements c
 ## Domain Correctness Assurance with Property-Based Testing (MS02)
 
 ### Introduction to Property Base Testing (PBT)
-In the previous milestone, we included unit tests to validate our model and program accuracy. 
+In the previous milestone, we included unit tests to validate our model of the domain and program accuracy. 
 These types of tests are called example-based testing, and do not consider all possible domain values (function inputs), and it’s possible that we may fail to anticipate edge cases that cause errors in the application. 
-Property-based testing does not need concrete examples of what is expected of the function under test.
+Property-based testing does not need concrete examples of what is expected as inputs of the function under test.
 Property-based testing stretches the boundaries of the inputs to the limit, possibly uncovering failing behaviour.
 To summarize this introductory section, we can say that properties are general rules that describe a program’s behaviour. Whatever the input is, the defined property condition must be true at all times.
 
@@ -141,82 +141,85 @@ We want to assure that unrealistic scheduling are created, and that the schedule
 
 - The resources are always available in the period vivas are being scheduled.
 - Resources are not required in 2 or more scheduled vivas in periods of that time that overlap.
-- Preferences summation is always accurate for analytical purposes
+- Preferences summation is always accurate for metrics purposes
 - Vivas are scheduled in a first come first served order.
 
 In the next section these concepts were translated into properties and explained in more detail.
 
-### Diagram and explain properties
+### Properties To Conceive Explanation
 
-As already mentioned, one thin that is missing from the unit tests implemented before, is the interaction between domain models. There is no exact testing covering the scheduler itself.
-The following diagrams provides a visual help to understand the full picture of the program.
+As already mentioned, one thing that is missing from the unit tests implemented before, is the interaction between domain models. There is no exact testing covering the scheduler itself.
+The following diagram provides a visual help to understand the full picture of the program.
 
 ![properties_under_test_algorithm_visualizer](documentation/diagrams/properties_under_test_algorithm_visualizer.png)
 
 <center>Figure 4 - Properties under testing digram</center>
 
 Every time new vivas are requited to be scheduled, the scheduling algorithm is filled with the following:
-Duration of a viva
 
+- Duration of a viva
 - Title of a viva
 - Student to present the viva
 - Jury evaluating the viva
 
-We want to ensure that whatever comes from the left side of the scheduler, the output on the right side will be a scheduler viva that is correctly created. Correctly created, in this context, means:
+We want to ensure that whatever comes from the left side of the scheduler, the output on the right side will be a scheduled viva that is correctly created. Correctly created, in this context, means:
 
 - The duration of the scheduled viva is the same as the one initially provided.
-- The tile of the scheduled viva is the same as the one initially proved.
+- The title of the scheduled viva is the same as the one initially provided.
 - The scheduled viva is going to be presented by the student that request in first place.
-- The elements of the jury are the ones specified
+- The elements of the jury:
+  - Are the ones specified
 	- Elements of the jury are unique
 	- Are available in the specified time period
-	- Elements of the jury will not be present in other vivas even if the overlap of time  is just one second.
+	- Elements of the jury will not be present in other vivas even if the overlap of time is just one second.
 	
 In the following section we will go through the implemented properties, and further details will be given to explain how the above was achieved.
 
 ### Implemented properties and explanation
 
-In this section the implemented properties are listed and details about it’s implementation are explained.
+In this section the implemented properties are listed and details about their implementation are explained.
 Implementing these properties required the creation of generators that are common to most properties below. These generators are used simultaneously in some of the properties, and are the ones responsible to generate the input data that will run on tests. Here we mostly concerned about the condition for the test to pass.
 
-#### “all viva must be scheduled in the time intervals in which its resources are available”.
-This property is the entirety of the algorithm. Given a set vivas and resources to be scheduled, every single viva should be transformed in a scheduled viva. The unavailability to scheduled only one viva should cause the algorithm to stop and not schedule any viva. After taking advantage of the generators to obtain all the required data to create unscheduled vivas and resources, the algorithm from milestone 01 is called. This property validates that given a set of vivas and resources that always have conditions to fill all the vivas, the scheduled vivas are created.
+Adicionar tabela a descrever geradores?
+>>
 
-#### “totalPreference of scheduled vivas must always be equal to the sum of the individual vivas”.
+#### “All viva must be scheduled in the time intervals in which its resources are available”.
+This property is the entirety of the algorithm. Given a set vivas and resources to be scheduled, every single viva should be transformed in a scheduled viva. The unavailability to schedule a viva should cause the algorithm to stop and fail the vivas schedule. After taking advantage of the generators to obtain all the required data to create unscheduled vivas and resources, the algorithm from milestone 01 is called. This property validates that given a set of vivas and resources that always have conditions to fill all the vivas, the scheduled vivas are created.
+
+#### “Total preference of scheduled vivas must always be equal to the sum of the individual vivas”.
 When the algorithm schedules the vivas, a total preference value is saved. By business requirements, we know that this preference value should always be obtained by summing all the individual preferences values from each scheduled viva. Because it is very hard to validate this via unit tests, we decided to write a PBT for this.
 
-#### “one resource cannot be overlapped in two scheduled viva”.
-This property describes a relationship between domain classes that cannot be catched or tested via unit testing, so it makes perfect sense to include a PBT for this. We want to make sure that resources are never allocated to scheduled vivas that will occur simultaneously.
+#### “One resource cannot be overlapped in two scheduled viva”.
+This property describes a relationship between domain classes that cannot be easily catched or tested via unit testing, so it makes sense to include a PBT for this. We want to make sure that resources are never allocated to scheduled vivas that will occur simultaneously.
 
-#### “even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available”.
+#### “Even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available”.
 This PBT is mostly useful to validate an unusual, but still valid scenario of a viva being scheduled with a small duration, in this case, just a few seconds. This is useful to validate that the split logic of the resources availabilities work in any given circumstance.
 
-####  “vivas scheduled should be in a First Come First Serve order”.
-Right now the scheduler we have acts on a First come, first served order.
-When generating vivas, we know the order where they come from, so we can compare the order in an easy way and bullet prof the FCFS accuracy of the algorithm.
+####  “Vivas schedule should be in a First Come First Serve order”.
+Right now the scheduler we have acts on a First come, first served order (FCFS).
+When generating vivas, we know the order where they come from, so we can compare the order in an easy way and bullet proof the FCFS accuracy of the algorithm.
 
-#### “after schedule vivas update, all vivas resources should be the same (same id)”
+#### “After schedule vivas update, all vivas resources should be the same (same id)”
 Scheduling a viva implies the creation of a complete new object representing the created scheduled viva.
 We want to make sure that no matter what, the list of resources is always the same, and we don’t allocate the wrong resources to the wrong vivas. This PBT ensures the viability of the algorithm by enforcing a rule where all resources of the scheduled viva should always correspond to the resources initially defined. This was not something that could be easily tested through domain validation before with just unit tests, so it makes perfect sense to include a PBT here.
 
-#### “after schedule vivas update, all vivas resources should have different availabilities, except the first schedule viva”
-Scheduling a viva implies that resources availabilities will be changed after the first update. This happens because the period of time where resources where available should now be removed for next viva to be scheduled. 
+#### “After schedule vivas update, all vivas resources should have different availabilities, except the first schedule viva”
+Scheduling a viva implies that resources availabilities will be changed after the first update. This happens because the period of time where resources were available should now be removed for next viva to be scheduled. 
 
-#### “all scheduled vivas duration must be equal to vivas duration”.
-When starting the algorithm, a duration for the vivas is specified and should be the same for the entire vivas. The algorithm is responsible to allocate this amount of time to a scheduled viva, but edge case in the time allocation might happen and cause a different allocated time. We want to make sure this never happens, so this property validates that no matter what, all scheduled vivas have the original specified time. Impossibility of allocating the amount of time to a single viva must cause the algorithm to fail instead.
-
-#### “when resources of a viva are available on the period of the viva, then a scheduled viva is always created”.
-This property is self explanatory and basically works as a corroboration for the algorithm. A succeeded run of this property validates the algorithm.
+#### “All scheduled vivas duration must be equal to vivas duration”.
+When starting the algorithm, a duration for the vivas is specified and should be the same for the all vivas. The algorithm is responsible to allocate this amount of time to a scheduled viva, but edge case in the time allocation might happen and cause a different allocated time. We want to make sure this never happens, so this property validates that no matter what, all scheduled vivas have the original specified time. Impossibility of allocating the amount of time to a single viva must cause the algorithm to fail instead.
 
 
-### Bugs found and actions steps to fix them
 
-During the development for this milestone 02, property based testing was at the core of our focus.
+### Bugs Found and Fix Actions Steps
+
+During the development for this milestone, property based testing was at the core of our focus.
 The following properties showed some issues with our domain for the previous milestones, and really corroborate the importance of using property based tests.
 We defined the following property: 
 
 #### “One resource cannot be overlapped in two scheduled viva”.
-The name is self explanatory, but we can dive into the details and say that in any circumstance the same resource can be simultaneously participating in two or more vivas.
+
+The name is self explanatory, but we can dive into the details and say that in any circumstance the same resource can't be simultaneously participating in two or more vivas.
 Following Allen’s linear algebra interval, our MS01 was correct but not covering all possible interception scenarios, leading to some failures during property based testing.
 Our code was covering overlapping scenarios, such as the following:
 
@@ -244,19 +247,25 @@ However, the following scenario was not covered.
 
 <center>Figure 8 - Allen's linear algebra definition of a contained overlap period.</center>
  
-In practical terms, when assessing the availability of the resources, the algorithm add a bug and would not consider a fully contained period as an intersection.
+In practical terms, when assessing the availability of the resources, the algorithm had a bug and would not consider a fully contained period as an intersection.
 The issue was fixed, and unit tests to cover this scenario were added.
 We took the decision to keep this scenario as a property based testing because as we found a bug from it, we consider it is valuable to remain as one for future development of the platform.
-Future requirements might require that we allocation of time periods is changed, and as a side effect another intersection issue would be inserted in the code without noticing. 
+Future requirements might require that the allocation of time periods is changed, and as a side effect another intersection issue would be inserted in the code without noticing. 
 We consider the presence of this property base test a good safety net with regards to the time period allocation for the resources.
 
-#### ("all scheduled vivas duration must be equal to vivas duration")
+#### "All scheduled vivas duration must be equal to vivas duration"
 
 When thinking about whether the above should be written as a property or not, we realized that this was easily tested on the domain model.
 Currently, a scheduled viva is created via a smart constructor that receives a viva, a calculated period duration and a schedule preference.
 The period is obtained by the algorithm, and by all means, will always the equal to the viva period received as a parameter, but if a programmer extended the code and called a scheduled viva directly with a different time period, we were allowing the viva to be scheduled, and that should not be the same.
 That validation was added to the domain, and is now prepared to send a Failure.
 Nevertheless, we decided to write a PBT for this scenario because we consider a domain validation for this is not enough. Further changes to the algorithm might cause the period allocation time to be calculated differently to the period of the actual viva, and if that side effect happens, it won’t be detected from a unit test. This PBT is our safety net for unwanted changes in the ecosystem of our algorithm.
+
+#### “All viva must be scheduled in the time intervals in which its resources are available”.
+
+When implementing this property and the primary implementation of all properties, the assessment facade for the MS01 algorithm was being called instead of the algorithm instead. This was intentional because, although that the unit being tested was the algorithm, the entrypoint in the application for it is the vivas parser (deserializer) and posteriorly the serializer. By using this primary approach, we noticed when implementing this property that if the vivas duration was 24h, or 86400 seconds, the serializer would mark it as `00:00:00`, and thus creating an inconsistency in the output. This occurs has the API being used to represent a duration in the serializer is `java.time.LocalTime`, that reacts in a strange way if receiving exactly the maximum time supported (86400 seconds), resetting the time to 0 seconds. After fixing this issue, we noticed that the deserializer also had this issue as it also uses the same API for deserializing the vivas duration.
+
+After fixing this issues, the property was up and running, but after adding a few more iterations (+100000 generations), it was detected that the generator `availabilitySequenceOf` was not generating availabilities if the time interval of the availability was less than 60 seconds. This was due to the generator measuring the time in minutes and not the actual minimum time unit for the domain, which is seconds. The problem was fixed and the property was up and running again. After running the property a few more times (+500000 generations), some generations were being able to produce the duration of less than 1 seconds (e.g. 500 nanoseconds), which is not allowed in the domain. Although that supposedly it was not allowed, the property was able to create the duration succesfully. After investigating the issue, we noticed that the duration smart constructor was not verifying if the incoming time representation was in seconds or not, meaning that although the time representation was not zero, in practice, it was as everything less than a seconds is 0 seconds. We added a new validation in the smart constructor to verify that the incoming time was in seconds and if so it was at least one second and fixed the generator to not produce time representations less than 1 second. Having these fixes applied, the property was now completely implemented and successful.
 
 
 ## Scheduling Algorithm Refinement with Resource Availability Preference Optimization (MS03)
