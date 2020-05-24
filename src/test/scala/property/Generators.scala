@@ -200,13 +200,6 @@ object Generators {
         .map(pair => Availability.create(pair._1, pair._2))
         .toList
     } yield group
-  /*
-  def genTeachersWith(availabilities: List[Availability], roles: List[Role], percentageFactor: Double) = for {
-    chunkSize <- availabilities.size * percentageFactor
-    ids <- Gen.listOfN(chunkSize, genNonEmptyString)
-    names <- Gen.listOfN(chunkSize, genNonEmptyString)
-    teachers <- Gen.listOf(genTeacherWith(availabilities, roles))
-  } yield teachers*/
 
   def genResourcesWith(availabilities: List[Availability],
                        roles: List[Role],
@@ -216,16 +209,6 @@ object Generators {
       genExternalsWith(availabilities, roles, minNumberOfResources)
     } else {
       genTeachersWith(availabilities, roles, minNumberOfResources)
-      /*val isToGenTeachers = for {
-        isToGenTeachers <- Gen.chooseNum(0, 1)
-      } yield isToGenTeachers
-
-      if (isToGenTeachers == 1) {
-        genTeachersWith(availabilities, roles, minNumberOfResources)
-      } else
-        // TODO: missing roles check
-        //genExternalsWith(availabilities, roles, minNumberOfResources)
-        genTeachersWith(availabilities, roles, minNumberOfResources)*/
     }
 
   }
