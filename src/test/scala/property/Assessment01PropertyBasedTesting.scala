@@ -6,6 +6,7 @@ import domain.model.{
   Duration,
   Jury,
   President,
+  Resource,
   Supervisor,
   Viva
 }
@@ -17,14 +18,19 @@ import domainSchedulerImpl.MS01Scheduler
 import org.scalacheck.Test.Parameters
 import xml.Functions
 
-object Assessment01PropertyBasedTesting extends Properties("") {
+object Assessment01PropertyBasedTesting
+    extends Properties("Assessment01PropertyBasedTesting") {
 
   override def overrideParameters(p: Parameters): Parameters =
     p.withMinSuccessfulTests(1000)
 
-  property(
-    "all viva must be scheduled in the time intervals in which its resources are available"
-  ) = {
+  val generateVivasScheduleInputsWith24HPeriodsOfTime: Gen[
+    (Duration,
+     List[Resource],
+     List[Resource],
+     List[List[Resource]],
+     List[List[Resource]])
+  ] = {
     val vivasDuration = for {
       durationPeriod <- Generators.genAtMost24HPeriodOfTime
       duration <- Duration.create(
@@ -67,10 +73,72 @@ object Assessment01PropertyBasedTesting extends Properties("") {
         supervisorsLength,
         Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
       )
+
     } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
+    vivasToScheduleGenerator
+  }
+
+  val generateVivasScheduleInputsWith60SPeriodsOfTime: Gen[
+    (Duration,
+     List[Resource],
+     List[Resource],
+     List[List[Resource]],
+     List[List[Resource]])
+  ] = {
+    val vivasDuration = for {
+      durationPeriod <- Generators.genAtMost60SPeriodOfTime
+      duration <- Duration.create(
+        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
+      )
+    } yield duration
+
+    val dateTimeNow = LocalDateTime.now()
+
+    val vivasToScheduleGenerator = for {
+      duration <- vivasDuration
+      availabilities <- Generators.genAvailabilitySequenceOf(
+        10,
+        dateTimeNow,
+        duration.get.timeDuration
+      )
+      presidents <- Generators.genResourcesWith(
+        availabilities,
+        List(President()),
+        2
+      )
+      advisers <- Generators.genResourcesWith(
+        availabilities,
+        List(Adviser()),
+        2
+      )
+      coAdvisersLength <- Gen.chooseNum(
+        0,
+        Math.min(presidents.length, advisers.length)
+      )
+      supervisorsLength <- Gen.chooseNum(
+        0,
+        Math.min(presidents.length, advisers.length)
+      )
+      coAdvisers <- Gen.listOfN(
+        coAdvisersLength,
+        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
+      )
+      supervisors <- Gen.listOfN(
+        supervisorsLength,
+        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
+      )
+    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
+
+    vivasToScheduleGenerator
+  }
+
+  property(
+    "all viva must be scheduled in the time intervals in which its resources are available"
+  ) = {
+
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith24HPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -119,53 +187,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   property(
     "totalPreference of scheduled vivas must always be equal to the sum of the individual vivas"
   ) = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost24HPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith24HPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -224,53 +248,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   }
 
   property("one resource cannot be overlapped in two scheduled viva") = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost24HPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith24HPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -339,52 +319,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   property(
     "even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available"
   ) = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost60SPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith60SPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -431,52 +368,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   }
 
   property("vivas scheduled should be in a First Come First Serve order") = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost24HPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith24HPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -532,52 +426,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   property(
     "after schedule vivas update, all vivas resources should be the same (same id)"
   ) = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost60SPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith60SPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -631,52 +482,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   property(
     "after schedule vivas update, all vivas resources should have different availabilities, except the first schedule viva"
   ) = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost24HPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith24HPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
@@ -749,53 +557,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
   }
 
   property("all scheduled vivas duration must be equal to vivas duration") = {
-    val vivasDuration = for {
-      durationPeriod <- Generators.genAtMost24HPeriodOfTime
-      duration <- Duration.create(
-        java.time.Duration.between(durationPeriod._1, durationPeriod._2)
-      )
-    } yield duration
-
-    val dateTimeNow = LocalDateTime.now()
-
-    val vivasToScheduleGenerator = for {
-      duration <- vivasDuration
-      availabilities <- Generators.genAvailabilitySequenceOf(
-        10,
-        dateTimeNow,
-        duration.get.timeDuration
-      )
-      presidents <- Generators.genResourcesWith(
-        availabilities,
-        List(President()),
-        2
-      )
-      advisers <- Generators.genResourcesWith(
-        availabilities,
-        List(Adviser()),
-        2
-      )
-      coAdvisersLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      supervisorsLength <- Gen.chooseNum(
-        0,
-        Math.min(presidents.length, advisers.length)
-      )
-      coAdvisers <- Gen.listOfN(
-        coAdvisersLength,
-        Generators.genResourcesWith(availabilities, List(CoAdviser()), 0)
-      )
-      supervisors <- Gen.listOfN(
-        supervisorsLength,
-        Generators.genResourcesWith(availabilities, List(Supervisor()), 0)
-      )
-
-    } yield (duration.get, presidents, advisers, coAdvisers, supervisors)
 
     Prop.forAll(
-      vivasToScheduleGenerator,
+      generateVivasScheduleInputsWith24HPeriodsOfTime,
       Generators.genName,
       Generators.genName
     ) { (arguments, student, title) =>
