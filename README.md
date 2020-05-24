@@ -204,7 +204,8 @@ This property is self explanatory and basically works as a corroboration for the
 During the development for this milestone 02, property based testing was at the core of our focus.
 The following properties showed some issues with our domain for the previous milestones, and really corroborate the importance of using property based tests.
 We defined the following property: 
-•	“One resource cannot be overlapped in two scheduled viva”.
+
+#### “One resource cannot be overlapped in two scheduled viva”.
 The name is self explanatory, but we can dive into the details and say that in any circumstance the same resource can be simultaneously participating in two or more vivas.
 Following Allen’s linear algebra interval, our MS01 was correct but not covering all possible interception scenarios, leading to some failures during property based testing.
 Our code was covering overlapping scenarios, such as the following:
@@ -238,6 +239,15 @@ The issue was fixed, and unit tests to cover this scenario were added.
 We took the decision to keep this scenario as a property based testing because as we found a bug from it, we consider it is valuable to remain as one for future development of the platform.
 Future requirements might require that we allocation of time periods is changed, and as a side effect another intersection issue would be inserted in the code without noticing. 
 We consider the presence of this property base test a good safety net with regards to the time period allocation for the resources.
+
+#### ("all scheduled vivas duration must be equal to vivas duration")
+
+When thinking about whether the above should be written as a property or not, we realized that this was easily tested on the domain model.
+Currently, a scheduled viva is created via a smart constructor that receives a viva, a calculated period duration and a schedule preference.
+The period is obtained by the algorithm, and by all means, will always the equal to the viva period received as a parameter, but if a programmer extended the code and called a scheduled viva directly with a different time period, we were allowing the viva to be scheduled, and that should not be the same.
+That validation was added to the domain, and is now prepared to send a Failure.
+Nevertheless, we decided to write a PBT for this scenario because we consider a domain validation for this is not enough. Further changes to the algorithm might cause the period allocation time to be calculated differently to the period of the actual viva, and if that side effect happens, it won’t be detected from a unit test. This PBT is our safety net for unwanted changes in the ecosystem of our algorithm.
+
 
 ## Scheduling Algorithm Refinement with Resource Availability Preference Optimization (MS03)
 
