@@ -53,6 +53,8 @@ The following table depicts the domain classes conceived and the validations ass
 |`Viva`| - Student name must not be null or empty - Title must not be null or empty - Duration length must not be negative or zero|
 |`Scheduled Viva`| - Period length must be greater than zero - All viva resources must be available on the viva realization period|
 
+<center>Table 1 - Conceived domain classes and their domain requirements</center>
+
 ## Vivas XML Document Parse
 
 In order to schedule the vivas, one must have these as input in the first place. For this current project milestone, the intended vivas input was a XML document with a specific schema as seen in code snippet 1.
@@ -175,13 +177,24 @@ We want to ensure that whatever comes from the left side of the scheduler, the o
 	
 In the following section we will go through the implemented properties, and further details will be given to explain how the above was achieved.
 
-### Implemented properties and explanation
+### Implemented Properties and Explanation
 
 In this section the implemented properties are listed and details about their implementation are explained.
 Implementing these properties required the creation of generators that are common to most properties below. These generators are used simultaneously in some of the properties, and are the ones responsible to generate the input data that will run on tests. Here we mostly concerned about the condition for the test to pass.
 
-Adicionar tabela a descrever geradores?
->>
+|Signature|Description|
+|---------|-----------|
+|`genId(prefix)`|Generates a unique resource identifier with a given prefix. Uses `Gen.uuid` to certify that the resource identifier is unique|
+|`genName`|Generates a valid name of a resource. Uses `Gen.identifier` to certify that the name has at least one character|
+|`genAtMost24HPeriodOfTime`|Generates a period a tuple of `LocalDateTime` that represents a time period with a maximum time period of 24 hours|
+|`genAtMost60SPeriodOfTime`|Generates a period a tuple of `LocalDateTime` that represents a time period with a maximum time period of 60 seconds|
+|`genPreferences(numberOfPreferences)`|Generates a list of preferences with length specified in `numberOfPreferences`|
+|`genAvailabilitySequenceOf(numberOfAvailability, startDateTime, duration)`|Generates a sequential list of availabilities that start on a datetime, each with a specific duration|
+|`genResourcesWith(availabilities, roles, minNumberOfResources)`|Generates a list of resources with at least the number specified in `minNumberOfResources` with the given roles and availabilities|
+|`generateVivasScheduleInputsWith24HPeriodsOfTime`|Generates resources and duration required for a viva schedule with a maximum time period of 24 hours|
+|`generateVivasScheduleInputsWith60SPeriodsOfTime`|Generates resources and duration required for a viva schedule with a maximum time period of 60 seconds|
+
+<center>Table 2 - Conceived generators for the implemented properties</center>
 
 #### “All viva must be scheduled in the time intervals in which its resources are available”.
 This property is the entirety of the algorithm. Given a set vivas and resources to be scheduled, every single viva should be transformed in a scheduled viva. The unavailability to schedule a viva should cause the algorithm to stop and fail the vivas schedule. After taking advantage of the generators to obtain all the required data to create unscheduled vivas and resources, the algorithm from milestone 01 is called. This property validates that given a set of vivas and resources that always have conditions to fill all the vivas, the scheduled vivas are created.
