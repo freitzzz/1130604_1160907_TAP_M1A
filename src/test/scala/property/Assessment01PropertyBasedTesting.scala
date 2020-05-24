@@ -109,16 +109,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           )
         )
 
-        val schedule = AssessmentMS01
-          .create(
-            Functions.serialize(
-              vivasDuration,
-              vivas.toList,
-              presidents ++ advisers ++ coAdvisers.flatten ++ supervisors.flatten
-            )
-          )
+        val schedule = MS01Scheduler.generateScheduledVivas(vivas.toList)
 
-        schedule.isSuccess
+        schedule.forall(_.isSuccess)
       }
     }
   }
@@ -430,16 +423,9 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           )
         )
 
-        val schedule = AssessmentMS01
-          .create(
-            Functions.serialize(
-              vivasDuration,
-              vivas.toList,
-              presidents ++ advisers ++ coAdvisers.flatten ++ supervisors.flatten
-            )
-          )
+        val schedule = MS01Scheduler.generateScheduledVivas(vivas.toList)
 
-        schedule.isSuccess
+        schedule.forall(_.isSuccess)
       }
     }
   }
@@ -742,17 +728,20 @@ object Assessment01PropertyBasedTesting extends Properties("") {
           .flatMap(resource => resource.availabilities)
 
         val remainingVivasResourcesAvailabilitiesAreDifferentThanTheScheduleOnes =
-          vivas.tail.zipWithIndex.forall(
-            pair =>
-              pair._1.jury.asResourcesSet.toList
-                .flatMap(resource => resource.availabilities) == scheduledVivas
-                .tail(pair._2)
-                .viva
-                .jury
-                .asResourcesSet
-                .toList
-                .flatMap(resource => resource.availabilities)
-          )
+          vivas
+            .drop(1)
+            .zipWithIndex
+            .forall(
+              pair =>
+                pair._1.jury.asResourcesSet.toList
+                  .flatMap(resource => resource.availabilities) == scheduledVivas
+                  .drop(1)(pair._2)
+                  .viva
+                  .jury
+                  .asResourcesSet
+                  .toList
+                  .flatMap(resource => resource.availabilities)
+            )
 
         firstVivaResourcesAvailabilitiesIsEqualToFirstScheduleVivaResourcesAvailabilities && remainingVivasResourcesAvailabilitiesAreDifferentThanTheScheduleOnes
       }
