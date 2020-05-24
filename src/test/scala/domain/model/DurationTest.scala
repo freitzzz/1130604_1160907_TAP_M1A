@@ -39,6 +39,22 @@ class DurationTest extends AnyFunSuite with Matchers {
 
   }
 
+  test("duration cannot be lower than 1 seconds") {
+
+    // Arrange
+
+    val timeDuration = time.Duration.ofNanos(500)
+
+    // Act
+
+    val duration = Duration.create(timeDuration)
+
+    // Assert
+
+    duration.isFailure shouldBe true
+
+  }
+
   test(
     "given a time duration that is higher than zero, then a valid duration can be produced"
   ) {
