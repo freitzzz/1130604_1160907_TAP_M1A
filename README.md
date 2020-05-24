@@ -168,21 +168,36 @@ In the following section we will go through the implemented properties, and furt
 
 In this section the implemented properties are listed and details about it’s implementation are explained.
 Implementing these properties required the creation of generators that are common to most properties below. These generators are used simultaneously in some of the properties, and are the ones responsible to generate the input data that will run on tests. Here we mostly concerned about the condition for the test to pass.
-•	“all viva must be scheduled in the time intervals in which its resources are available”.
-o	This property is the entirety of the algorithm. Given a set vivas and resources to be scheduled, every single viva should be transformed in a scheduled viva. The unavailability to scheduled only one viva should cause the algorithm to stop and not schedule any viva. After taking advantage of the generators to obtain all the required data to create unscheduled vivas and resources, the algorithm from milestone 01 is called. This property validates that given a set of vivas and resources that always have conditions to fill all the vivas, the scheduled vivas are created.
 
-•	“totalPreference of scheduled vivas must always be equal to the sum of the individual vivas”.
-o	When the algorithm schedules the vivas, a total preference value is saved. By business requirements, we know that this preference value should always be obtained by summing all the individual preferences values from each scheduled viva. Because it is very hard to validate this via unit tests, we decided to write a PBT for this.
+#### “all viva must be scheduled in the time intervals in which its resources are available”.
+This property is the entirety of the algorithm. Given a set vivas and resources to be scheduled, every single viva should be transformed in a scheduled viva. The unavailability to scheduled only one viva should cause the algorithm to stop and not schedule any viva. After taking advantage of the generators to obtain all the required data to create unscheduled vivas and resources, the algorithm from milestone 01 is called. This property validates that given a set of vivas and resources that always have conditions to fill all the vivas, the scheduled vivas are created.
 
-•	“one resource cannot be overlapped in two scheduled viva”.
-o	This property describes a relationship between domain classes that cannot be catched or tested via unit testing, so it makes perfect sense to include a PBT for this. We want to make sure that resources are never allocated to scheduled vivas that will occur simultaneously.
+#### “totalPreference of scheduled vivas must always be equal to the sum of the individual vivas”.
+When the algorithm schedules the vivas, a total preference value is saved. By business requirements, we know that this preference value should always be obtained by summing all the individual preferences values from each scheduled viva. Because it is very hard to validate this via unit tests, we decided to write a PBT for this.
 
-•	“even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available”.
-•	“vivas scheduled should be in a First Come First Serve order”.
-•	“after schedule vivas update, all vivas resources should be the same (same id)”
-•	“after schedule vivas update, all vivas resources should have different availabilities, except the first schedule viva”
-•	“all scheduled vivas duration must be equal to vivas duration”.
-•	“when resources of a viva are available on the period of the viva, then a scheduled viva is always created”.
+#### “one resource cannot be overlapped in two scheduled viva”.
+This property describes a relationship between domain classes that cannot be catched or tested via unit testing, so it makes perfect sense to include a PBT for this. We want to make sure that resources are never allocated to scheduled vivas that will occur simultaneously.
+
+#### “even if vivas take seconds to occur all viva must be scheduled in the time intervals in which its resources are available”.
+This PBT is mostly useful to validate an unusual, but still valid scenario of a viva being scheduled with a small duration, in this case, just a few seconds. This is useful to validate that the split logic of the resources availabilities work in any given circumstance.
+
+####  “vivas scheduled should be in a First Come First Serve order”.
+Right now the scheduler we have acts on a First come, first served order.
+When generating vivas, we know the order where they come from, so we can compare the order in an easy way and bullet prof the FCFS accuracy of the algorithm.
+
+#### “after schedule vivas update, all vivas resources should be the same (same id)”
+Scheduling a viva implies the creation of a complete new object representing the created scheduled viva.
+We want to make sure that no matter what, the list of resources is always the same, and we don’t allocate the wrong resources to the wrong vivas. This PBT ensures the viability of the algorithm by enforcing a rule where all resources of the scheduled viva should always correspond to the resources initially defined. This was not something that could be easily tested through domain validation before with just unit tests, so it makes perfect sense to include a PBT here.
+
+#### “after schedule vivas update, all vivas resources should have different availabilities, except the first schedule viva”
+Scheduling a viva implies that resources availabilities will be changed after the first update. This happens because the period of time where resources where available should now be removed for next viva to be scheduled. 
+
+#### “all scheduled vivas duration must be equal to vivas duration”.
+When starting the algorithm, a duration for the vivas is specified and should be the same for the entire vivas. The algorithm is responsible to allocate this amount of time to a scheduled viva, but edge case in the time allocation might happen and cause a different allocated time. We want to make sure this never happens, so this property validates that no matter what, all scheduled vivas have the original specified time. Impossibility of allocating the amount of time to a single viva must cause the algorithm to fail instead.
+
+#### “when resources of a viva are available on the period of the viva, then a scheduled viva is always created”.
+This property is self explanatory and basically works as a corroboration for the algorithm. A succeeded run of this property validates the algorithm.
+
 
 ### Bugs found and actions steps to fix them
 
