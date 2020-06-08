@@ -84,6 +84,7 @@ print(diffAndIntersect._1.size)
 
 println(diffAndIntersect._1)
 
+
 //diffAndIntersect._2.map(x => x.title)
 
 

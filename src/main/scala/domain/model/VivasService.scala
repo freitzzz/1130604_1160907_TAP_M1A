@@ -5,7 +5,7 @@ object VivasService {
   def differAndIntersect(vivas: List[Viva]): (Set[Viva], Set[Viva]) = {
 
     val vivasResources =
-      vivas.flatMap(x => x.jury.asResourcesSet.toList.map(y => y.id.s))
+      vivas.flatMap(x => x.jury.asResourcesSet.toList)
 
     val count = vivasResources.groupBy(identity).view.mapValues(_.size)
 
@@ -13,7 +13,7 @@ object VivasService {
 
     // TODO: Optimize
     val vivasWhichResourcesIntersect = vivas.filter(
-      _.jury.asResourcesSet.exists(r => intersects.toList.contains(r.id.s))
+      _.jury.asResourcesSet.exists(r => intersects.toList.contains(r))
     )
 
     (
