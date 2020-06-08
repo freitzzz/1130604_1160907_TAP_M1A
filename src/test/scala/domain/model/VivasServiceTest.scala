@@ -22,7 +22,8 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    val expectedDivision = (Set(), Set())
+    val expectedDivision =
+      ((Set[Viva](), List[Resource]()), (Set[Viva](), List[Resource]()))
 
     divisionVivasDifferenceAndIntersection == expectedDivision shouldBe true
 
@@ -166,9 +167,38 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    val expectedDivision = (Set(), Set(vivaX, vivaY, vivaZ, vivaW))
+    val expectedDivision = (
+      (
+        Set[Viva](),
+        List[Resource](
+          differentAdviserJuryX,
+          differentAdviserJuryY,
+          differentAdviserJuryZ,
+          differentAdviserJuryW
+        )
+      ),
+      (Set[Viva](vivaX, vivaY, vivaZ, vivaW), List[Resource](sharedPresident))
+    )
 
-    divisionVivasDifferenceAndIntersection == expectedDivision shouldBe true
+    val expectedDivisionVivas =
+      (expectedDivision._1._1, expectedDivision._2._1)
+
+    val actualDivisionVivas = (
+      divisionVivasDifferenceAndIntersection._1._1,
+      divisionVivasDifferenceAndIntersection._2._1
+    )
+
+    actualDivisionVivas == expectedDivisionVivas shouldBe true
+
+    divisionVivasDifferenceAndIntersection._1._2.size == expectedDivision._1._2.size shouldBe true
+
+    divisionVivasDifferenceAndIntersection._2._2.size == expectedDivision._2._2.size shouldBe true
+
+    divisionVivasDifferenceAndIntersection._2._2
+      .forall(expectedDivision._2._2.contains) shouldBe true
+
+    divisionVivasDifferenceAndIntersection._1._2
+      .forall(expectedDivision._1._2.contains) shouldBe true
 
   }
 
@@ -363,9 +393,43 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    val expectedDivision = (Set(vivaX, vivaY, vivaZ, vivaW), Set())
+    val expectedDivision =
+      (
+        (
+          Set[Viva](vivaX, vivaY, vivaZ, vivaW),
+          List[Resource](
+            differentPresidentJuryX,
+            differentPresidentJuryY,
+            differentPresidentJuryZ,
+            differentPresidentJuryW,
+            differentAdviserJuryX,
+            differentAdviserJuryY,
+            differentAdviserJuryW,
+            differentAdviserJuryZ
+          )
+        ),
+        (Set[Viva](), List[Resource]())
+      )
 
-    divisionVivasDifferenceAndIntersection == expectedDivision shouldBe true
+    val expectedDivisionVivas =
+      (expectedDivision._1._1, expectedDivision._2._1)
+
+    val actualDivisionVivas = (
+      divisionVivasDifferenceAndIntersection._1._1,
+      divisionVivasDifferenceAndIntersection._2._1
+    )
+
+    actualDivisionVivas == expectedDivisionVivas shouldBe true
+
+    divisionVivasDifferenceAndIntersection._1._2.size == expectedDivision._1._2.size shouldBe true
+
+    divisionVivasDifferenceAndIntersection._2._2.size == expectedDivision._2._2.size shouldBe true
+
+    divisionVivasDifferenceAndIntersection._2._2
+      .forall(expectedDivision._2._2.contains) shouldBe true
+
+    divisionVivasDifferenceAndIntersection._1._2
+      .forall(expectedDivision._1._2.contains) shouldBe true
 
   }
 
@@ -530,9 +594,40 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
 
     // Assert
 
-    val expectedDivision = (Set(vivaY), Set(vivaX, vivaZ, vivaW))
+    val expectedDivision =
+      (
+        (
+          Set[Viva](vivaY),
+          List[Resource](
+            sharedPresidentJuryY,
+            differentAdviserJuryX,
+            differentAdviserJuryY,
+            differentAdviserJuryZ,
+            differentAdviserJuryW,
+          )
+        ),
+        (Set[Viva](vivaX, vivaZ, vivaW), List[Resource](sharedPresidentJuryX))
+      )
 
-    divisionVivasDifferenceAndIntersection == expectedDivision shouldBe true
+    val expectedDivisionVivas =
+      (expectedDivision._1._1, expectedDivision._2._1)
+
+    val actualDivisionVivas = (
+      divisionVivasDifferenceAndIntersection._1._1,
+      divisionVivasDifferenceAndIntersection._2._1
+    )
+
+    actualDivisionVivas == expectedDivisionVivas shouldBe true
+
+    divisionVivasDifferenceAndIntersection._1._2.size == expectedDivision._1._2.size shouldBe true
+
+    divisionVivasDifferenceAndIntersection._2._2.size == expectedDivision._2._2.size shouldBe true
+
+    divisionVivasDifferenceAndIntersection._2._2
+      .forall(expectedDivision._2._2.contains) shouldBe true
+
+    divisionVivasDifferenceAndIntersection._1._2
+      .forall(expectedDivision._1._2.contains) shouldBe true
 
   }
 }

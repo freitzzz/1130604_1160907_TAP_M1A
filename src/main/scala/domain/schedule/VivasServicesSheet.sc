@@ -80,12 +80,15 @@ val diffAndIntersect = VivasService.differAndIntersect(vivas)
 
 //diffAndIntersect._1.map(x => x.title)
 
-print(diffAndIntersect._1.size)
+print(diffAndIntersect._1._1.size)
 
-println(diffAndIntersect._1)
+println(diffAndIntersect._1._1)
+println(diffAndIntersect._1._2)
 
 
 //diffAndIntersect._2.map(x => x.title)
 
+println(diffAndIntersect._2._1)
+println(diffAndIntersect._1._2)
 
-print(diffAndIntersect._2.size)
+print(diffAndIntersect._2._1.size)
