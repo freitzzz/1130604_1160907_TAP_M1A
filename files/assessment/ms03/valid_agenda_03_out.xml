@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../schedule.xsd"
+        totalPreference="90">
+
+    <viva student="Student 007" title="Title 7" start="2020-06-01T09:30:00" end="2020-06-01T11:00:00" preference="3">
+        <president name="Teacher 013"/>
+        <adviser name="Teacher 014"/>
+        <supervisor name="External 007"/>
+    </viva>
+    <viva student="Student 003" title="Title 3" start="2020-06-02T10:30:00" end="2020-06-02T12:00:00" preference="6">
+        <president name="Teacher 005"/>
+        <adviser name="Teacher 006"/>
+        <supervisor name="External 003"/>
+    </viva>
+    <viva student="Student 002" title="Title 2" start="2020-06-03T10:00:00" end="2020-06-03T11:30:00" preference="9">
+        <president name="Teacher 003"/>
+        <adviser name="Teacher 004"/>
+        <supervisor name="External 002"/>
+    </viva>
+    <viva student="Student 010" title="Title 10" start="2020-06-04T11:00:00" end="2020-06-04T12:30:00" preference="12">
+        <president name="Teacher 019"/>
+        <adviser name="Teacher 020"/>
+        <supervisor name="External 010"/>
+    </viva>
+    <viva student="Student 009" title="Title 9" start="2020-06-05T08:00:00" end="2020-06-05T09:30:00" preference="15">
+        <president name="Teacher 017"/>
+        <adviser name="Teacher 018"/>
+        <supervisor name="External 009"/>
+    </viva>
+    <viva student="Student 001" title="Title 1" start="2020-06-06T14:00:00" end="2020-06-06T15:30:00" preference="3">
+        <president name="Teacher 001"/>
+        <adviser name="Teacher 002"/>
+        <supervisor name="External 001"/>
+    </viva>
+    <viva student="Student 005" title="Title 5" start="2020-06-07T15:00:00" end="2020-06-07T16:30:00" preference="6">
+        <president name="Teacher 009"/>
+        <adviser name="Teacher 010"/>
+        <supervisor name="External 005"/>
+    </viva>
+    <viva student="Student 004" title="Title 4" start="2020-06-08T16:00:00" end="2020-06-08T17:30:00" preference="9">
+        <president name="Teacher 007"/>
+        <adviser name="Teacher 008"/>
+        <supervisor name="External 004"/>
+    </viva>
+    <viva student="Student 008" title="Title 8" start="2020-06-09T15:15:00" end="2020-06-09T16:45:00" preference="12">
+        <president name="Teacher 015"/>
+        <adviser name="Teacher 016"/>
+        <supervisor name="External 008"/>
+    </viva>
+    <viva student="Student 006" title="Title 6" start="2020-06-10T17:10:00" end="2020-06-10T18:40:00" preference="15">
+        <president name="Teacher 011"/>
+        <adviser name="Teacher 012"/>
+        <supervisor name="External 006"/>
+    </viva>
+</schedule>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../schedule.xsd"
+        totalPreference="21">
+    <viva student="Student 002" title="Title 2" start="2020-05-30T09:30:00" end="2020-05-30T10:30:00" preference="15">
+        <president name="Teacher 002"/>
+        <adviser name="Teacher 001"/>
+        <supervisor name="External 001"/>
+    </viva>
+    <viva student="Student 001" title="Title 1" start="2020-05-30T14:30:00" end="2020-05-30T15:30:00" preference="6">
+        <president name="Teacher 001"/>
+        <adviser name="Teacher 002"/>
+    </viva>
+</schedule>
