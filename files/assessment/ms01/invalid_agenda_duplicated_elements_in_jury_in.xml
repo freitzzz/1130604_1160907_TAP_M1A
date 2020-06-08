@@ -2,13 +2,8 @@
 <agenda xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         duration="01:00:00">
     <vivas>
-        <viva student="Student 001" title="Title 1">
+        <viva student="Hugo" title="TAP Milestone 1 presentation">
             <president id="T001"/>
-            <adviser id="T002"/>
-            <supervisor id="E001"/>
-        </viva>
-        <viva student="Student 002" title="Title 2">
-            <president id="T002"/>
             <adviser id="T001"/>
             <supervisor id="E001"/>
         </viva>
