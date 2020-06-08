@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<agenda 
+xsi:noNamespaceSchemaLocation="../../agenda.xsd" duration="01:45:00" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <vivas>
+        <viva student="V001" title="Title: V001">
+            <president id="T005"/>
+            <adviser id="T007"/>
+        </viva>
+        <viva student="V002" title="Title: V002">
+            <president id="T003"/>
+            <adviser id="T009"/>
+        </viva>
+        <viva student="V003" title="Title: V003">
+            <president id="T001"/>
+            <adviser id="T008"/>
+            <coadviser id="E006"/>
+        </viva>
+        <viva student="V004" title="Title: V004">
+            <president id="T006"/>
+            <adviser id="T003"/>
+        </viva>
+        <viva student="V005" title="Title: V005">
+            <president id="T003"/>
+            <adviser id="T002"/>
+            <coadviser id="T006"/>
+            <supervisor id="E006"/>
+        </viva>
+        <viva student="V006" title="Title: V006">
+            <president id="T008"/>
+            <adviser id="T003"/>
+        </viva>
+        <viva student="V007" title="Title: V007">
+            <president id="T007"/>
+            <adviser id="T004"/>
+            <supervisor id="E002"/>
+        </viva>
+        <viva student="V008" title="Title: V008">
+            <president id="T001"/>
+            <adviser id="T009"/>
+            <coadviser id="E003"/>
+            <supervisor id="E006"/>
+        </viva>
+        <viva student="V009" title="Title: V009">
+            <president id="T007"/>
+            <adviser id="T005"/>
+            <coadviser id="E002"/>
+            <supervisor id="E006"/>
+        </viva>
+        <viva student="V010" title="Title: V010">
+            <president id="T006"/>
+            <adviser id="T007"/>
+            <coadviser id="T008"/>
+        </viva>
+        <viva student="V011" title="Title: V011">
+            <president id="T006"/>
+            <adviser id="T010"/>
+            <coadviser id="T001"/>
+            <supervisor id="E008"/>
+        </viva>
+        <viva student="V012" title="Title: V012">
+            <president id="T007"/>
+            <adviser id="T003"/>
+        </viva>
+        <viva student="V013" title="Title: V013">
+            <president id="T007"/>
+            <adviser id="T003"/>
+        </viva>
+        <viva student="V014" title="Title: V014">
+            <president id="T008"/>
+            <adviser id="T009"/>
+            <coadviser id="T005"/>
+        </viva>
+        <viva student="V015" title="Title: V015">
+            <president id="T004"/>
+            <adviser id="T007"/>
+        </viva>
+        <viva student="V016" title="Title: V016">
+            <president id="T004"/>
+            <adviser id="T008"/>
+            <coadviser id="T007"/>
+        </viva>
+        <viva student="V017" title="Title: V017">
+            <president id="T003"/>
+            <adviser id="T006"/>
+        </viva>
+        <viva student="V018" title="Title: V018">
+            <president id="T008"/>
+            <adviser id="T009"/>
+            <coadviser id="T001"/>
+        </viva>
+        <viva student="V019" title="Title: V019">
+            <president id="T009"/>
+            <adviser id="T010"/>
+            <coadviser id="E006"/>
+            <supervisor id="E001"/>
+        </viva>
+        <viva student="V020" title="Title: V020">
+            <president id="T008"/>
+            <adviser id="T007"/>
+        </viva>
+    </vivas>
+    <resources>
+        <teachers>
+            <teacher id="T001" name="T001">
+                <availability start="2020-06-10T18:00:00" end="2020-06-10T19:45:00" preference="1"/>
+                <availability start="2020-06-13T08:57:00" end="2020-06-13T11:32:00" preference="1"/>
+                <availability start="2020-06-25T12:04:00" end="2020-06-25T14:39:00" preference="5"/>
+                <availability start="2020-06-16T15:01:00" end="2020-06-16T17:12:00" preference="3"/>
+            </teacher>
+            <teacher id="T002" name="T002">
+                <availability start="2020-06-30T14:54:00" end="2020-06-30T17:00:00" preference="1"/>
+            </teacher>
+            <teacher id="T003" name="T003">
+                <availability start="2020-06-03T13:05:00" end="2020-06-03T14:50:00" preference="5"/>
+                <availability start="2020-06-29T08:58:00" end="2020-06-29T10:43:00" preference="5"/>
+                <availability start="2020-06-30T14:54:00" end="2020-06-30T17:00:00" preference="1"/>
+                <availability start="2020-06-12T09:29:00" end="2020-06-12T11:14:00" preference="1"/>
+                <availability start="2020-06-01T08:41:00" end="2020-06-01T10:26:00" preference="1"/>
+                <availability start="2020-06-17T18:30:00" end="2020-06-17T20:15:00" preference="1"/>
+                <availability start="2020-06-27T18:52:00" end="2020-06-27T21:25:00" preference="4"/>
+            </teacher>
+            <teacher id="T004" name="T004">
+                <availability start="2020-06-11T08:02:00" end="2020-06-11T10:08:00" preference="1"/>
+                <availability start="2020-06-09T12:01:00" end="2020-06-09T14:36:00" preference="5"/>
+                <availability start="2020-06-08T17:00:00" end="2020-06-08T19:10:00" preference="5"/>
+            </teacher>
+            <teacher id="T005" name="T005">
+                <availability start="2020-06-15T08:08:00" end="2020-06-15T10:38:00" preference="4"/>
+                <availability start="2020-06-02T15:00:00" end="2020-06-02T17:35:00" preference="5"/>
+                <availability start="2020-06-22T14:46:00" end="2020-06-22T17:21:00" preference="5"/>
+            </teacher>
+            <teacher id="T006" name="T006">
+                <availability start="2020-06-29T08:58:00" end="2020-06-29T10:43:00" preference="5"/>
+                <availability start="2020-06-30T14:54:00" end="2020-06-30T17:00:00" preference="1"/>
+                <availability start="2020-06-19T18:51:00" end="2020-06-19T21:03:00" preference="5"/>
+                <availability start="2020-06-25T12:04:00" end="2020-06-25T14:39:00" preference="5"/>
+                <availability start="2020-06-27T18:52:00" end="2020-06-27T21:25:00" preference="4"/>
+            </teacher>
+            <teacher id="T007" name="T007">
+                <availability start="2020-06-15T08:08:00" end="2020-06-15T10:38:00" preference="4"/>
+                <availability start="2020-06-11T08:02:00" end="2020-06-11T10:08:00" preference="1"/>
+                <availability start="2020-06-02T15:00:00" end="2020-06-02T17:35:00" preference="5"/>
+                <availability start="2020-06-19T18:51:00" end="2020-06-19T21:03:00" preference="5"/>
+                <availability start="2020-06-01T08:41:00" end="2020-06-01T10:26:00" preference="1"/>
+                <availability start="2020-06-17T18:30:00" end="2020-06-17T20:15:00" preference="1"/>
+                <availability start="2020-06-09T12:01:00" end="2020-06-09T14:36:00" preference="5"/>
+                <availability start="2020-06-08T17:00:00" end="2020-06-08T19:10:00" preference="5"/>
+                <availability start="2020-06-14T15:43:00" end="2020-06-14T17:28:00" preference="5"/>
+            </teacher>
+            <teacher id="T008" name="T008">
+                <availability start="2020-06-10T18:00:00" end="2020-06-10T19:45:00" preference="1"/>
+                <availability start="2020-06-12T09:29:00" end="2020-06-12T11:14:00" preference="1"/>
+                <availability start="2020-06-19T18:51:00" end="2020-06-19T21:03:00" preference="5"/>
+                <availability start="2020-06-22T14:46:00" end="2020-06-22T17:21:00" preference="5"/>
+                <availability start="2020-06-08T17:00:00" end="2020-06-08T19:10:00" preference="5"/>
+                <availability start="2020-06-16T15:01:00" end="2020-06-16T17:12:00" preference="3"/>
+                <availability start="2020-06-14T15:43:00" end="2020-06-14T17:28:00" preference="5"/>
+            </teacher>
+            <teacher id="T009" name="T009">
+                <availability start="2020-06-03T13:05:00" end="2020-06-03T14:50:00" preference="5"/>
+                <availability start="2020-06-13T08:57:00" end="2020-06-13T11:32:00" preference="1"/>
+                <availability start="2020-06-22T14:46:00" end="2020-06-22T17:21:00" preference="5"/>
+                <availability start="2020-06-16T15:01:00" end="2020-06-16T17:12:00" preference="3"/>
+                <availability start="2020-06-21T10:00:00" end="2020-06-21T12:27:00" preference="1"/>
+            </teacher>
+            <teacher id="T010" name="T010">
+                <availability start="2020-06-13T08:50:00" end="2020-06-13T11:30:00" preference="2"/>
+                <availability start="2020-06-25T12:04:00" end="2020-06-25T14:39:00" preference="5"/>
+                <availability start="2020-06-21T10:00:00" end="2020-06-21T12:27:00" preference="1"/>
+            </teacher>
+        </teachers>
+        <externals>
+            <external id="E001" name="E001">
+                <availability start="2020-06-21T10:00:00" end="2020-06-21T12:27:00" preference="1"/>
+                <availability start="2020-06-25T12:04:00" end="2020-06-25T14:39:00" preference="5"/>
+            </external>
+            <external id="E002" name="E002">
+                <availability start="2020-06-11T08:02:00" end="2020-06-11T10:08:00" preference="1"/>
+                <availability start="2020-06-02T15:00:00" end="2020-06-02T17:35:00" preference="5"/>
+            </external>
+            <external id="E003" name="E003">
+                <availability start="2020-06-02T15:00:00" end="2020-06-02T17:35:00" preference="5"/>
+                <availability start="2020-06-13T08:57:00" end="2020-06-13T11:32:00" preference="1"/>
+            </external>
+            <external id="E006" name="E006">
+                <availability start="2020-06-10T18:00:00" end="2020-06-10T19:45:00" preference="1"/>
+                <availability start="2020-06-30T14:54:00" end="2020-06-30T17:00:00" preference="1"/>
+                <availability start="2020-06-13T08:57:00" end="2020-06-13T11:32:00" preference="1"/>
+                <availability start="2020-06-02T15:00:00" end="2020-06-02T17:35:00" preference="5"/>
+                <availability start="2020-06-21T10:00:00" end="2020-06-21T12:27:00" preference="1"/>
+            </external>
+            <external id="E008" name="E008">
+                <availability start="2020-06-13T08:50:00" end="2020-06-13T11:30:00" preference="2"/>
+                <availability start="2020-06-25T12:04:00" end="2020-06-25T14:39:00" preference="5"/>
+            </external>
+        </externals>
+    </resources>
+</agenda>
+
