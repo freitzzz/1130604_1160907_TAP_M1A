@@ -1,4 +1,4 @@
-import domain.model.{Adviser, Availability, CoAdviser, Duration, External, Jury, NonEmptyString, President, Resource, Supervisor, Teacher, Viva, VivasService}
+import domain.model._
 
 val v1 = Set[String]("T1", "T2", "T3", "E1")
 
@@ -81,7 +81,10 @@ val diffAndIntersect = VivasService.differAndIntersect(vivas)
 //diffAndIntersect._1.map(x => x.title)
 
 print(diffAndIntersect._1.size)
-print(1)
+
+println(diffAndIntersect._1)
+
 //diffAndIntersect._2.map(x => x.title)
+
 
 print(diffAndIntersect._2.size)
