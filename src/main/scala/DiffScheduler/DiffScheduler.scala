@@ -12,19 +12,21 @@ object DiffScheduler {
   }
 
   /*
-  In this method we go through the availabilites of the resources. We start by looking for the maxed preference of each resource.
-  The algorithm keeps looking to the next maxed availabilites until it finds a period of time where all resources are
+  In this method we go through the availabilities of the resources. We start by looking for the maxed preference of each resource.
+  The algorithm keeps looking to the next maxed availabilities until it finds a period of time where all resources are
   simultaneously available.
    */
   def findResourcesMaxedAvailability(viva: Viva): Option[Period] = {
-    val maxedPeriods = viva.jury.asResourcesSet
+
+    val resourcesSet = viva.jury.asResourcesSet
+
+    val maxedPeriods = resourcesSet
       .flatMap(resource => resource.availabilities)
       .toList
       .sortBy(x => x.preference.value)
       .reverse
-      .map(availability => availability.period)
-      .map(period => Period.create(period.start, period.start.plus(viva.duration.timeDuration)).get)
+      .map(availability => Period.create(availability.period.start, availability.period.start.plus(viva.duration.timeDuration)).get)
 
-    maxedPeriods.find(period => viva.jury.asResourcesSet.forall(resource => resource.isAvailableOn(period)))
+    maxedPeriods.find(period => resourcesSet.forall(resource => resource.isAvailableOn(period)))
   }
 }
