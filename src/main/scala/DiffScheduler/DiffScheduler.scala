@@ -17,11 +17,11 @@ object DiffScheduler {
   simultaneously available.
    */
   def findResourcesMaxedAvailability(viva: Viva): Option[Period] = {
-
     val maxedPeriods = viva.jury.asResourcesSet
       .flatMap(resource => resource.availabilities)
       .toList
       .sortBy(x => x.preference.value)
+      .reverse
       .map(availability => availability.period)
       .map(period => Period.create(period.start, period.start.plus(viva.duration.timeDuration)).get)
 
