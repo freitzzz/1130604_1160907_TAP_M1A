@@ -8,6 +8,15 @@ sealed abstract class Resource(val id: NonEmptyString,
                                val availabilities: List[Availability],
                                roles: List[Role]) {
 
+  // O(N)
+  def availabilitiesPossibleFor(vivaDuration: Duration): List[Availability] = {
+
+    availabilities.filter(
+      a => a.period.end.minus(vivaDuration.timeDuration) >= a.period.start
+    )
+
+  }
+
   def hasRole(role: Role): Boolean = this.roles.contains(role)
 
   def isAvailableOn(period: Period): Boolean =
