@@ -10,9 +10,8 @@ object ScheduledVivaService {
     val vivaResources = viva.jury.asResourcesSet
 
     val resourcesAvailabilitiesPeriodsPossibleForVivaDuration =
-      vivaResources.flatMap(
-        _.availabilitiesPossibleFor(vivaDuration).map(_.period)
-      )
+      vivaResources
+        .flatMap(_.availabilitiesPossibleFor(vivaDuration).map(_.period))
 
     resourcesAvailabilitiesPeriodsPossibleForVivaDuration.filter(
       period => vivaResources.forall(_.isAvailableOn(period))

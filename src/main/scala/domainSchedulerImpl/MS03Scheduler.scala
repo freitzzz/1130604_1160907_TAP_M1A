@@ -54,6 +54,8 @@ object MS03Scheduler extends DomainScheduler {
               val viva = value._3
               val period = value._2
 
+              println(value)
+
               val updatedVivas =
                 ScheduledVivaService.updateVivasAccordingToScheduledVivaPeriod(
                   viva.jury,
@@ -61,14 +63,13 @@ object MS03Scheduler extends DomainScheduler {
                   period
                 )
 
-              println(value)
-
               val scheduledViva = ScheduledViva
                 .create(viva, period)
 
               auxScheduleVivas(updatedVivas, scheduledViva :: scheduledVivas)
             case None =>
               // TODO: nao poder ser esta mensagem de erro, o head nao e utilizado
+              println("!")
               List[Try[ScheduledViva]](
                 Failure(
                   new IllegalStateException(
@@ -107,19 +108,29 @@ object MS03Scheduler extends DomainScheduler {
 
           possibleVivaPeriods.flatMap(period => {
 
+            val vivaPeriod = Period
+              .create(
+                period.start,
+                period.start.plus(headViva.duration.timeDuration)
+              )
+              .get
+
+            if (period.toString == "Period(2020-06-10T08:00,2020-06-10T10:05)" && headViva.duration.toString == "Duration(PT1H15M)")
+              println("!!!!!!!!!!!!")
+
             val sumOfPreferences = ScheduledVivaService
-              .calculateSumOfPreferences(vivaJuryAsResourcesSet, period)
+              .calculateSumOfPreferences(vivaJuryAsResourcesSet, vivaPeriod)
 
             val updatedVivas = ScheduledVivaService
               .updateVivasAccordingToScheduledVivaPeriod(
                 vivaJury,
                 tailVivas,
-                period
+                vivaPeriod
               )
 
             auxFindVivaThatHasTheBiggestSchedulePreference(
               updatedVivas,
-              tuples ++ List((sumOfPreferences, period, headViva))
+              tuples ++ List((sumOfPreferences, vivaPeriod, headViva))
             )
 
           })
@@ -135,7 +146,29 @@ object MS03Scheduler extends DomainScheduler {
         List[(Int, Period, Viva)]()
       )
 
-    maximizedVivas.sortBy(_._1).lastOption
+    println(maximizedVivas.count(_._1 == 15))
+
+    println(maximizedVivas.count(a => a._3.student.s == "V003" && a._1 == 15))
+
+    val a = maximizedVivas
+      .sortBy(_._1)
+      .reverse
+
+    a.headOption match {
+      case Some(value) => {
+        val biggestSumOfPreferences = value._1
+
+        a.filter(_._1 == biggestSumOfPreferences)
+          .sortBy(_._2.start)
+          .sortBy(_._3.title.s)
+          .headOption
+      }
+      case None => None
+    }
+
+    /*    println(a)
+
+    a*/
 
   }
 }
