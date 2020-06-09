@@ -655,4 +655,190 @@ class ResourceTest extends AnyFunSuite with Matchers {
 
   }
 
+  test(
+    "if the resource has no availabilities then availabilitiesPossibleFor returns an empty list"
+  ) {
+    // Arrange
+
+    val id = NonEmptyString.create("1").get
+
+    val name = NonEmptyString.create("John").get
+
+    val role = CoAdviser()
+
+    val availabilities = List[Availability]()
+
+    val roles = List[Role](role)
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val duration = Duration.create(java.time.Duration.ofMinutes(5)).get
+
+    // Act
+
+    val availabilitiesPossibleFor = external.availabilitiesPossibleFor(duration)
+
+    // Assert
+
+    availabilitiesPossibleFor shouldBe List()
+  }
+
+  test(
+    "if all resource availabilities periods have a duration of > 5 minutes then availabilitiesPossibleFor returns a list with all resource availabilities if the input duration is 5 minutes"
+  ) {
+    // Arrange
+
+    val id = NonEmptyString.create("1").get
+
+    val name = NonEmptyString.create("John").get
+
+    val role = CoAdviser()
+
+    val dateTimeNow = LocalDateTime.now()
+
+    val periodX =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(1)).get
+
+    val periodY =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(2)).get
+
+    val periodZ =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(3)).get
+
+    val preference = Preference.create(5).get
+
+    val availabilityX =
+      Availability.create(periodX, preference)
+
+    val availabilityY =
+      Availability.create(periodY, preference)
+
+    val availabilityZ =
+      Availability.create(periodZ, preference)
+
+    val availabilities =
+      List[Availability](availabilityX, availabilityY, availabilityZ)
+
+    val roles = List[Role](role)
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val duration = Duration.create(java.time.Duration.ofMinutes(5)).get
+
+    // Act
+
+    val availabilitiesPossibleFor = external.availabilitiesPossibleFor(duration)
+
+    // Assert
+
+    availabilitiesPossibleFor shouldBe List(
+      availabilityX,
+      availabilityY,
+      availabilityZ
+    )
+  }
+
+  test(
+    "if resource has X - 1 availabilities which periods are contained in a Y duration then availabilitiesPossibleFor returns a list with the X - 1 availabilities if the input duration is Y"
+  ) {
+    // Arrange
+
+    val id = NonEmptyString.create("1").get
+
+    val name = NonEmptyString.create("John").get
+
+    val role = CoAdviser()
+
+    val dateTimeNow = LocalDateTime.now()
+
+    val periodX =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(1)).get
+
+    val periodY =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(2)).get
+
+    val periodZ =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(4).plusSeconds(3)).get
+
+    val preference = Preference.create(5).get
+
+    val availabilityX =
+      Availability.create(periodX, preference)
+
+    val availabilityY =
+      Availability.create(periodY, preference)
+
+    val availabilityZ =
+      Availability.create(periodZ, preference)
+
+    val availabilities =
+      List[Availability](availabilityX, availabilityY, availabilityZ)
+
+    val roles = List[Role](role)
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val duration = Duration.create(java.time.Duration.ofMinutes(5)).get
+
+    // Act
+
+    val availabilitiesPossibleFor = external.availabilitiesPossibleFor(duration)
+
+    // Assert
+
+    availabilitiesPossibleFor shouldBe List(availabilityX, availabilityY)
+  }
+
+  test(
+    "if resource has X - 1 availabilities which periods are contained in a Y duration then availabilitiesPossibleFor returns a list with the X - 1 availabilities if the input duration is < than Y"
+  ) {
+    // Arrange
+
+    val id = NonEmptyString.create("1").get
+
+    val name = NonEmptyString.create("John").get
+
+    val role = CoAdviser()
+
+    val dateTimeNow = LocalDateTime.now()
+
+    val periodX =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(1)).get
+
+    val periodY =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(5).plusSeconds(2)).get
+
+    val periodZ =
+      Period.create(dateTimeNow, dateTimeNow.plusMinutes(4).plusSeconds(3)).get
+
+    val preference = Preference.create(5).get
+
+    val availabilityX =
+      Availability.create(periodX, preference)
+
+    val availabilityY =
+      Availability.create(periodY, preference)
+
+    val availabilityZ =
+      Availability.create(periodZ, preference)
+
+    val availabilities =
+      List[Availability](availabilityX, availabilityY, availabilityZ)
+
+    val roles = List[Role](role)
+
+    val external = External.create(id, name, availabilities, roles).get
+
+    val duration =
+      Duration.create(java.time.Duration.ofMinutes(5).minusSeconds(1)).get
+
+    // Act
+
+    val availabilitiesPossibleFor = external.availabilitiesPossibleFor(duration)
+
+    // Assert
+
+    availabilitiesPossibleFor shouldBe List(availabilityX, availabilityY)
+  }
+
 }
