@@ -28,9 +28,10 @@ object ScheduledViva {
         )
       )
     } else {
-      val sumOfPreferences = vivaJuryAsResourcesSet.toList
-        .flatMap(resource => resource.availabilityOn(period))
-        .foldLeft(0)(_ + _.preference.value)
+      val sumOfPreferences = ScheduledVivaService.calculateSumOfPreferences(
+        viva.jury.asResourcesSet,
+        period
+      )
 
       Success(new ScheduledViva(viva, period, sumOfPreferences) {})
     }
