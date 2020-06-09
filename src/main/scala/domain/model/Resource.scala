@@ -9,10 +9,12 @@ sealed abstract class Resource(val id: NonEmptyString,
                                roles: List[Role]) {
 
   // O(N)
-  def availabilitiesPossibleFor(vivaDuration: Duration): List[Availability] = {
+  def availabilitiesPossibleFor(duration: Duration): List[Availability] = {
 
     availabilities.filter(
-      a => a.period.end.minus(vivaDuration.timeDuration) >= a.period.start
+      availability =>
+        availability.period.end
+          .minus(duration.timeDuration) >= availability.period.start
     )
 
   }
