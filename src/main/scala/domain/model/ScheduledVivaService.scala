@@ -22,7 +22,7 @@ object ScheduledVivaService {
 
   def calculateSumOfPreferences(vivaJuryResources: Set[Resource],
                                 vivaPeriod: Period): Int = {
-    val sumOfPreferences = vivaJuryResources
+    val sumOfPreferences = vivaJuryResources.toList
       .flatMap(resource => resource.availabilityOn(vivaPeriod))
       .foldLeft(0)(_ + _.preference.value)
 

@@ -3,7 +3,6 @@ package domainSchedulerImpl
 import java.time.Duration
 
 import domain.model.{
-  Agenda,
   Availability,
   External,
   Jury,
@@ -14,10 +13,9 @@ import domain.model.{
   Viva
 }
 import domain.schedule.DomainScheduler
-import xml.Functions
 
 import scala.annotation.tailrec
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
 object MS01Scheduler extends DomainScheduler {
   override def generateScheduledVivas(

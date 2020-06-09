@@ -89,6 +89,8 @@ object MS03Scheduler extends DomainScheduler {
     vivas: List[Viva]
   ): Option[(Int, Period, Viva)] = {
 
+    // TODO: This has to be tail recursive
+
     def auxFindVivaThatHasTheBiggestSchedulePreference(
       vivas: List[Viva],
       tuples: List[(Int, Period, Viva)]

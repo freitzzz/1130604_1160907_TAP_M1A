@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<agenda xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../agenda.xsd"
-        duration="01:00:00">
+<agenda xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" duration="01:00:00">
     <vivas>
         <viva student="Student 001" title="Title 1">
             <president id="T001"/>
