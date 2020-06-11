@@ -135,7 +135,9 @@ object MS03Scheduler extends DomainScheduler {
       )
 
     // This might not be our desired option as we want the one with the best sum of schedule preferences & starts with less time & viva title is "less"
-    val bestSchedule = maximizedVivas.sortBy(_._6).lastOption
+    val bestSchedule = maximizedVivas
+      .sortBy(r => (-r._6, r._3.title.s))
+      .headOption
 
     bestSchedule match {
       case Some(value) => value._5
