@@ -1,5 +1,7 @@
 package domain.model
 
+import scala.util.Try
+
 object ScheduledVivaService {
 
   // O(N^3) = O(N^2) + O(N^3)
@@ -56,6 +58,43 @@ object ScheduledVivaService {
 
     updatedVivas
 
+  }
+
+  def ScheduleVivasIndividually(vivas: List[Viva]): List[Try[ScheduledViva]] = {
+
+    vivas.map(
+      viva =>
+        ScheduledViva.create(viva, findResourcesMaxedAvailability(viva).get)
+    )
+  }
+
+  /*
+  In this method we go through the availabilities of the resources. We start by looking for the maxed preference of each resource.
+  The algorithm keeps looking to the next maxed availabilities until it finds a period of time where all resources are
+  simultaneously available.
+   */
+  private def findResourcesMaxedAvailability(viva: Viva): Option[Period] = {
+
+    val resourcesSet = viva.jury.asResourcesSet
+
+    val maxedPeriods = resourcesSet
+      .flatMap(resource => resource.availabilities)
+      .toList
+      .sortBy(x => x.preference.value)
+      .reverse
+      .map(
+        availability =>
+          Period
+            .create(
+              availability.period.start,
+              availability.period.start.plus(viva.duration.timeDuration)
+            )
+            .get
+      )
+
+    maxedPeriods.find(
+      period => resourcesSet.forall(resource => resource.isAvailableOn(period))
+    )
   }
 
   private def updateViva(viva: Viva, updatedResources: List[Resource]) = {

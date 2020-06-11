@@ -22,7 +22,7 @@ object MS03Scheduler extends DomainScheduler {
     val diffAndIntersect = VivasService.differAndIntersect(vivas)
 
     //for the diff, simply calculate the best availability per resource and return it
-    val differencesViva = DiffScheduler.DiffScheduler.ScheduleVivasIndividually(
+    val differencesViva = ScheduledVivaService.ScheduleVivasIndividually(
       diffAndIntersect._1._1.toList
     )
 
@@ -36,7 +36,7 @@ object MS03Scheduler extends DomainScheduler {
 
     //List[Try[ScheduledViva]]()//remove this once code is completed
 
-    scheduledVivas
+    scheduledVivas ++ differencesViva
   }
 
   private def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
@@ -132,23 +132,4 @@ object MS03Scheduler extends DomainScheduler {
     }
 
   }
-
-  /*private def findTheActualVivaWithBestSumOfPreferencesMaximization(
-    vivasMaximizationTree: List[(Int, Period, Viva, Int, Long, Long)],
-    maxLevel: Int
-  ) = {
-
-    val levelOneNodes = vivasMaximizationTree.filter(n => n._4 == 1)
-
-    val levelsRange = 1.to(maxLevel + 1)
-
-    levelOneNodes.foreach(node => {
-
-      val allParentChildren = vivasMaximizationTree.filter(_._5 == node._5)
-
-      allParentChildren.map()
-
-    })
-
-  }*/
 }
