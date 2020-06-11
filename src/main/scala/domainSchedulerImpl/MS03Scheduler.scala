@@ -36,7 +36,18 @@ object MS03Scheduler extends DomainScheduler {
 
     //List[Try[ScheduledViva]]()//remove this once code is completed
 
-    scheduledVivas ++ differencesViva
+    val completeSchedule = scheduledVivas ++ differencesViva
+
+    // Order
+
+    completeSchedule.find(_.isFailure) match {
+      case Some(_) => completeSchedule
+      case None =>
+        completeSchedule.sortWith(
+          (a, b) => a.get.period.start.isBefore(b.get.period.start)
+        )
+    }
+
   }
 
   private def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
@@ -123,6 +134,7 @@ object MS03Scheduler extends DomainScheduler {
         List[(Int, Period, Viva, Int, List[Try[ScheduledViva]], Int)]()
       )
 
+    // This might not be our desired option as we want the one with the best sum of schedule preferences & starts with less time & viva title is "less"
     val bestSchedule = maximizedVivas.sortBy(_._6).lastOption
 
     bestSchedule match {
