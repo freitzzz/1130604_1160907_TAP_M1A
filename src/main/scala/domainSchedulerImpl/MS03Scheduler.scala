@@ -62,11 +62,10 @@ object MS03Scheduler extends DomainScheduler {
 
     def auxFindVivaThatHasTheBiggestSchedulePreference(
       vivas: List[Viva],
-      tuples: List[(Int, Period, Viva, Int, List[Try[ScheduledViva]], Int)],
-      level: Int = 0,
+      tuples: List[(List[Try[ScheduledViva]], Int)],
       previousTreeBranch: List[Try[ScheduledViva]] = List[Try[ScheduledViva]](),
       previousTreeSum: Int = 0
-    ): List[(Int, Period, Viva, Int, List[Try[ScheduledViva]], Int)] = {
+    ): List[(List[Try[ScheduledViva]], Int)] = {
 
       vivas match {
         case ::(headViva, tailVivas) =>
@@ -106,17 +105,7 @@ object MS03Scheduler extends DomainScheduler {
 
             auxFindVivaThatHasTheBiggestSchedulePreference(
               updatedVivas,
-              tuples ++ List(
-                (
-                  sumOfPreferences,
-                  vivaPeriod,
-                  headViva,
-                  level + 1,
-                  newTreeBranch,
-                  newTreeSum
-                )
-              ),
-              level + 1,
+              tuples ++ List((newTreeBranch, newTreeSum)),
               newTreeBranch,
               newTreeSum
             )
@@ -131,17 +120,32 @@ object MS03Scheduler extends DomainScheduler {
     val maximizedVivas =
       auxFindVivaThatHasTheBiggestSchedulePreference(
         vivas,
-        List[(Int, Period, Viva, Int, List[Try[ScheduledViva]], Int)]()
+        List[(List[Try[ScheduledViva]], Int)]()
       )
 
-    // This might not be our desired option as we want the one with the best sum of schedule preferences & starts with less time & viva title is "less"
-    val bestSchedule = maximizedVivas.sortBy(_._6).lastOption
+    val temp = maximizedVivas.sortBy(_._2).reverse
 
-    bestSchedule match {
-      case Some(value) => value._5
+    val maxSumOfSchedulePreferences = temp.headOption
+
+    maxSumOfSchedulePreferences match {
+      case Some(value) =>
+        maximizedVivas
+          .filter(_._2 == value._2)
+          .sortWith((a, b) => a._1.toString() < b._1.toString())
+          .headOption
+          .get
+          ._1
       case None =>
         List(Failure(new IllegalStateException("Couldn't find best schedule")))
     }
+    /*// This might not be our desired option as we want the one with the best sum of schedule preferences & starts with less time & viva title is "less"
+    val bestSchedule = maximizedVivas.sortBy(_._2).lastOption*/
+
+    /*bestSchedule match {
+      case Some(value) => value._1
+      case None =>
+        List(Failure(new IllegalStateException("Couldn't find best schedule")))
+    }*/
 
   }
 }
