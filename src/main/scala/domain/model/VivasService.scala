@@ -30,7 +30,6 @@ object VivasService {
     )
   }
 
-  // TODO: Need unit tests
   def findVivasThatShareTheSameJury(vivas: List[Viva]): Set[Viva] = {
 
     val vivasPerResourcesSet = vivas.groupBy(viva => viva.jury.asResourcesSet)
