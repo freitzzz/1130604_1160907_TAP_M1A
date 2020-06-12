@@ -300,7 +300,8 @@ class ScheduleVivaServiceTest extends AnyFunSuite with Matchers {
       )
 
     val updatedAvailabilities = newUpdatedVivas
-      .flatMap(x => x.jury.asResourcesSet)
+      .flatMap(x => x.jury.asResourcesSet) //T3, T1, E2
+      .filter(x => x.id == "T3" || x.id == "T1" || x.id == "E2")
       .flatMap(x => x.availabilities)
 
     //Assert
