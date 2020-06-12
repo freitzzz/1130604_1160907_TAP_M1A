@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<schedule
+        xsi:noNamespaceSchemaLocation="../../schedule.xsd" totalPreference="90" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <viva student="V001" title="Title: V001" start="2020-06-07T08:28:00" end="2020-06-07T11:13:00" preference="20">
+        <president name="T005"/>
+        <adviser name="T001"/>
+        <coadviser name="E002"/>
+        <supervisor name="E004"/>
+    </viva>
+    <viva student="V005" title="Title: V005" start="2020-06-07T09:44:00" end="2020-06-07T12:29:00" preference="12">
+        <president name="T009"/>
+        <adviser name="T010"/>
+        <coadviser name="E005"/>
+    </viva>
+    <viva student="V002" title="Title: V002" start="2020-06-09T16:00:00" end="2020-06-09T18:45:00" preference="3">
+        <president name="T003"/>
+        <adviser name="T004"/>
+        <coadviser name="E002"/>
+    </viva>
+    <viva student="V004" title="Title: V004" start="2020-06-14T18:52:00" end="2020-06-14T21:37:00" preference="15">
+        <president name="T002"/>
+        <adviser name="T001"/>
+        <supervisor name="E001"/>
+    </viva>
+    <viva student="V003" title="Title: V003" start="2020-06-17T12:01:00" end="2020-06-17T14:46:00" preference="3">
+        <president name="T003"/>
+        <adviser name="T005"/>
+        <coadviser name="T002"/>
+    </viva>
+    <viva student="V006" title="Title: V006" start="2020-06-20T08:56:00" end="2020-06-20T11:41:00" preference="15">
+        <president name="T008"/>
+        <adviser name="T009"/>
+        <supervisor name="E008"/>
+    </viva>
+    <viva student="V008" title="Title: V008" start="2020-06-24T18:02:00" end="2020-06-24T20:47:00" preference="16">
+        <president name="T007"/>
+        <adviser name="T009"/>
+        <coadviser name="T010"/>
+        <supervisor name="E005"/>
+    </viva>
+    <viva student="V007" title="Title: V007" start="2020-06-26T17:42:00" end="2020-06-26T20:27:00" preference="6">
+        <president name="T008"/>
+        <adviser name="T009"/>
+    </viva>
+</schedule>
+
