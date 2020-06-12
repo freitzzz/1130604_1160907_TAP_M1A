@@ -15,8 +15,20 @@ object ScheduledVivaService {
       vivaResources
         .flatMap(_.availabilitiesPossibleFor(vivaDuration).map(_.period))
 
+    // TODO: needs update of unit tests
+
     resourcesAvailabilitiesPeriodsPossibleForVivaDuration.filter(
-      period => vivaResources.forall(_.isAvailableOn(period))
+      period =>
+        vivaResources.forall(
+          _.isAvailableOn(
+            Period
+              .create(
+                period.start,
+                period.start.plus(vivaDuration.timeDuration)
+              )
+              .get
+          )
+      )
     )
 
   }
