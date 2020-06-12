@@ -630,4 +630,195 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
       .forall(expectedDivision._1._2.contains) shouldBe true
 
   }
+
+  test(
+    "given a list of vivas where there are vivas that share the same exact resources, then a set with those vivas should be returned and should never be empty when calling findVivasThatShareTheSameJury"
+  ) {
+    val resourcesAvailabilityPeriod = Period
+      .create(LocalDateTime.now(), LocalDateTime.now().plusMinutes(10))
+      .get
+
+    val resourcesAvailabilityPreference = Preference.create(5).get
+
+    val sharedPresidentBetweenViva1AndViva2 = Teacher
+      .create(
+        NonEmptyString.create("T001").get,
+        NonEmptyString.create("President #1").get,
+        List(
+          Availability
+            .create(
+              resourcesAvailabilityPeriod,
+              resourcesAvailabilityPreference
+            )
+        ),
+        List(President())
+      )
+      .get
+
+    val sharedAdviserBetweenViva1AndViva2 = Teacher
+      .create(
+        NonEmptyString.create("T002").get,
+        NonEmptyString.create("Adviser #1").get,
+        List(
+          Availability
+            .create(
+              resourcesAvailabilityPeriod,
+              resourcesAvailabilityPreference
+            )
+        ),
+        List(Adviser())
+      )
+      .get
+
+    val juryViva1 =
+      Jury
+        .create(
+          sharedPresidentBetweenViva1AndViva2,
+          sharedAdviserBetweenViva1AndViva2,
+          List(),
+          List()
+        )
+        .get
+
+    val juryViva2 =
+      Jury
+        .create(
+          sharedPresidentBetweenViva1AndViva2,
+          sharedAdviserBetweenViva1AndViva2,
+          List(),
+          List()
+        )
+        .get
+
+    val vivasDuration = Duration.create(java.time.Duration.ofMinutes(5)).get
+
+    val viva1 = Viva.create(
+      NonEmptyString.create("Student #1").get,
+      NonEmptyString.create("Viva 1").get,
+      juryViva1,
+      vivasDuration
+    )
+
+    val viva2 = Viva.create(
+      NonEmptyString.create("Student #2").get,
+      NonEmptyString.create("Viva 2").get,
+      juryViva2,
+      vivasDuration
+    )
+
+    val vivas = List[Viva](viva1, viva2)
+
+    //Act
+
+    val vivasThatShareTheSameResources =
+      VivasService.findVivasThatShareTheSameJury(vivas)
+
+    //Assert
+
+    vivasThatShareTheSameResources.size shouldBe 2
+
+  }
+
+  test(
+    "given a list of vivas that never share the same exact resources, then when calling findVivasThatShareTheSameJury an empty set should be returned"
+  ) {
+
+    val resourcesAvailabilityPeriod = Period
+      .create(LocalDateTime.now(), LocalDateTime.now().plusMinutes(10))
+      .get
+
+    val resourcesAvailabilityPreference = Preference.create(5).get
+
+    val sharedPresidentBetweenViva1AndViva2 = Teacher
+      .create(
+        NonEmptyString.create("T001").get,
+        NonEmptyString.create("President #1").get,
+        List(
+          Availability
+            .create(
+              resourcesAvailabilityPeriod,
+              resourcesAvailabilityPreference
+            )
+        ),
+        List(President())
+      )
+      .get
+
+    val adviserExclusiveToViva1 = Teacher
+      .create(
+        NonEmptyString.create("T002").get,
+        NonEmptyString.create("Adviser #1").get,
+        List(
+          Availability
+            .create(
+              resourcesAvailabilityPeriod,
+              resourcesAvailabilityPreference
+            )
+        ),
+        List(Adviser())
+      )
+      .get
+
+    val adviserExclusiveToViva2 = Teacher
+      .create(
+        NonEmptyString.create("T003").get,
+        NonEmptyString.create("Adviser #2").get,
+        List(
+          Availability
+            .create(
+              resourcesAvailabilityPeriod,
+              resourcesAvailabilityPreference
+            )
+        ),
+        List(Adviser())
+      )
+      .get
+
+    val juryViva1 =
+      Jury
+        .create(
+          sharedPresidentBetweenViva1AndViva2,
+          adviserExclusiveToViva1,
+          List(),
+          List()
+        )
+        .get
+
+    val juryViva2 =
+      Jury
+        .create(
+          sharedPresidentBetweenViva1AndViva2,
+          adviserExclusiveToViva2,
+          List(),
+          List()
+        )
+        .get
+
+    val vivasDuration = Duration.create(java.time.Duration.ofMinutes(5)).get
+
+    val viva1 = Viva.create(
+      NonEmptyString.create("Student #1").get,
+      NonEmptyString.create("Viva 1").get,
+      juryViva1,
+      vivasDuration
+    )
+
+    val viva2 = Viva.create(
+      NonEmptyString.create("Student #2").get,
+      NonEmptyString.create("Viva 2").get,
+      juryViva2,
+      vivasDuration
+    )
+
+    val vivas = List[Viva](viva1, viva2)
+
+    //Act
+
+    val vivasThatShareTheSameResources =
+      VivasService.findVivasThatShareTheSameJury(vivas)
+
+    //Assert
+
+    vivasThatShareTheSameResources.size shouldBe 0
+  }
 }
