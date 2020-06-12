@@ -7,6 +7,5 @@ class AssessmentMS03Test extends AnyFunSuite with AssessmentBehaviours {
 
   val PATH = "files/assessment/ms03" // Assessment file path
 
-  // TODO: Uncomment on MS03
-  //performTests(create)
+  performTests(create)
 }
