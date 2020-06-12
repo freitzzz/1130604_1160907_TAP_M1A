@@ -64,5 +64,21 @@ object AssessmentMS03 extends Schedule {
 }
 
 object CustomAssessmentMS03 extends Schedule {
-  def create(xml: Elem): Try[Elem] = ???
+  def create(xml: Elem): Try[Elem] = {
+    val vivasParse = Functions.deserialize(xml)
+
+    vivasParse match {
+      case Failure(exception) => Failure(exception)
+      case Success(value) =>
+        val vivas = value
+
+        val scheduledVivas = MS03Scheduler.generateScheduledVivas(vivas)
+
+        scheduledVivas.find(_.isFailure) match {
+          case Some(value) => Failure(value.failed.get)
+          case None =>
+            Success(Functions.serialize(Agenda(scheduledVivas.map(_.get))))
+        }
+    }
+  }
 }
