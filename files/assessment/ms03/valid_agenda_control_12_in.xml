@@ -81,7 +81,6 @@
                 <availability start="2020-06-25T12:01:00" end="2020-06-25T15:20:00" preference="1"/>
                 <availability start="2020-06-29T18:59:00" end="2020-06-29T22:19:00" preference="2"/>
                 <availability start="2020-06-09T08:41:00" end="2020-06-09T12:01:00" preference="1"/>
-                <availability start="2020-06-29T18:59:00" end="2020-06-29T22:05:00" preference="4"/>
             </teacher>
             <teacher id="T008" name="T008">
                 <availability start="2020-06-03T08:01:00" end="2020-06-03T11:21:00" preference="1"/>
