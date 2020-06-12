@@ -1,7 +1,9 @@
 package domainSchedulerImpl
 
 import domain.model.{
+  Jury,
   Period,
+  Resource,
   ScheduledViva,
   ScheduledVivaService,
   Viva,
@@ -9,7 +11,8 @@ import domain.model.{
 }
 import domain.schedule.DomainScheduler
 
-import scala.util.{Failure, Try}
+import scala.annotation.tailrec
+import scala.util.{Failure, Success, Try}
 
 object MS03Scheduler extends DomainScheduler {
   override def generateScheduledVivas(
@@ -19,15 +22,18 @@ object MS03Scheduler extends DomainScheduler {
     val diffAndIntersect = VivasService.differAndIntersect(vivas)
 
     //for the diff, simply calculate the best availability per resource and return it
-    val differencesViva = ScheduledVivaService.ScheduleVivasIndividually(
+    val isolatedScheduledVivas = ScheduledVivaService.ScheduleVivasIndividually(
       diffAndIntersect._1._1.toList
     )
 
     //for the intersect, apply algorithm
 
-    val scheduledVivas = scheduleVivas(diffAndIntersect._2._1.toList)
+    val sharedScheduledVivas =
+      if (diffAndIntersect._2._1.nonEmpty)
+        scheduleVivasThatShareResources(diffAndIntersect._2._1.toList)
+      else List()
 
-    val completeSchedule = scheduledVivas ++ differencesViva
+    val completeSchedule = sharedScheduledVivas ++ isolatedScheduledVivas
 
     // Order
 
@@ -41,15 +47,15 @@ object MS03Scheduler extends DomainScheduler {
 
   }
 
-  private def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
+  private def scheduleVivasThatShareResources(
+    vivas: List[Viva]
+  ): List[Try[ScheduledViva]] = {
     findScheduleThatHasTheBiggestSumOfSchedulePreference(vivas)
   }
 
   private def findScheduleThatHasTheBiggestSumOfSchedulePreference(
     vivas: List[Viva]
   ): List[Try[ScheduledViva]] = {
-
-    // TODO: This has to be tail recursive
 
     def auxFindVivaThatHasTheBiggestSchedulePreference(
       vivas: List[Viva],
@@ -67,43 +73,81 @@ object MS03Scheduler extends DomainScheduler {
           val vivaJury = headViva.jury
           val vivaJuryAsResourcesSet = vivaJury.asResourcesSet
 
-          possibleVivaPeriods.flatMap(period => {
-
-            val vivaPeriod = Period
-              .create(
-                period.start,
-                period.start.plus(headViva.duration.timeDuration)
-              )
-              .get
-
-            val sumOfPreferences = ScheduledVivaService
-              .calculateSumOfPreferences(vivaJuryAsResourcesSet, vivaPeriod)
-
-            val updatedVivas = ScheduledVivaService
-              .updateVivasAccordingToScheduledVivaPeriod(
-                vivaJury,
-                tailVivas,
-                vivaPeriod
-              )
-
-            val newTreeBranch = previousTreeBranch ++ List[Try[ScheduledViva]](
-              ScheduledViva.create(headViva, vivaPeriod)
-            )
-
-            val newTreeSum = previousTreeSum + sumOfPreferences
-
-            auxFindVivaThatHasTheBiggestSchedulePreference(
-              updatedVivas,
-              tuples ++ List((newTreeBranch, newTreeSum)),
-              newTreeBranch,
-              newTreeSum
-            )
-
-          })
+          scheduleVivaItsPossiblePeriods(
+            possibleVivaPeriods,
+            headViva,
+            vivaJuryAsResourcesSet,
+            vivaJury,
+            tailVivas,
+            tuples,
+            previousTreeBranch,
+            previousTreeSum,
+            List()
+          )
 
         case Nil => tuples.reverse
       }
 
+    }
+
+    @tailrec
+    def scheduleVivaItsPossiblePeriods(
+      periods: List[Period],
+      headViva: Viva,
+      vivaJuryAsResourcesSet: Set[Resource],
+      vivaJury: Jury,
+      tailVivas: List[Viva],
+      tuples: List[(List[Try[ScheduledViva]], Int)],
+      previousTreeBranch: List[Try[ScheduledViva]],
+      previousTreeSum: Int,
+      scheduledVivas: List[(List[Try[ScheduledViva]], Int)]
+    ): List[(List[Try[ScheduledViva]], Int)] = {
+      periods match {
+        case ::(period, next) =>
+          val vivaPeriod = Period
+            .create(
+              period.start,
+              period.start.plus(headViva.duration.timeDuration)
+            )
+            .get
+
+          val sumOfPreferences = ScheduledVivaService
+            .calculateSumOfPreferences(vivaJuryAsResourcesSet, vivaPeriod)
+
+          val updatedVivas = ScheduledVivaService
+            .updateVivasAccordingToScheduledVivaPeriod(
+              vivaJury,
+              tailVivas,
+              vivaPeriod
+            )
+
+          val newTreeBranch = previousTreeBranch ++ List[Try[ScheduledViva]](
+            ScheduledViva.create(headViva, vivaPeriod)
+          )
+
+          val newTreeSum = previousTreeSum + sumOfPreferences
+
+          val temp = auxFindVivaThatHasTheBiggestSchedulePreference(
+            updatedVivas,
+            tuples ++ List((newTreeBranch, newTreeSum)),
+            newTreeBranch,
+            newTreeSum
+          )
+
+          scheduleVivaItsPossiblePeriods(
+            next,
+            headViva,
+            vivaJuryAsResourcesSet,
+            vivaJury,
+            tailVivas,
+            tuples,
+            previousTreeBranch,
+            previousTreeSum,
+            scheduledVivas ++ temp
+          )
+
+        case Nil => scheduledVivas.reverse
+      }
     }
 
     val maximizedVivas =
@@ -117,19 +161,33 @@ object MS03Scheduler extends DomainScheduler {
 
     maxSumOfSchedulePreferences match {
       case Some(value) =>
-        maximizedVivas
-          .filter(_._2 == value._2)
-          .filter(tuple => !tuple._1.exists(_.isFailure))
-          .sortWith((a, b) => a._1.toString() < b._1.toString())
-          .headOption
-          .get
-          ._1
+        val vivasScheduleCombinationsWithHighestSumOfPreferences =
+          maximizedVivas
+            .filter(_._2 == value._2)
+            .filter(tuple => !tuple._1.exists(_.isFailure))
+            .map(_._1.map(_.get).sortBy(_.viva.title.s))
+
+        val vivasThatShareSameJury =
+          VivasService.findVivasThatShareTheSameJury(vivas)
+
+        val scheduledVivas = if (vivasThatShareSameJury.isEmpty) {
+
+          vivasScheduleCombinationsWithHighestSumOfPreferences.headOption.get
+
+        } else {
+
+          // if any vivas being scheduled share the same jury, then the picking of the best scheduled preference
+          // must be based on the order of the vivas input
+
+          vivasScheduleCombinationsWithHighestSumOfPreferences
+            .map(c => c.sortBy(sc => -sc.scheduledPreference))
+            .find(_.headOption.get.viva.title == vivas.headOption.get.title)
+            .get
+        }
+
+        scheduledVivas.map(Success(_))
       case None =>
-        List(
-          Failure(
-            new IllegalStateException("No shared vivas could be scheduled.")
-          )
-        )
+        List(Failure(new IllegalStateException("Schedule is impossible")))
     }
 
   }

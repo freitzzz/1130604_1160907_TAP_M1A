@@ -14,7 +14,7 @@ import domain.model.{
   Viva
 }
 import domain.schedule._
-import domainSchedulerImpl.MS01Scheduler
+import domainSchedulerImpl.{MS01Scheduler, MS03Scheduler}
 import xml.Functions
 
 import scala.annotation.tailrec
@@ -44,7 +44,23 @@ object AssessmentMS01 extends Schedule {
 
 object AssessmentMS03 extends Schedule {
   // TODO: Use the functions in your own code to implement the assessment of ms03
-  def create(xml: Elem): Try[Elem] = ???
+  def create(xml: Elem): Try[Elem] = {
+    val vivasParse = Functions.deserialize(xml)
+
+    vivasParse match {
+      case Failure(exception) => Failure(exception)
+      case Success(value) =>
+        val vivas = value
+
+        val scheduledVivas = MS03Scheduler.generateScheduledVivas(vivas)
+
+        scheduledVivas.find(_.isFailure) match {
+          case Some(value) => Failure(value.failed.get)
+          case None =>
+            Success(Functions.serialize(Agenda(scheduledVivas.map(_.get))))
+        }
+    }
+  }
 }
 
 object CustomAssessmentMS03 extends Schedule {

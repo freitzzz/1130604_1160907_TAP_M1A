@@ -29,4 +29,13 @@ object VivasService {
       (vivasWhichResourcesIntersect.toSet, intersects)
     )
   }
+
+  // TODO: Need unit tests
+  def findVivasThatShareTheSameJury(vivas: List[Viva]): Set[Viva] = {
+
+    val vivasPerResourcesSet = vivas.groupBy(viva => viva.jury.asResourcesSet)
+
+    vivasPerResourcesSet.filter(_._2.size != 1).flatMap(_._2).toSet
+
+  }
 }
