@@ -258,9 +258,10 @@ object Functions {
   def serialize(agenda: Agenda): Elem = {
 
     val xml =
-      <schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" totalPreference={agenda.scheduledVivas.foldLeft(0)(_ + _.scheduledPreference).toString}>
+      <schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="../../schedule.xsd"
+              totalPreference={agenda.scheduledVivas.foldLeft(0)(_ + _.scheduledPreference).toString}>
         {agenda.scheduledVivas.map(serializeScheduledViva)}
-      </schedule>
+    </schedule>
 
     xml
 
@@ -406,7 +407,7 @@ object Functions {
     val coAdvisersXML =
       jury.coAdvisers.map(coAdviser => <coadviser name={coAdviser.name.s}/>)
 
-    List(presidentXML, adviserXML, supervisorsXML, coAdvisersXML).flatten
+    List(presidentXML, adviserXML, coAdvisersXML, supervisorsXML).flatten
 
   }
 
