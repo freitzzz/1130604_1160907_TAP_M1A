@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<schedule 
+xsi:noNamespaceSchemaLocation="../../schedule.xsd" totalPreference="33" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <viva student="V001" title="Title: V001" start="2020-06-12T08:00:00" end="2020-06-12T09:15:00" preference="9">
+        <president name="T001"/>
+        <adviser name="T002"/>
+        <supervisor name="E001"/>
+    </viva>
+    <viva student="V002" title="Title: V002" start="2020-06-16T08:00:00" end="2020-06-16T09:15:00" preference="12">
+        <president name="T003"/>
+        <adviser name="T002"/>
+        <coadviser name="E002"/>
+    </viva>
+    <viva student="V003" title="Title: V003" start="2020-06-16T08:00:00" end="2020-06-16T09:15:00" preference="12">
+        <president name="T001"/>
+        <adviser name="T004"/>
+        <coadviser name="E003"/>
+    </viva>
+</schedule>
+
