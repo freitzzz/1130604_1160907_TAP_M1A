@@ -46,3 +46,7 @@ object AssessmentMS03 extends Schedule {
   // TODO: Use the functions in your own code to implement the assessment of ms03
   def create(xml: Elem): Try[Elem] = ???
 }
+
+object CustomAssessmentMS03 extends Schedule {
+  def create(xml: Elem): Try[Elem] = ???
+}
