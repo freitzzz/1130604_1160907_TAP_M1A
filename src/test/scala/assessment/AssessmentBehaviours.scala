@@ -47,6 +47,7 @@ trait AssessmentBehaviours {
   }
 
   private def testFile(f: File, ms: Elem => Try[Elem]): (File, Try[Boolean]) = {
+
     val tout = for {
       ixml <- load(f) // load input file
       oxml <- ms(ixml) // convert input file into output file

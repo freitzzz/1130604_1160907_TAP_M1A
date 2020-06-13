@@ -13,7 +13,7 @@ abstract case class Jury private (president: Resource,
     president.hashCode() + adviser.hashCode() + supervisors
       .hashCode() + coAdvisers.hashCode()
 
-  def asResourcesSet: Set[Resource] = {
+  lazy val asResourcesSet: Set[Resource] = {
     val supervisorSet = supervisors.toSet
     val coAdvisersSet = coAdvisers.toSet
     val presidentsSet = Set(president)
