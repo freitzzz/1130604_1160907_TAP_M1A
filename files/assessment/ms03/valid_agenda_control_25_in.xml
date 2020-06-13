@@ -76,7 +76,6 @@
             </teacher>
             <teacher id="T006" name="T006">
                 <availability start="2020-06-14T08:12:00" end="2020-06-14T11:47:00" preference="2"/>
-                <availability start="2020-06-16T18:02:00" end="2020-06-16T21:05:00" preference="1"/>
                 <availability start="2020-06-15T17:47:00" end="2020-06-15T20:32:00" preference="4"/>
                 <availability start="2020-06-16T18:01:00" end="2020-06-16T21:26:00" preference="1"/>
             </teacher>
