@@ -6,5 +6,5 @@ import scala.util.Try
 
 trait DomainScheduler {
 
-  def generateScheduledVivas(vivas: List[Viva]): List[Try[ScheduledViva]]
+  def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]]
 }

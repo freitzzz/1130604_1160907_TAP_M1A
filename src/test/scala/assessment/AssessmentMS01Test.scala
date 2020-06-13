@@ -1,7 +1,7 @@
 package assessment
 
-import org.scalatest.funsuite.AnyFunSuite
 import assessment.AssessmentMS01.create
+import org.scalatest.funsuite.AnyFunSuite
 
 class AssessmentMS01Test extends AnyFunSuite with AssessmentBehaviours {
 

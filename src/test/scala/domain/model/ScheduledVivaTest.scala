@@ -163,7 +163,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val vivaDuration = Duration.create(time.Duration.ofHours(1)).get
+    val vivaDuration = Duration.create(time.Duration.ofMinutes(5)).get
 
     val viva = Viva.create(student, title, jury, vivaDuration)
 
@@ -253,7 +253,7 @@ class ScheduledVivaTest extends AnyFunSuite with Matchers {
 
     val jury = Jury.create(president, adviser, List.empty, List.empty).get
 
-    val vivaDuration = Duration.create(time.Duration.ofHours(1)).get
+    val vivaDuration = Duration.create(time.Duration.ofMinutes(5)).get
 
     val viva = Viva.create(student, title, jury, vivaDuration)
 
