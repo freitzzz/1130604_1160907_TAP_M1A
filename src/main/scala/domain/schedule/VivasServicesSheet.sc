@@ -7,7 +7,7 @@ val elem = FileIO.load("/home/freitas/Development/Projects/TAP/1130604_1160907_t
 
 val vivas =  Functions.deserialize(elem).get
 
-val scheduledVivasTry = MS03Scheduler.generateScheduledVivas(vivas)
+val scheduledVivasTry = MS03Scheduler.scheduleVivas(vivas)
 
 scheduledVivasTry.find(a => a.isFailure)
 

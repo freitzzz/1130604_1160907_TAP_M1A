@@ -7,16 +7,16 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Try}
 
 object MS01Scheduler extends DomainScheduler {
-  override def generateScheduledVivas(
-    vivas: List[Viva]
-  ): List[Try[ScheduledViva]] = {
+  override def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
 
-    val scheduledVivas = scheduleVivas(vivas)
+    val scheduledVivas = scheduleVivasInFCFSOrder(vivas)
 
     scheduledVivas
   }
 
-  private def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
+  private def scheduleVivasInFCFSOrder(
+    vivas: List[Viva]
+  ): List[Try[ScheduledViva]] = {
 
     @tailrec
     def auxScheduleVivas(

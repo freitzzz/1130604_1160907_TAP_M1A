@@ -10,19 +10,19 @@ import scala.xml.Elem
 
 object AssessmentMS01 extends Schedule {
   def create(xml: Elem): Try[Elem] = {
-    SchedulerResolver.applyScheduler(xml, MS01Scheduler.generateScheduledVivas)
+    SchedulerResolver.applyScheduler(xml, MS01Scheduler.scheduleVivas)
   }
 }
 
 object AssessmentMS03 extends Schedule {
   def create(xml: Elem): Try[Elem] = {
-    SchedulerResolver.applyScheduler(xml, MS03Scheduler.generateScheduledVivas)
+    SchedulerResolver.applyScheduler(xml, MS03Scheduler.scheduleVivas)
   }
 }
 
 object CustomAssessmentMS03 extends Schedule {
   def create(xml: Elem): Try[Elem] = {
-    SchedulerResolver.applyScheduler(xml, MS03Scheduler.generateScheduledVivas)
+    SchedulerResolver.applyScheduler(xml, MS03Scheduler.scheduleVivas)
   }
 }
 

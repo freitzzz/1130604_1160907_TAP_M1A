@@ -168,7 +168,7 @@ object Assessment01PropertyBasedTesting
           )
         )
 
-        val schedule = MS01Scheduler.generateScheduledVivas(vivas.toList)
+        val schedule = MS01Scheduler.scheduleVivas(vivas.toList)
 
         schedule.forall(_.isSuccess)
       }
@@ -280,7 +280,7 @@ object Assessment01PropertyBasedTesting
         )
 
         val scheduledVivasTry =
-          MS01Scheduler.generateScheduledVivas(vivas.toList)
+          MS01Scheduler.scheduleVivas(vivas.toList)
 
         val scheduledVivas = scheduledVivasTry.map(x => x.get)
 
@@ -351,7 +351,7 @@ object Assessment01PropertyBasedTesting
           )
         )
 
-        val schedule = MS01Scheduler.generateScheduledVivas(vivas.toList)
+        val schedule = MS01Scheduler.scheduleVivas(vivas.toList)
 
         schedule.forall(_.isSuccess)
       }
@@ -401,7 +401,7 @@ object Assessment01PropertyBasedTesting
         )
 
         val scheduledVivas = MS01Scheduler
-          .generateScheduledVivas(vivas.toList)
+          .scheduleVivas(vivas.toList)
           .flatMap(scheduleViva => scheduleViva.toOption)
 
         vivas.zipWithIndex.forall(
@@ -459,7 +459,7 @@ object Assessment01PropertyBasedTesting
         )
 
         val scheduledVivas = MS01Scheduler
-          .generateScheduledVivas(vivas.toList)
+          .scheduleVivas(vivas.toList)
           .flatMap(scheduleViva => scheduleViva.toOption)
 
         vivas.zipWithIndex.forall(
@@ -514,7 +514,7 @@ object Assessment01PropertyBasedTesting
         )
 
         val scheduledVivas = MS01Scheduler
-          .generateScheduledVivas(vivas.toList)
+          .scheduleVivas(vivas.toList)
           .flatMap(scheduleViva => scheduleViva.toOption)
 
         val firstViva = vivas(0)
@@ -589,7 +589,7 @@ object Assessment01PropertyBasedTesting
         )
 
         val scheduledVivasTry =
-          MS01Scheduler.generateScheduledVivas(vivas.toList)
+          MS01Scheduler.scheduleVivas(vivas.toList)
 
         val scheduledVivas = scheduledVivasTry.map(x => x.get)
 

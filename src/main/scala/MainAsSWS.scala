@@ -14,7 +14,7 @@ object MainAsSWS {
 
     val vivas = Functions.deserialize(elem).get
 
-    val scheduledVivasTry = MS03Scheduler.generateScheduledVivas(vivas)
+    val scheduledVivasTry = MS03Scheduler.scheduleVivas(vivas)
 
     scheduledVivasTry.find(a => a.isFailure)
 

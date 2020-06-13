@@ -7,9 +7,7 @@ import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 object MS03Scheduler extends DomainScheduler {
-  override def generateScheduledVivas(
-    vivas: List[Viva]
-  ): List[Try[ScheduledViva]] = {
+  override def scheduleVivas(vivas: List[Viva]): List[Try[ScheduledViva]] = {
 
     val diffAndIntersect = VivasService.differAndIntersect(vivas)
 
