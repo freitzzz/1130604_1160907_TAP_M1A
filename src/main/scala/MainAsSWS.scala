@@ -8,7 +8,7 @@ object MainAsSWS {
   def main(args: Array[String]): Unit = {
     val elem = FileIO
       .load(
-        "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms03/valid_agenda_control_00_in.xml"
+        "/home/freitas/Development/Projects/TAP/1130604_1160907_tap_m1a/files/assessment/ms03/valid_agenda_control_18_in.xml"
       )
       .get
 
@@ -24,7 +24,7 @@ object MainAsSWS {
 
     println(scheduledVivas)
 
-    FileIO.save("/home/freitas/Desktop/ok2.xml", output)
+    FileIO.save("/home/freitas/Desktop/ok8.xml", output)
   }
 
 }
