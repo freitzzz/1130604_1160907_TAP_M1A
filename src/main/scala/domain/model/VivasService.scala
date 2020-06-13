@@ -30,11 +30,13 @@ object VivasService {
     )
   }
 
-  def findVivasThatShareTheSameJury(vivas: List[Viva]): Set[Viva] = {
+  def findVivasThatShareTheSameJury(
+    vivas: List[Viva]
+  ): Map[Set[Resource], List[Viva]] = {
 
     val vivasPerResourcesSet = vivas.groupBy(viva => viva.jury.asResourcesSet)
 
-    vivasPerResourcesSet.filter(_._2.size != 1).flatMap(_._2).toSet
+    vivasPerResourcesSet.filter(_._2.size != 1)
 
   }
 }

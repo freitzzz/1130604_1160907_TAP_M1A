@@ -24,6 +24,10 @@ object MS03Scheduler extends DomainScheduler {
     println(diffAndIntersect._2)
     println(diffAndIntersect._1)
 
+    println("Differences")
+
+    diffAndIntersect._1._1.foreach(println(_))
+
     //for the diff, simply calculate the best availability per resource and return it
     val isolatedScheduledVivas = ScheduledVivaService.ScheduleVivasIndividually(
       diffAndIntersect._1._1.toList
@@ -244,7 +248,7 @@ object MS03Scheduler extends DomainScheduler {
             .filter(_._2 == value._2)
             .filter(tuple => !tuple._1.exists(_.isFailure))
             .map(_._1.map(_.get))
-            .map((combination) => (combination.map(_.period), combination))
+            .map(combination => (combination.map(_.period), combination))
             .sortBy(_._1.toString())
             .map(_._2)
 
@@ -332,7 +336,7 @@ object MS03Scheduler extends DomainScheduler {
           val flatted =
             vivasScheduleCombinationsWithHighestSumOfPreferences.flatten
 
-          val biggestSchedulePreferencesForEachViva =
+          /*val biggestSchedulePreferencesForEachViva =
             vivasThatShareSameJury.map(
               viva =>
                 (
@@ -341,23 +345,34 @@ object MS03Scheduler extends DomainScheduler {
                     .filter(_.viva.title == viva.title)
                     .maxBy(_.scheduledPreference)
               )
-            )
+            )*/
 
           println("biggest")
 
-          biggestSchedulePreferencesForEachViva.zipWithIndex.foreach(asd => {
+          /* biggestSchedulePreferencesForEachViva.zipWithIndex.foreach(asd => {
             println(
               s"Viva: ${asd._1._1.title} Scheduled Preference: ${asd._1._2.scheduledPreference}}"
             )
-          })
+          })*/
 
-          val c = vivasScheduleCombinationsWithHighestSumOfPreferences.find(
-            _.contains(
-              biggestSchedulePreferencesForEachViva
-                .find(_._1.title == firstViva.title)
-                .get
-                ._2
+          val c = /*vivasScheduleCombinationsWithHighestSumOfPreferences
+            .filter(
+              _.contains(
+                biggestSchedulePreferencesForEachViva
+                  .find(_._1.title == firstViva.title)
+                  .get
+                  ._2
+              )
             )
+            .map(
+              scheduledVivas =>
+                (scheduledVivas, scheduledVivas.map(_.viva.title))
+            )
+            .sortBy(_._2.toString())*/
+
+          findBestCombinationsAccordingToVivasThatShareTheSameJury(
+            vivasScheduleCombinationsWithHighestSumOfPreferences,
+            vivasThatShareSameJury.toList
           )
 
           val a = vivasScheduleCombinationsWithHighestSumOfPreferences
@@ -365,7 +380,7 @@ object MS03Scheduler extends DomainScheduler {
             .headOption
           //.get
 
-          c.get
+          c.headOption.get
         }
 
         scheduledVivas.map(Success(_))
@@ -375,4 +390,36 @@ object MS03Scheduler extends DomainScheduler {
 
   }
 
+  @scala.annotation.tailrec
+  private def findBestCombinationsAccordingToVivasThatShareTheSameJury(
+    combinations: List[List[ScheduledViva]],
+    vivasThatShareSameJury: List[(Set[Resource], List[Viva])]
+  ): List[List[ScheduledViva]] = {
+
+    vivasThatShareSameJury match {
+      case ::(head, next) => {
+        val vivaWithPriority = head._2.headOption.get
+
+        val bestSchedulePreferenceInCombinationsForVivaWithPriority =
+          combinations.flatten
+            .filter(_.viva.title == vivaWithPriority.title)
+            .maxBy(_.scheduledPreference)
+
+        val bestCombinationsForVivaWithPriority = combinations.filter(
+          scheduledVivas =>
+            scheduledVivas.exists(
+              scheduledViva =>
+                scheduledViva.viva.title == vivaWithPriority.title && scheduledViva.scheduledPreference == bestSchedulePreferenceInCombinationsForVivaWithPriority.scheduledPreference
+          )
+        )
+
+        findBestCombinationsAccordingToVivasThatShareTheSameJury(
+          bestCombinationsForVivaWithPriority,
+          next
+        )
+      }
+      case Nil => combinations
+    }
+
+  }
 }
