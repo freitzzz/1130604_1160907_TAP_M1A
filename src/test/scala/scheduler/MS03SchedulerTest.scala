@@ -154,7 +154,26 @@ class MS03SchedulerTest extends AnyFunSuite with Matchers {
 
   test(
     "given a list of vivas which resources have availabilities that overlap after a period division, but at least a combination of scheduled vivas is successful, then the scheduler returns a successful complete schedule"
-  ) {}
+  ) {
+    //Arrange
+    val vivas =
+      VivasGiver.giveMeAListOfVivasThatShareResourcesAndSplittingAvailabilitesMakesOperlappingSometimes
+
+    //Act
+
+    val scheduledVivas = MS03Scheduler.scheduleVivas(vivas)
+    val expectedScheduledVivasSize = vivas.size
+
+    //Assert
+    scheduledVivas.size shouldBe expectedScheduledVivasSize
+
+    scheduledVivas
+      .filter(_.isSuccess)
+      .map(x => x.get)
+      .map(x => x.scheduledPreference)
+      .sum shouldBe 25
+
+  }
 
   test(
     "given a list of vivas that shares resources and it was not possible to schedule these then the scheduler returns a Failure indicating that the schedule is impossible"
@@ -555,6 +574,44 @@ class MS03SchedulerTest extends AnyFunSuite with Matchers {
               </teacher>
             </teachers>
             <externals>
+            </externals>
+          </resources>
+        </agenda>
+
+      Functions.deserialize(xml).get
+
+    }
+
+    def giveMeAListOfVivasThatShareResourcesAndSplittingAvailabilitesMakesOperlappingSometimes()
+      : List[Viva] = {
+
+      val xml =
+        <agenda xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../agenda.xsd"
+                duration="01:00:00">
+          <vivas>
+            <viva student="Student 001" title="Title 1">
+              <president id="T001"/>
+              <adviser id="T002"/>
+            </viva>
+            <viva student="Student 002" title="Title 2">
+              <president id="T002"/>
+              <adviser id="T001"/>
+              <supervisor id="E001"/>
+            </viva>
+          </vivas>
+          <resources>
+            <teachers>
+              <teacher id="T001" name="Teacher 001">
+                <availability start="2020-05-30T09:30:00" end="2020-05-30T12:30:00" preference="5"/>
+              </teacher>
+              <teacher id="T002" name="Teacher 002">
+                <availability start="2020-05-30T09:30:00" end="2020-05-30T12:30:00" preference="5"/>
+              </teacher>
+            </teachers>
+            <externals>
+              <external id="E001" name="External 001">
+                <availability start="2020-05-30T09:30:00" end="2020-05-30T12:30:00" preference="5"/>
+              </external>
             </externals>
           </resources>
         </agenda>
