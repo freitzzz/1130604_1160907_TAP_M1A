@@ -121,7 +121,7 @@ object ScheduledVivaService {
         .sortBy(-_._2)
 
     maximizedPeriodsWhichResourcesAvailablePerScheduledPreference match {
-      case ::(head, next) =>
+      case ::(head, _) =>
         if (maximizedPeriodsWhichResourcesAvailablePerScheduledPreference.count(
               _._2 == head._2
             ) == 1) {
@@ -138,10 +138,6 @@ object ScheduledVivaService {
         }
       case Nil => None
     }
-
-    /*maxedPeriods.find(
-      period => resourcesSet.forall(resource => resource.isAvailableOn(period))
-    )*/
   }
 
   private def updateViva(viva: Viva, updatedResources: List[Resource]) = {

@@ -3,17 +3,7 @@ package property
 import java.time.temporal.{ChronoUnit, TemporalUnit}
 import java.time.{LocalDateTime, ZoneOffset}
 
-import domain.model.{
-  Availability,
-  External,
-  NonEmptyString,
-  Period,
-  Preference,
-  Resource,
-  Role,
-  Supervisor,
-  Teacher,
-}
+import domain.model._
 import org.scalacheck.Gen
 
 object Generators {

@@ -2,16 +2,7 @@ package domainSchedulerImpl
 
 import java.time.Duration
 
-import domain.model.{
-  Availability,
-  External,
-  Jury,
-  Period,
-  Resource,
-  ScheduledViva,
-  Teacher,
-  Viva
-}
+import domain.model._
 import domain.schedule.DomainScheduler
 
 import scala.annotation.tailrec

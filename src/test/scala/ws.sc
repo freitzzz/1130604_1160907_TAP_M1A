@@ -1,9 +1,8 @@
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-import domain.model.{Adviser, Duration, Period, President, Supervisor}
+import domain.model.{Adviser, Duration, Period, President}
 import org.scalacheck.Gen
-import property.Generators
 
 Gen.listOf(President(), Adviser()).sample.get
 

@@ -1,23 +1,10 @@
 package assessment
 
-import java.time.Duration
-
-import domain.model.{
-  Agenda,
-  Availability,
-  External,
-  Jury,
-  Period,
-  Resource,
-  ScheduledViva,
-  Teacher,
-  Viva
-}
+import domain.model.Agenda
 import domain.schedule._
 import domainSchedulerImpl.{MS01Scheduler, MS03Scheduler}
 import xml.Functions
 
-import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 import scala.xml.Elem
 

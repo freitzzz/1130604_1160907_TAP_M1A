@@ -2,28 +2,10 @@ package xml
 
 import java.io.ByteArrayInputStream
 import java.time
+import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, LocalTime, ZoneOffset}
-import java.time.format.{DateTimeFormatter, ResolverStyle}
 
-import domain.model.{
-  Adviser,
-  Agenda,
-  Availability,
-  CoAdviser,
-  Duration,
-  External,
-  Jury,
-  NonEmptyString,
-  Period,
-  Preference,
-  President,
-  Resource,
-  Role,
-  ScheduledViva,
-  Supervisor,
-  Teacher,
-  Viva
-}
+import domain.model._
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
 

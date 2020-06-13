@@ -1,21 +1,12 @@
 package property
 
-import domain.model.{
-  Adviser,
-  CoAdviser,
-  Duration,
-  Jury,
-  President,
-  Resource,
-  Supervisor,
-  Viva
-}
-import org.scalacheck.{Gen, Prop, Properties}
 import java.time.LocalDateTime
 
 import assessment.AssessmentMS01
+import domain.model._
 import domainSchedulerImpl.MS01Scheduler
 import org.scalacheck.Test.Parameters
+import org.scalacheck.{Gen, Prop, Properties}
 import xml.Functions
 
 object Assessment01PropertyBasedTesting

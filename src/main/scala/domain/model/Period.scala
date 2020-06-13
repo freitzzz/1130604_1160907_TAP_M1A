@@ -3,7 +3,6 @@ package domain.model
 import java.time.LocalDateTime
 
 import scala.math.Ordering.Implicits._
-
 import scala.util.{Failure, Success, Try}
 
 sealed abstract case class Period private (start: LocalDateTime,

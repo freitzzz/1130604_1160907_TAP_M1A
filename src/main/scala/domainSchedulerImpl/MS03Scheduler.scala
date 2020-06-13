@@ -1,14 +1,6 @@
 package domainSchedulerImpl
 
-import domain.model.{
-  Jury,
-  Period,
-  Resource,
-  ScheduledViva,
-  ScheduledVivaService,
-  Viva,
-  VivasService
-}
+import domain.model._
 import domain.schedule.DomainScheduler
 
 import scala.annotation.tailrec
