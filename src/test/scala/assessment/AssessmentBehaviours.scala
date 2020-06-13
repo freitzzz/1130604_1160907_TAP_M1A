@@ -48,10 +48,6 @@ trait AssessmentBehaviours {
 
   private def testFile(f: File, ms: Elem => Try[Elem]): (File, Try[Boolean]) = {
 
-    if (f.getPath.endsWith("valid_agenda_control_27_in.xml")) {
-      println("a")
-    }
-
     val tout = for {
       ixml <- load(f) // load input file
       oxml <- ms(ixml) // convert input file into output file

@@ -8,23 +8,6 @@ Gen.listOf(President(), Adviser()).sample.get
 
 List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).grouped(2).toList
 
-/*
-0.to(100).foreach(_ => println(Gen.oneOf(List(Generators.genExternalsWith(List(), List(Supervisor()), 1))).sample.get.sample))*/
-
-
-/*
-0.to(10001).foreach(_=> println(Generators.genExternalWith(List(),List(Supervisor())).sample))*/
-
-
-/*
-val a = List("a").zipWithIndex
-
-val b = List("b").zipWithIndex
-
-val c = a ++ b
-
-val d = c.groupBy(d => d._2)*/
-
 0.to(0).toList
 
 val duration5h = Duration.create( java.time.Duration.ZERO.plus(5, ChronoUnit.HOURS)).get

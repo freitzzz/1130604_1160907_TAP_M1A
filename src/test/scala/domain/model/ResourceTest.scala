@@ -64,12 +64,6 @@ class ResourceTest extends AnyFunSuite with Matchers {
         )
         .get
 
-    println(periodX.overlaps(periodY))
-
-    println(periodX.overlaps(overlappingPeriod))
-
-    println(periodY.overlaps(overlappingPeriod))
-
     val availabilityX = Availability
       .create(periodX, Preference.create(5).get)
 
