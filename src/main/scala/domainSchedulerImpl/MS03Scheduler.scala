@@ -236,14 +236,15 @@ object MS03Scheduler extends DomainScheduler {
       )
 
     val maxSumOfSchedulePreferences =
-      maximizedVivas.sortBy(_._2).reverse.headOption
+      maximizedVivas.sortBy(-_._2).headOption
 
     maxSumOfSchedulePreferences match {
       case Some(value) =>
         val vivasScheduleCombinationsWithHighestSumOfPreferences =
           maximizedVivas
-            .filter(_._2 == value._2)
-            .filter(tuple => !tuple._1.exists(_.isFailure))
+            .filter(
+              tuple => tuple._2 == value._2 && !tuple._1.exists(_.isFailure)
+            )
             .map(_._1.map(_.get))
             .map(combination => (combination.map(_.period), combination))
             .sortBy(_._1.toString())
