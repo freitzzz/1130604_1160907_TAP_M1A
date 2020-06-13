@@ -54,7 +54,7 @@ object MS03Scheduler extends DomainScheduler {
             scheduledVivasSortedByDateTime
           } else {
             orderScheduledVivasByVivaTitle(
-              scheduledVivasSortedByDateTime.tail,
+              scheduledVivasSortedByDateTime.drop(1),
               List[ScheduledViva](scheduledVivasSortedByDateTime.headOption.get)
             )
           }
@@ -261,7 +261,8 @@ object MS03Scheduler extends DomainScheduler {
       val bestSchedulePreferenceInCombinationsForVivaWithPriority =
         combinations.flatten
           .filter(_.viva.title == vivaWithPriority.title)
-          .maxBy(_.scheduledPreference)
+          .maxByOption(_.scheduledPreference)
+          .get
 
       val bestCombinationsForVivaWithPriority = combinations.filter(
         scheduledVivas =>
