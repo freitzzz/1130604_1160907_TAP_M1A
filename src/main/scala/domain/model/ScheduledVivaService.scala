@@ -97,11 +97,8 @@ object ScheduledVivaService {
 
     val resourcesSet = viva.jury.asResourcesSet
 
-    val maxedPeriods = resourcesSet
+    val maxedPeriods = resourcesSet.toList
       .flatMap(resource => resource.availabilities)
-      .toList
-      .sortBy(x => x.preference.value)
-      .reverse
       .map(
         availability =>
           Period
