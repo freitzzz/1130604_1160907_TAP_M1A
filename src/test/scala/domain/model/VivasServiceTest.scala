@@ -829,4 +829,22 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
 
     vivasThatShareTheSameResources.size shouldBe 0
   }
+
+  test(
+    "given an empty list, the result of findVivasThatShareTheSameJury should be an empty map"
+  ) {
+
+    // Arrange
+
+    val vivas = List[Viva]()
+
+    // Act
+
+    val vivasThatShareTheSameJury =
+      VivasService.findVivasThatShareTheSameJury(vivas)
+
+    // Assert
+
+    vivasThatShareTheSameJury shouldBe Map.empty[Set[Resource], List[Viva]]
+  }
 }

@@ -9,14 +9,12 @@ import scala.util.{Failure, Success, Try}
 import scala.xml.Elem
 
 object AssessmentMS01 extends Schedule {
-  // TODO: Use the functions in your own code to implement the assessment of ms01
   def create(xml: Elem): Try[Elem] = {
     SchedulerResolver.applyScheduler(xml, MS01Scheduler.generateScheduledVivas)
   }
 }
 
 object AssessmentMS03 extends Schedule {
-  // TODO: Use the functions in your own code to implement the assessment of ms03
   def create(xml: Elem): Try[Elem] = {
     SchedulerResolver.applyScheduler(xml, MS03Scheduler.generateScheduledVivas)
   }

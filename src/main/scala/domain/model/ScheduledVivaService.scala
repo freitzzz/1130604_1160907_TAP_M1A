@@ -1,6 +1,6 @@
 package domain.model
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 object ScheduledVivaService {
 
@@ -76,7 +76,15 @@ object ScheduledVivaService {
 
     vivas.map(
       viva =>
-        ScheduledViva.create(viva, findResourcesMaxedAvailability(viva).get)
+        findResourcesMaxedAvailability(viva) match {
+          case Some(value) => ScheduledViva.create(viva, value)
+          case None =>
+            Failure(
+              new IllegalStateException(
+                s"Viva $viva could not be scheduled as at least one resource is not available in the viva period"
+              )
+            )
+      }
     )
   }
 
@@ -85,7 +93,6 @@ object ScheduledVivaService {
   The algorithm keeps looking to the next maxed availabilities until it finds a period of time where all resources are
   simultaneously available.
    */
-  // TODO Update unit tests
   private def findResourcesMaxedAvailability(viva: Viva): Option[Period] = {
 
     val resourcesSet = viva.jury.asResourcesSet
