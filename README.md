@@ -289,6 +289,20 @@ After fixing this issues, the property was up and running, but after adding a fe
 
 ## Scheduling Algorithm Refinement with Resource Availability Preference Optimization (MS03)
 
+This sections covers in detail the last milestone of the project, which goal is to permit the schedule of vivas based on the maximization of the resource availability preferences. First an initial introduction to the scheduler requirements, constraints and concerns will be presented. Consequently it will be described how the scheduler works under the hood, its limitations and optimizations applied in order to increase its performance. In the latter it will exposed and explained the functional tests designed to validate the algorithm, as well as future improvements of the solution.
+
+### Requirements, Concerns and Contraints
+
+### How the Scheduler works
+
+### Limitations
+
+### Applied Optimizations
+
+### Functional Tests conceived to validate the Scheduler
+
+### Future Improvements
+
 ### Team Members
 
 `Gustavo Moreira 1130604@isep.ipp.pt`
