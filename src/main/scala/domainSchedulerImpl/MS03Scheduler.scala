@@ -18,17 +18,21 @@ object MS03Scheduler extends DomainScheduler {
       diffAndIntersect._1._1.toList
     )
 
-    //for the intersect, apply algorithm
+    //for the intersect, apply algorithm shared resources viva scheduled preference maximization algoritm
 
     val sharedScheduledVivas =
       if (diffAndIntersect._2._1.nonEmpty) {
-        val vivasWhichResourcesIntersect =
+
+        val vivasWhichResourcesIntersectPerTheirAppearanceOrder =
           diffAndIntersect._2._1
             .map(viva => (viva, vivas.indexOf(viva)))
             .toList
             .sortBy(_._2)
             .map(_._1)
-        scheduleVivasThatShareResources(vivasWhichResourcesIntersect)
+
+        scheduleVivasThatShareResources(
+          vivasWhichResourcesIntersectPerTheirAppearanceOrder
+        )
       } else {
         List()
       }
@@ -112,7 +116,31 @@ object MS03Scheduler extends DomainScheduler {
     vivas: List[Viva]
   ): List[Try[ScheduledViva]] = {
 
-    def auxFindVivaThatHasTheBiggestSchedulePreference(
+    /**
+      * Finds all possible scheduled viva combinations by creating a tree of scheduled vivas.
+      *
+      * Each node corresponds to a possible period that a viva can be scheduled and thus a state of a complete schedule.
+      * Each branch marks the follow-up to the complete schedule
+      * In order to be able to identify each complete schedule in the final result, the previous tree branch and the sum
+      * of the schedule is kept so the next schedule can grab these and chain these to them.
+      *
+      * The result of the function is a list of trees, in which each tree is root nodes correspond to a viva of the given vivas
+      * With this, in the end we can find which combination is considered the best based on the criteria of
+      * max sum of scheduled preferences, schedules periods of time earliness and vivas that share the same jury
+      *
+      *                       _________
+      *                      |
+      *     ___________      | P1
+      *    |                 | P2
+      *    | P1 --------- V2 | P3
+      *    | P2              | ....
+      * V1 | P3              | PN
+      *    |                 |__________
+      *    | ...
+      *    | PN
+      *    |____________
+      */
+    def findScheduledVivaCombinations(
       vivas: List[Viva],
       tuples: List[(List[Try[ScheduledViva]], Int)],
       previousTreeBranch: List[Try[ScheduledViva]] = List[Try[ScheduledViva]](),
@@ -128,7 +156,7 @@ object MS03Scheduler extends DomainScheduler {
           val vivaJury = headViva.jury
           val vivaJuryAsResourcesSet = vivaJury.asResourcesSet
 
-          scheduleVivaItsPossiblePeriods(
+          scheduleVivaInItsPossiblePeriods(
             possibleVivaPeriods,
             headViva,
             vivaJuryAsResourcesSet,
@@ -146,7 +174,7 @@ object MS03Scheduler extends DomainScheduler {
     }
 
     @tailrec
-    def scheduleVivaItsPossiblePeriods(
+    def scheduleVivaInItsPossiblePeriods(
       periods: List[Period],
       headViva: Viva,
       vivaJuryAsResourcesSet: Set[Resource],
@@ -182,14 +210,14 @@ object MS03Scheduler extends DomainScheduler {
 
           val newTreeSum = previousTreeSum + sumOfPreferences
 
-          val temp = auxFindVivaThatHasTheBiggestSchedulePreference(
+          val temp = findScheduledVivaCombinations(
             updatedVivas,
             tuples ++ List((newTreeBranch, newTreeSum)),
             newTreeBranch,
             newTreeSum
           )
 
-          scheduleVivaItsPossiblePeriods(
+          scheduleVivaInItsPossiblePeriods(
             next,
             headViva,
             vivaJuryAsResourcesSet,
@@ -206,7 +234,7 @@ object MS03Scheduler extends DomainScheduler {
     }
 
     val maximizedVivas =
-      auxFindVivaThatHasTheBiggestSchedulePreference(
+      findScheduledVivaCombinations(
         vivas,
         List[(List[Try[ScheduledViva]], Int)]()
       )
