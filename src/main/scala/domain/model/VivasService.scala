@@ -8,9 +8,7 @@ object VivasService {
     * to the pair of the vivas that do not share resources and the corresponding resources that are not shared
     * and the second tuple tuple the pair of the vivas that share resources and the corresponding resources that are shared
     */
-  def differAndIntersect(
-    vivas: List[Viva]
-  ): ((Set[Viva], List[Resource]), (Set[Viva], List[Resource])) = {
+  def differAndIntersect(vivas: List[Viva]): (List[Viva], List[Viva]) = {
 
     val vivasResources =
       vivas.flatMap(x => x.jury.asResourcesSet.toList)
@@ -18,16 +16,12 @@ object VivasService {
     val count = vivasResources.groupBy(identity).view.mapValues(_.size)
 
     val intersects = count.filter(x => x._2 > 1).keys.toList
-    val differences = count.filter(x => x._2 == 1).keys.toList
 
     // TODO: Optimize
     val vivasWhichResourcesIntersect =
       vivas.filter(_.jury.asResourcesSet.exists(r => intersects.contains(r)))
 
-    (
-      (vivas.diff(vivasWhichResourcesIntersect).toSet, differences),
-      (vivasWhichResourcesIntersect.toSet, intersects)
-    )
+    (vivas.diff(vivasWhichResourcesIntersect), vivasWhichResourcesIntersect)
   }
 
   def findVivasThatShareTheSameJury(

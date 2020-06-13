@@ -12,19 +12,17 @@ object MS03Scheduler extends DomainScheduler {
     val diffAndIntersect = VivasService.differAndIntersect(vivas)
 
     //for the diff, simply calculate the best availability per resource and return it
-    val isolatedScheduledVivas = ScheduledVivaService.ScheduleVivasIndividually(
-      diffAndIntersect._1._1.toList
-    )
+    val isolatedScheduledVivas =
+      ScheduledVivaService.ScheduleVivasIndividually(diffAndIntersect._1)
 
     //for the intersect, apply algorithm shared resources viva scheduled preference maximization algoritm
 
     val sharedScheduledVivas =
-      if (diffAndIntersect._2._1.nonEmpty) {
+      if (diffAndIntersect._2.nonEmpty) {
 
         val vivasWhichResourcesIntersectPerTheirAppearanceOrder =
-          diffAndIntersect._2._1
+          diffAndIntersect._2
             .map(viva => (viva, vivas.indexOf(viva)))
-            .toList
             .sortBy(_._2)
             .map(_._1)
 
