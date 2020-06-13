@@ -104,9 +104,44 @@ object ScheduledVivaService {
             .get
       )
 
-    maxedPeriods.find(
-      period => resourcesSet.forall(resource => resource.isAvailableOn(period))
+    val periodsWhichResourcesAreAvailable = maxedPeriods.filter(
+      period => resourcesSet.forall(_.isAvailableOn(period))
     )
+
+    val maximizedPeriodsWhichResourcesAvailablePerScheduledPreference =
+      periodsWhichResourcesAreAvailable
+        .map(
+          period =>
+            (
+              period,
+              ScheduledVivaService
+                .calculateSumOfPreferences(resourcesSet, period)
+          )
+        )
+        .sortBy(-_._2)
+
+    maximizedPeriodsWhichResourcesAvailablePerScheduledPreference match {
+      case ::(head, next) =>
+        if (maximizedPeriodsWhichResourcesAvailablePerScheduledPreference.count(
+              _._2 == head._2
+            ) == 1) {
+          Some(head._1)
+        } else {
+          Some(
+            maximizedPeriodsWhichResourcesAvailablePerScheduledPreference
+              .filter(_._2 == head._2)
+              .sortBy(_._1.start)
+              .headOption
+              .get
+              ._1
+          )
+        }
+      case Nil => None
+    }
+
+    /*maxedPeriods.find(
+      period => resourcesSet.forall(resource => resource.isAvailableOn(period))
+    )*/
   }
 
   private def updateViva(viva: Viva, updatedResources: List[Resource]) = {
