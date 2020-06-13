@@ -85,6 +85,7 @@ object ScheduledVivaService {
   The algorithm keeps looking to the next maxed availabilities until it finds a period of time where all resources are
   simultaneously available.
    */
+  // TODO Update unit tests
   private def findResourcesMaxedAvailability(viva: Viva): Option[Period] = {
 
     val resourcesSet = viva.jury.asResourcesSet
