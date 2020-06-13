@@ -715,7 +715,15 @@ class VivasServiceTest extends AnyFunSuite with Matchers {
 
     //Assert
 
-    vivasThatShareTheSameResources.size shouldBe 2
+    vivasThatShareTheSameResources shouldBe Map[Set[Resource], List[Viva]](
+      (
+        Set[Resource](
+          sharedPresidentBetweenViva1AndViva2,
+          sharedAdviserBetweenViva1AndViva2
+        ),
+        List[Viva](viva1, viva2)
+      )
+    )
 
   }
 
