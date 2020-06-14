@@ -377,7 +377,7 @@ In order to optimize the scheduler, there is the need to first divide the input 
 - Algorithm that maximizes resources availabilities preferences without calculating all possible combinations of schedule, which takes as input the vivas that do not share resources;
 - Algorithm that maximizes resources availabilities preferences by calculating all possible combinations of schedule, which takes as input the vivas that do share resources.
 
-To have a better understanding of the scheduler, a graphical representation can be conceived, as seen below in Figure X.
+To have a better understanding of the scheduler, a graphical representation can be conceived, as seen below in Figure 9.
 
 ![overview_ms03_scheduler](documentation/diagrams/overview_ms03_scheduler.png)
 
