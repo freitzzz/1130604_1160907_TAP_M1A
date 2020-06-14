@@ -9,6 +9,7 @@ The development was divided in three milestones, being the first one an MVP impl
 The next sections will explain in detail topics such as the coding guidelines imposed in the project to promote the code quality and readness by the current and future developers, the established domain and how functional design was adopted to certify it in the code, how input files are parsed, how each scheduling algorithm is designed and works as well how property based testing was tackled.
 
 ### MS01
+
 The first milestone was developed under the Test Driven Development approach (TDD). Since this was the beginning of the project, every domain model concept was still under development, and the code base was non existent.
 In order to ensure a good development and preventing the maximum amount of bugs since the first moment, we first wrote unit tests that would ensure the correctness of our domain model. Only after have the tests written, we started the development of the first come first served algorithm.
 This approach helped us to prevent for some bug that might have shown up later in the project.
@@ -16,6 +17,7 @@ Writing the unit tests first definitely helped to clarify what we wanted from th
 Having a reasonable amount of unit tests present in the project would also prevent collateral changes to damage the domain model, as a failure when running the unit tests would signal a defect in the latest changes.
 
 ### MS02
+
 The second milestone was dedicated to Property Based Testing (PBT).
 In this milestone, the focus was to think of properties to include in our project and help to validate the code correctness. 
 Unit tests written during MS01 are a great way to have fast feedback about our code, but they don’t test every possible scenario. As a software developer, we try to include the best edge cases possible but since it’s a manual process, we might not even know or think about all the edge cases that we need to consider.
@@ -27,11 +29,12 @@ To summarize, these tests are great to implements when we want to test to many m
 As a side effect of development, when considering writing PBT for certain scenarios, we understood that these were easily written as a unit test, so those cases were also taken into consideration and included in the code test base for the project.
 
 ### MS03
-For this milestone, the requirement wAS to develop a new algorithm that is more effective is terms of achieving the scheduled vivas with a higher total preference value. The main idea was to repeat the process of developing a scheduler algorithm, but instead of a First Come First Served approach, the algorithm to be develop would have to be the most effective possible in terms of maximizing the preferences of the resources availabilities.
+
+For this milestone, the requirement was to develop a new algorithm that is more effective is terms of achieving the scheduled vivas with a higher total preference value. The main idea was to repeat the process of developing a scheduler algorithm, but instead of a First Come First Served approach, the algorithm to be developed would have to be the most effective possible in terms of maximizing the preferences of the resources availabilities.
 Since the domain concepts were not changed, Test Driven Development (TDD) was not applied, as the developed unit tests for the first milestone and the added ones that were included as a side effect from the second milestone already cover the domain concepts.
 Testing an algorithm which purpose is to maximize a very specific type of data in our domain makes it hard to generalize via unit or property based tests, so for this milestone the performed tests highly rely on the provided files for the assessment 03 evaluation, since we assume these files have been correctly tested previously.
-We take these files as a rule of thumb to validate the accuracy of the algorithm and to ensure it’s credibility.
-In addition to these tests, some functional tests for the scheduler algorithm were created to validate it’s general behaviour.
+We take these files as a rule of thumb to validate the accuracy of the algorithm and to ensure its credibility.
+In addition to these tests, functional tests for the scheduler algorithm were created to validate its general behaviour.
 Since the algorithm is composed in two different parts, one that directly schedules vivas which resources are exclusive for the viva, and other that compares the vivas that share resources in order to obtain the best optimization possible, we still want to ensure that both parts work correctly and independent of each other. For that reason, unit tests were created to simulate those conditions, and ensure the accuracy of the algorithm under these edge case scenarios.
 The scenarios tested include:
 
@@ -339,7 +342,7 @@ Period 2 (11:30 - 12:30): 3 - 5 - 5 => Total 13
 
 <center>Code Snippet 2 - Example of two combinations of schedule, which the second is the best</center>
 
-As seen in code snippet above, if we only considered the first earliest period, then we would take the wrong path of discovering the best combination as there is another period which leads to an higher sum of preferences. In order prevent this from happening, there is the need to realize that the scheduling is not a linear process, but rather an exploratory process. In order to make sure that the best combination of schedule is found, then there is the need to calculate the combinations for all possible periods. There is a catch to this last statement, as this is the expected for only one viva. If there is two or more vivas to schedule in which two or more of these share resources of their jury, then there is the notion of possible paths when splitting the period after a schedule of a viva that shares resources. This leads to a very complex algorithm which results in an heavy computing task that scales in space and time at `O(n!)` (TODO: ISTO PODE TAR ERRADO, CONFIRMAR) time.
+As seen in code snippet above, if we only considered the first earliest period, then we would take the wrong path of discovering the best combination as there is another period which leads to an higher sum of preferences. In order prevent this from happening, there is the need to realize that the scheduling is not a linear process, but rather an exploratory process. In order to make sure that the best combination of schedule is found, then there is the need to calculate the combinations for all possible periods. There is a catch to this last statement, as this is the expected for only one viva. If there is two or more vivas to schedule in which two or more of these share resources of their jury, then there is the notion of possible paths when splitting the period after a schedule of a viva that shares resources. This leads to a very complex algorithm which results in an heavy computing task that scales in space and time at `O(n!)` time.
 
 After all combinations are calculated, it is necessary to decide which one of these is the desired. The main requirement is that the best is the one with higher sum of schedule preferences. Yet, since we are calculating all possible combinations, there could be more than one combination with higher sum of schedule preferences. The tie-breaker criteria in these cases is to choose the one which periods are the earliest. There could also exist vivas that share the same jury. On these situations, the priority is the combination which schedule preference is the highest for the viva which appears first in the schedule input. So for example, if the following situation occurred, then the desired combination would be **C2** as vivas V2 and V3 share the same jury and in combination C2, **V2** has the highest schedule preference.
 
@@ -463,24 +466,22 @@ Once these periods are known, it is necessary to iterate through all them and re
 #### Output Ordering
 
 The output ordering is defined by the business rules criteria and applied accordingly in the algorithm.
-After calculating all the possible vivas scheduling, the option with the biggest sum returned. However, it is still unordered, so the necessary steps still need to be applied in order to achieve the correct ordering. 
-In this case, the first step is to sort the scheduled vivas the it’s time period, starting for the earliest until we reach the latest. This step has a complexity of O(Nlog(N)), since we are dealing with a sortBy which under the hood is a timsort implementation, and in the worst case scenario is an O(Nlog(N)) complexity.
-After executing this step, we obtain an ordered list by periods, but we still need to verify if there are periods that are repeated, because in these cases, we still want to order it by viva title. We group the list in periods that are equal to themselves and filter the cases where the result of the groupby operation is bigger than 1, which indicates a repeated period, and finally applying a flatMap to facilitate the next step in the ordering part of the algorithm.
+After calculating all the possible vivas scheduling, the option with the biggest sum is returned. However, it is still unordered, so the necessary steps still need to be applied in order to achieve the correct ordering. 
+In this case, the first step is to sort the scheduled vivas to their occurrence time period, starting for the earliest until we reach the latest. This step has a complexity of O(Nlog(N)), since we are dealing with a `sortBy` function which under the hood is a `timsort` (hybrid use of insertion + merge sort) implementation, and in the worst case scenario has O(Nlog(N)) algorithmic complexity.
+After executing this step, we obtain an ordered list by periods, but we still need to verify if there are periods that are repeated, because in these cases, we still want to order it alphabetically by viva title. We group the list in periods that are equal to themselves and filter the cases where the result of the `groupBy` function is bigger than 1, which indicates a repeated period, and finally applying the `flatMap` function to facilitate the next step in the ordering part of the algorithm.
 In case there are multiple vivas scheduled for the same period, a simple tail recursive algorithm is applied to order those period by viva title.
-The totally complexity of the algorithm is O(N(Log(N)) + O(N) in the worst case scenario because the validation of multiple vivas happening in the same time period implies a maximum complecity of O(N)
-
-
+The totally complexity of the algorithm is O(N(Log(N)) + O(N) in the worst case scenario because the validation of multiple vivas happening in the same time period implies a maximum space complexity of O(N).
 
 ### Limitations
 
 Due to the complexity of the algorithm, from a certain amount of vivas and availabilities provided as inputs, the algorithm starts to perform badly in usable human time.
-Another limitation is related to the available memory of a machine during runtime execution of the algorithm. Since we explore every possibility of every branch in the tree, it can get pretty expensive to allocate of that memory.
-We didn’t define a limit of vivas that can be scheduled in 8gb of ram, but creating an input file that is big enough to cause a lack of memory would be a simple solution to evaluate how limited in term of inputs the algorithm can be.
+Another limitation is related to the available memory of a machine during runtime execution of the algorithm. Since we explore every possibility of every branch in the tree, it can get pretty expensive to allocate such chunks of the data structure in the main memory.
+We didn’t define a limit of vivas that can be scheduled in 8GB of RAM, but creating an input file that is big enough to cause a lack of memory would be a simple solution to evaluate how limited in term of inputs the algorithm can be.
 
 
 ### Applied Optimizations
 
-Apart from the optimizations mentioned in the sections above, once the scheduler was implemented and working as expected, the group noticed that to execute all existing tests (85), in average it would be necessary to wait ~ 24 seconds in total for these to complete. The group knew that the core issue is the maximization of resources availabilites preferences in all schedule combinations algorithm, but the reduce its time it would be necessary to reduce its complexity, which in major terms would require to rewrite the whole algorithm. Although of this constraint, the group knew that other things could be optimized. After a brief analysis of all operations that happen in the scheduler, we noticed that one of most common operation calls is the `asResourcesSet` method of `Jury` class. This method provides the transformation of a given Jury instance as a set of resources (`Set[Resource]`). Since all classes are immutable and all data structures are immutable, then whenever modifying the transformed set of resources, the original jury instance wouldn't get modified, so it does not make a lot of sense to have a method that always transforms the Jury instance as a new Set of resources. To break these continuous creationg of a datastructure, the team refactored the method to be a `lazy val`. This way, the data structure would only be required to create once its called the first time. By applying these changes, the approximate time of tests completion reduced from ~24 to ~18, which is a 6 seconds difference. Having such good results from just a `keyword` change motivated the group to go further and optimize more operations. As Functional Programming principles were applied and a lot of data structures were used, then the majority of the code was data structure transformations. Having this in consideration, the team identified that some functions and transformations were being unnecessarily applied. For example the function that differentiated the vivas that shared resources from those who did not shared resources (`differAndIntersect`), was returning a tuple of `(Set[Viva], List[Resource]), (Set[Viva], List[Resource])`, but after the operation call no resources were being used, just the set of vivas. These had to be removed in order to reduce the memory usage and the memory allocation calls. Also, after calling this function, `toList` operation was being called so `sortBy` function could be applied. To reduce the need of calling `toList`, instead of returning the vivas as a set, a list would ((List[Viva], List[Viva])) and thus removing the need to transform as a list in the calling code. This optimization is little but proves that there is always things that can be optimized. Other optimizations to data structure transformations were also applied, such as optimizing the transversal of a datastructure. For example in `findResourcesMaxedAvailability` the code that used to find the periods which a viva can occur was the following:
+Apart from the optimizations mentioned in the sections above, once the scheduler was implemented and working as expected, the group noticed that to execute all existing tests (85), in average it would be necessary to wait ~ 24 seconds in total for these to complete. The group knew that the core issue is the maximization of resources availabilites preferences in all schedule combinations algorithm, but to reduce its time it would be necessary to reduce its complexity, which in major terms would require to rewrite the whole algorithm. Although of this constraint, the group knew that other things could be optimized. After a brief analysis of all operations that happen in the scheduler, we noticed that one of most common operation calls is the `asResourcesSet` method of `Jury` class. This method provides the transformation of a given Jury instance as a set of resources (`Set[Resource]`). Since all classes are immutable and all data structures are immutable, then whenever modifying the transformed set of resources, the original jury instance wouldn't get modified, so it does not make a lot of sense to have a method that always transforms the Jury instance as a new Set of resources. To break these continuous creation of a data structure, the team refactored the method to be a `lazy val` value. This way, the data structure would only be required to create once its called for the first time. By applying these changes, the approximate time of tests completion reduced from ~24 to ~18 seconds, which is a 6 seconds difference. Having such good results from just a `keyword` change motivated the group to go further and optimize more operations. As Functional Programming principles were applied and a lot of data structures were used, then the majority of the code was data structure transformations. Having this in consideration, the team identified that some functions and transformations were being unnecessarily applied. For example the function that differentiated the vivas that shared resources from those who did not shared resources (`differAndIntersect`), was returning a tuple of `(Set[Viva], List[Resource]), (Set[Viva], List[Resource])`, but after the operation call no resources were being used, just the set of vivas. These had to be removed in order to reduce the memory usage and the memory allocation calls. Also, after calling this function, `toList` operation was being called so `sortBy` function could be applied. To reduce the need of calling `toList`, instead of returning the vivas as a set, a list would (`(List[Viva], List[Viva])`) and thus removing the need to transform as a list in the calling code. This optimization is little but proves that there is always things that can be optimized. Other optimizations to data structure transformations were also applied, such as optimizing the elements transversal of a data structure. For example in `findResourcesMaxedAvailability` the code that used to find the periods which a viva can occur was the following:
 
 ```
 
@@ -503,7 +504,7 @@ resourcesSet
 
 <center>Code Snippet 7 - Old code for finding the periods which a viva can occur in findResourcesMaxedAvailability function</center>
 
-If we analyse the transformations taking place, we identify that to apply the `sortBy` transformation, the data structure would require to be a list and thus the need of calling `toList` function. It is known that the data structure needs to be a list to apply the `sortBy` function, so there is nothing that is possible to optimize here right? Actually no because the `toList` function is being called after the `flatMap` function, which in normal conditions increases the size of the list. If the `toList` function is called before the `flatMap` function, less elements will need to be transvered on the `toList` operation. The final optimizations applied correspond to the sort of a data structure according to the highest value of scheduled preference. This is a *descending* sort so after calling `sortBy` function, the `reverse` function would need to be applied. This last function can be removed if on the `sortBy` function, the integer is negated (sortBy(- value)), which results in a descending sort as the bigger the number is negated, the less it is compared to lower negated numbers. Additionaly to the `sortBy` function, in situations where it is only necessary to get the first element with highest schedule preference, the `maxByOption` function was applied. After all these optimizations, the group was able to reduce the time to completely execute all tests from ~24 seconds to ~17 seconds, earning ~7 seconds of advantage. Take in mind that these tests are fairly complex (Assessment file tests + Functional Tests + Unit tests) and were run on a 6 year old laptop with a dual core mobile CPU (`Intel i7-3537U (4) @ 3.100GHz`) and 8GB of RAM on top of `Lubuntu 18.04 x64` distribution, with all the development tools open (InteliJ, Microsoft Teams for Linux and Google Chrome).
+If we analyse the transformations taking place, we identify that to apply the `sortBy` transformation, the data structure would require to be a list and thus the need of calling `toList` function. It is known that the data structure needs to be a list to apply the `sortBy` function, so there is nothing that is possible to optimize here right? Actually ther is because the `toList` function is being called after the `flatMap` function, which in normal conditions increases the size of the list. If the `toList` function is called before the `flatMap` function, less elements will need to be transvered on the `toList` operation. The final optimizations applied correspond to the sort of a data structure according to the highest value of scheduled preference. This is a *descending* sort so after calling `sortBy` function, the `reverse` function would need to be applied. This last function can be removed if on the `sortBy` function, the integer is negated (`sortBy(- value)`), which results in a descending sort as the bigger the number is negated, the less it is compared to lower negated numbers. Additionaly to the `sortBy` function, in situations where it is only necessary to get the first element with highest schedule preference, the `maxByOption` function was applied. After all these optimizations, the group was able to reduce the time to completely execute all tests from ~24 seconds to ~17 seconds, earning ~7 seconds of advantage. Take in mind that these tests are fairly complex (Assessment file tests + Functional tests + Unit tests) and were run on a 6 year old laptop with a dual core mobile CPU (`Intel i7-3537U (4) @ 3.100GHz`) and 8GB of RAM on top of `Lubuntu 18.04 x64` Linux distribution, with all the development tools open (InteliJ, Microsoft Teams for Linux and Google Chrome).
 
 ### Functional Tests conceived to validate the Scheduler
 
@@ -513,29 +514,29 @@ In order to validate such scenarios, the following tests were written:
 
 #### Given an empty list of vivas, then MS03 Scheduler returns an empty list
 
-We want to ensure that when a list of empty vivas is provided to the algorithm, then it’s prepared to handle this edge case scenario and that id does not break, and return an empty list of scheduled vivas instead.
+We want to ensure that when a list of empty vivas is provided to the algorithm, then it’s prepared to handle this edge case scenario and that it does not break, and return an empty list of scheduled vivas instead.
 
 #### Given a list of vivas that do not share resources, then the schedule that maximizes schedule preference of vivas which do not share resources is applied
 
-Since the algorithm is divided in two different parts, as at the beginning there is a split between vivas that share resources and vivas that have exclusive resources, we want to ensure that both parts of the algorithm are working correctly. For that end, this tests receives as an input a list of vivas that never share resources between them.
+Since the algorithm is divided in two different parts, as at the beginning there is a split between vivas that share resources and vivas that have exclusive resources, we want to ensure that both parts of the algorithm are working correctly. For that purpose, these tests receive as an input a list of vivas that never share resources between them and verify that the criteria to the scheduling of vivas that do not share resources are applied.
 
 #### Given a list of vivas that only share resources, then the schedule that maximizes schedule preference of vivas which that share resources is applied
 
-This test tests the other part referred in the test above. It ensures that the algorithm works when evaluating only resources that always share vivas between them.
+This test verifies the other part referred in the test above. It ensures that the algorithm works when evaluating only resources that always share vivas between them.
 
 #### Given a list of vivas that share and don't resources, then the schedule that maximizes schedule preference of vivas which that share resources is applied to vivas which share resources and the schedule that maximizes schedule preference of vivas which do not share resources is applied to vivas which do not share resources
 
-As a compliment of the above last two functional tests described, we also want to ensure that the algorithm works in it’s full usage, when both intersected and different vivas are present at the same time.
-This functional test in particular is equivalent to the files provided in the assessment 03 evaluation in most cases.
+As a compliment of the above last two functional tests described, we also want to ensure that the algorithm works in its full usage, when both intersected and different vivas are present at the same time.
+This functional test in particular is equivalent to the files provided in the Assessment 03 evaluation in most cases.
 
-#### Given a list of vivas which schedule period is not the same, then scheduler returns the scheduled vivas based on their period earliness
+#### Given a list of vivas which schedule period is not the same, then the scheduler returns the scheduled vivas based on their period earliness
 
-In this case, we want to ensure that the order of the calculated scheduled vivas period is chronological, starting from the earliest and ending on the latest.
+In this case, we want to ensure that the order of the calculated scheduled vivas period is chronological sorted, starting from the earliest and ending on the latest.
 To verify this, we provide a list of vivas that will never have the exact same scheduled period, and then we compare the periods of each scheduled viva. The period of the scheduled viva being evaluated must always be earlier than the next one, until the end of the list.
 
-#### Given a list of vivas which schedule period is the same, then scheduler returns the scheduled vivas based on their period earliness and to those scheduled vivas which period is the same the order is based on the viva title
+#### Given a list of vivas which schedule period is the same, then the scheduler returns the scheduled vivas based on their period earliness and to those scheduled vivas which period is the same the order is based on the viva title
 
-Sometimes vivas will be scheduled to the exact same time period. In those cases, we want to make sure that the breaking criteria decided by the business rules is applied. In this case, we provided initial vivas data that will force vivas to the scheduled in the same time period. The breaking criteria says that the vivas should be ordered by it’s title and order of arrival as an input. To validate this, we compare the order of the scheduled vivas with the order of the initial vivas, to ensure the validation of the defined breaking criteria.
+Sometimes vivas will be scheduled to the exact same time period. In those cases, we want to make sure that the breaking criteria decided by the business rules is applied. In this case, we provided initial vivas data that will force vivas to be scheduled in the same time period. The breaking criteria says that the vivas should be ordered by their title and order of arrival as an input. To validate this, we compare the order of the scheduled vivas with the order of the initial vivas, to ensure the validation of the defined breaking criteria.
 
 #### Given a list of vivas which resources have availabilities that overlap after a period division, but at least a combination of scheduled vivas is successful, then the scheduler returns a successful complete schedule
 
@@ -544,11 +545,11 @@ This is not possible in pratical terms, but one invalid overlaping possibility s
 
 #### Given a list of vivas that shares resources and it was not possible to schedule these then the scheduler returns a Failure indicating that the schedule is impossible
 
-Sometimes the provided data is not valid to schedule all the vivas. The data might be wrong because the referred resources of the vivas don’t exist, or the availabilities are not enough. In these cases, we want to make sure that the algorithm handles such scenarios, and returns the correct error message as output.
+Sometimes the provided data is not valid to schedule all the vivas. The data might be wrong because the referred resources of the vivas do not exist, or the availabilities are not enough. In these cases, we want to make sure that the algorithm handles such scenarios, and returns the correct error message as output.
  
 #### Given a list of vivas in which two vivas share the same jury, then the combination of scheduled vivas is based on the max sum of scheduled preferences and based on the order of the input of these two vivas that share the same jury
 
-Sometimes the provided data will have two vivas with the exact same jury. In these cases, we want to make sure that the first viva to be scheduled is the one that can be the most maximized in terms of it’s total preference. In case of a draw in the max preference value, the breaking criteria already explained above should still be valid. This functional test ensures this behaviour.
+Sometimes the provided data will have two vivas with the exact same jury. In these cases, we want to make sure that the first viva to be scheduled is the one that can be the most maximized in terms of its total preference. In case of a draw in the max preference value, the breaking criteria already explained above should still be valid. This functional test ensures this behaviour.
 
 #### Given a list of vivas in which four or more (6/8/10 ...) vivas share the same jury, then the combination of scheduled vivas is based on the max sum of scheduled preferences and based on the order of the input of these vivas that share the same jury
 
@@ -557,22 +558,23 @@ This last functional test ensures the same as the previous described one, but it
 
 ### Future Improvements
 
-Although the algorithm for the MS03 is effective in it’s result, it is a complete Bread First Search algorithm, where all possibilities for all scheduled vivas are evaluated, and only after obtaining all the possible scheduling, we chose the one that matches the business criteria.
+Although the algorithm for the MS03 is effective in its result, it is a complete Bread First Search algorithm, where all possibilities for all scheduled vivas are evaluated, and only after obtaining all the possible scheduling, the one that matches the business criteria is chosen.
 In practical terms, the longer the graph, the most computation intensive the algorithm will be.
-As of now, we utilize the Bread First Search as it was first defined, without later known techniques that reduce it’s computational effort without losing accuracy.
+As of now, we utilize the Bread First Search as it was first defined, without later known techniques that reduce its computational effort without losing accuracy.
 Among those techniques, here are a few to consider in further iterations of the project:
 
-- Use adjacency list to reduce memory usage and add element quickly.
+- Use adjacency list to reduce memory usage and add elements quicker.
 - Use dynamic programming to store optimal solutions. This would allow, for example, to verify if a node has already been visited and not check the result again.
 - Use an array for visited nodes to prevent visiting the same nodes repeatedly.
+- In alternative to the Bread First Search algorithm, we could have used another approach, usually called Depth First Search. In case we opted for this algorithm, it would be possible to use an intermediate value to determine if an upcoming combination would be more optimized than the current value. If a more optimized value could not be found, then it would not be necessary to go deeper in the tree.
 
 Furthermore, we may want to include load tests in the project to validate the algorithm breaking point in terms of how many vivas can it schedule in usable human time.
 As we questioned during the milestone 01 development, we may want to include load tests to verify some of the following questions:
 
-- Is the algorithm time effective to schedule in an optimal way all vivas from  the universities of Portugal?
+- Is the algorithm time efficient to schedule in an optimal way all vivas from the universities of Portugal?
 - What about the universities of the United States?
 - Can we sell the algorithm and be confident that will be able to schedule all the vivas that it receives as an input, without depending on the data?
-- In alternative to the Bread First Search algorithm, we could have used another approach, usually called Depth First Search. In case we opted for this algorithm, it would be possible to use an intermediate value to determine in an upcoming combination would be more optimized than the current value. If a more optimized value could not be found, then it would not be necessary to go deeper in the tree.
+
 
 
 ### Team Members
