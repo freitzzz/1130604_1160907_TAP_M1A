@@ -475,7 +475,30 @@ The totally complexity of the algorithm is O(N(Log(N)) + O(N) in the worst case 
 
 ### Applied Optimizations
 
-Apart from the optimizations mentioned in the sections above, ...
+Apart from the optimizations mentioned in the sections above, once the scheduler was implemented and working as expected, the group noticed that to execute all existing tests (85), in average it would be necessary to wait ~ 24 seconds in total for these to complete. The group knew that the core issue is the maximization of resources availabilites preferences in all schedule combinations algorithm, but the reduce its time it would be necessary to reduce its complexity, which in major terms would require to rewrite the whole algorithm. Although of this constraint, the group knew that other things could be optimized. After a brief analysis of all operations that happen in the scheduler, we noticed that one of most common operation calls is the `asResourcesSet` method of `Jury` class. This method provides the transformation of a given Jury instance as a set of resources (`Set[Resource]`). Since all classes are immutable and all data structures are immutable, then whenever modifying the transformed set of resources, the original jury instance wouldn't get modified, so it does not make a lot of sense to have a method that always transforms the Jury instance as a new Set of resources. To break these continuous creationg of a datastructure, the team refactored the method to be a `lazy val`. This way, the data structure would only be required to create once its called the first time. By applying these changes, the approximate time of tests completion reduced from ~24 to ~18, which is a 6 seconds difference. Having such good results from just a `keyword` change motivated the group to go further and optimize more operations. As Functional Programming principles were applied and a lot of data structures were used, then the majority of the code was data structure transformations. Having this in consideration, the team identified that some functions and transformations were being unnecessarily applied. For example the function that differentiated the vivas that shared resources from those who did not shared resources (`differAndIntersect`), was returning a tuple of `(Set[Viva], List[Resource]), (Set[Viva], List[Resource])`, but after the operation call no resources were being used, just the set of vivas. These had to be removed in order to reduce the memory usage and the memory allocation calls. Also, after calling this function, `toList` operation was being called so `sortBy` function could be applied. To reduce the need of calling `toList`, instead of returning the vivas as a set, a list would ((List[Viva], List[Viva])) and thus removing the need to transform as a list in the calling code. This optimization is little but proves that there is always things that can be optimized. Other optimizations to data structure transformations were also applied, such as optimizing the transversal of a datastructure. For example in `findResourcesMaxedAvailability` the code that used to find the periods which a viva can occur was the following:
+
+```
+
+resourcesSet
+  .flatMap(resource => resource.availabilities)
+  .toList
+  .sortBy(x => x.preference.value)
+  .reverse
+  .map(
+    availability =>
+      Period
+        .create(
+          availability.period.start,
+          availability.period.start.plus(viva.duration.timeDuration)
+        )
+        .get
+  )
+
+```
+
+<center>Code Snippet 7 - Old code for finding the periods which a viva can occur in findResourcesMaxedAvailability function</center>
+
+If we analyse the transformations taking place, we identify that to apply the `sortBy` transformation, the data structure would require to be a list and thus the need of calling `toList` function. It is known that the data structure needs to be a list to apply the `sortBy` function, so there is nothing that is possible to optimize here right? Actually no because the `toList` function is being called after the `flatMap` function, which in normal conditions increases the size of the list. If the `toList` function is called before the `flatMap` function, less elements will need to be transvered on the `toList` operation. The final optimizations applied correspond to the sort of a data structure according to the highest value of scheduled preference. This is a *descending* sort so after calling `sortBy` function, the `reverse` function would need to be applied. This last function can be removed if on the `sortBy` function, the integer is negated (sortBy(- value)), which results in a descending sort as the bigger the number is negated, the less it is compared to lower negated numbers. Additionaly to the `sortBy` function, in situations where it is only necessary to get the first element with highest schedule preference, the `maxByOption` function was applied. After all these optimizations, the group was able to reduce the time to completely execute all tests from ~24 seconds to ~17 seconds, earning ~7 seconds of advantage. Take in mind that these tests are fairly complex (Assessment file tests + Functional Tests + Unit tests) and were run on a 6 year old laptop with a dual core mobile CPU (`Intel i7-3537U (4) @ 3.100GHz`) and 8GB of RAM on top of `Lubuntu 18.04 x64` distribution, with all the development tools open (InteliJ, Microsoft Teams for Linux and Google Chrome).
 
 ### Functional Tests conceived to validate the Scheduler
 
