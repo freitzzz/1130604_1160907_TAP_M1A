@@ -363,9 +363,37 @@ To sum up, the output of the schedule should also be ordered by period earliness
 
 ### How the Scheduler works
 
+Given the requirements, constraints and concerns of the scheduler, it is now possible to conceive the scheduler based on these. It is known that the input is a list of vivas and the output the complete schedule of these. It is also known that the vivas can share resources, which leads to the three possibilities of inputs:
+
+- Vivas list in which all vivas do not share resources;
+- Vivas list in which all vivas only share resources;
+- Vivas list in which there is vivas that share and do not share resources.
+
+In order to optimize the scheduler, there is the need to first divide the input list in two parcels: the vivas who share resources and the vivas that do not share resources. With this we can apply two algorithms:
+
+- Algorithm that maximizes resources availabilities preferences without calculating all possible combinations of schedule, which takes as input the vivas that do not share resources;
+- Algorithm that maximizes resources availabilities preferences by calculating all possible combinations of schedule, which takes as input the vivas that do share resources.
+
+To have a better understanding of the scheduler, a graphical representation can be conceived, as seen below in Figure X.
+
+![overview_ms03_scheduler](documentation/diagrams/overview_ms03_scheduler.png)
+
+<center>Figure 9 - Overview of MS03 Scheduler<center>
+
+Once the main flow of the scheduler is known, it is now possible to implement each step of it. The following subsections detail two algorithms mentioned, as well as how the order is done.
+
+#### Resources Availabilities Preferences Maximization without calculating all possible combinations of schedule Algorithm
+
+#### Resources Availabilities Preferences Maximization by calculating all possible combinations of schedule Algorithm
+
+#### Output Ordering
+
+
 ### Limitations
 
 ### Applied Optimizations
+
+Apart from the optimizations mentioned in the sections above, ...
 
 ### Functional Tests conceived to validate the Scheduler
 
