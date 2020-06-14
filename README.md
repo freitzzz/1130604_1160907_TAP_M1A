@@ -378,13 +378,75 @@ To have a better understanding of the scheduler, a graphical representation can 
 
 ![overview_ms03_scheduler](documentation/diagrams/overview_ms03_scheduler.png)
 
-<center>Figure 9 - Overview of MS03 Scheduler<center>
+<center>Figure 9 - Overview of MS03 Scheduler</center>
 
 Once the main flow of the scheduler is known, it is now possible to implement each step of it. The following subsections detail two algorithms mentioned, as well as how the order is done.
 
 #### Resources Availabilities Preferences Maximization without calculating all possible combinations of schedule Algorithm
 
 #### Resources Availabilities Preferences Maximization by calculating all possible combinations of schedule Algorithm
+
+As described in the sections above, this algorithm calculates all possibilities of schedule taking in consideration the maximization of the resources availabilities preferences. Before implemeting it, the algorithm was designed taking in consideration the functional and technical requirements. It is known that the algorithm should calculate all possible combinations per period of time. This means that for each period of time, a part of combination must be checked. This also means that after *descending* on the just calculated part of combination, it is needed to calculate again the part of the combinaton for each period of time, and so on and so on ... This behaviour gives the notion of spanning combinations per period of time, a *..1 relationship. A datastructure specialized for this is a multi-node/level tree, in which each **node** is part of a combination of a viva schedule per a period of time and the tree **branches**/**edges** a link / chain between each part of these combinations.
+
+```
+
+  *                       _________
+  *                      |
+  *     ___________      | P1
+  *    |                 | P2
+  *    | P1 --------- V2 | P3
+  *    | P2              | ....
+  * V1 | P3              | PN
+  *    |                 |__________
+  *    | ...
+  *    | PN
+  *    |____________
+
+```
+
+<center>Code Snippet 4 - Illustrative example of a multi-node tree in which each node is part of a schedule combination and the branches a connection between these
+</center>
+
+There are various ways to represent a multi-node tree as a datastructure. Given that the technical requirements specify that all data structures must be immutable, then an optimizable datastructure to represent the tree is a List of tuples, in which each first element of the tuple is a combination of scheduled vivas and the second element the sum of the scheduled preferences. This way, once the tree is built, its just necessary to sort by the max value of the second element to get the combinations which are considered the most desired. Once again, as we are under the constraint of immutable data structures, and we need to span the computation per periods of time, then it is necessary to recur to recursiveness, so the tree list is supplied to the next level. This is done by suppling the previous branch / chain / link of the tree, which represents a combination of scheduled vivas, and its previous sum of schedule preferences as parameters of the recursive function. This way it is possible to chain the combination on the fly, or else this would have to be done after all combinations are calculated, and would require positional identifiers in the tree, such as sentinels, just so it could be possible to detect which branch belongs to each complete schedule combination.
+
+```
+
+def findScheduledVivaCombinations(
+  vivas: List[Viva],
+  tuples: List[(List[Try[ScheduledViva]], Int)],
+  previousTreeBranch: List[Try[ScheduledViva]] = List[Try[ScheduledViva]](),
+  previousTreeSum: Int = 0
+): List[(List[Try[ScheduledViva]], Int)] = {
+
+```
+
+<center>Code Snippet 5 - Function that finds all complete schedule combinations signature</center>
+
+So, to complete the tree, it is first needed to iterate through all vivas. Then for each viva, all possible periods that the viva can occur is calculated. This last operation of finding all possible periods is complex, as it requires to go through all resources availabilities and then ask all resources if these are available from the availability period start to availability period start + viva duration, which results in a O(N ^ 3) time operation.
+
+```
+
+// O(N) * (O(N) * (O(N))) = O(N) * O(N ^ 2) = O(N ^ 3)
+
+resourcesAvailabilitiesPeriodsPossibleForVivaDuration.filter(
+  period =>
+    vivaResources.forall(
+      _.isAvailableOn(
+        Period
+          .create(
+            period.start,
+            period.start.plus(vivaDuration.timeDuration)
+          )
+          .get
+      )
+  )
+)
+
+```
+
+<center>Code Snippet 6 - Find of all possible periods in which a viva can occur</center>
+
+Once these periods are known, it is necessary to iterate through all them and recursively call `findScheduledVivaCombinations` function, with the new calculated parcel of schedule combination. This leads to a **recursive** tree with N levels and M root nodes. Since the levels are the number of vivas and the root nodes the number of periods which the initial viva can occur on, then that means that the complexity of the algorith is O(M ^ N), which is highly complex but at least its not categorized as factorial complexity. Also since recursive functions are being conceived and one of the technical requirements is that all functions must tail recursive, that means that an additional parameter of the recursive function must exist, which holds the return of the function (List of combination tuples).
 
 #### Output Ordering
 
