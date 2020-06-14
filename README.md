@@ -27,7 +27,20 @@ To summarize, these tests are great to implements when we want to test to many m
 As a side effect of development, when considering writing PBT for certain scenarios, we understood that these were easily written as a unit test, so those cases were also taken into consideration and included in the code test base for the project.
 
 ### MS03
-[tbd]
+For this milestone, the requirement wAS to develop a new algorithm that is more effective is terms of achieving the scheduled vivas with a higher total preference value. The main idea was to repeat the process of developing a scheduler algorithm, but instead of a First Come First Served approach, the algorithm to be develop would have to be the most effective possible in terms of maximizing the preferences of the resources availabilities.
+Since the domain concepts were not changed, Test Driven Development (TDD) was not applied, as the developed unit tests for the first milestone and the added ones that were included as a side effect from the second milestone already cover the domain concepts.
+Testing an algorithm which purpose is to maximize a very specific type of data in our domain makes it hard to generalize via unit or property based tests, so for this milestone the performed tests highly rely on the provided files for the assessment 03 evaluation, since we assume these files have been correctly tested previously.
+We take these files as a rule of thumb to validate the accuracy of the algorithm and to ensure it’s credibility.
+In addition to these tests, some functional tests for the scheduler algorithm were created to validate it’s general behaviour.
+Since the algorithm is composed in two different parts, one that directly schedules vivas which resources are exclusive for the viva, and other that compares the vivas that share resources in order to obtain the best optimization possible, we still want to ensure that both parts work correctly and independent of each other. For that reason, unit tests were created to simulate those conditions, and ensure the accuracy of the algorithm under these edge case scenarios.
+The scenarios tested include:
+
+- No vivas are scheduled when no vivas are provided in first place.
+- Algorithm works correctly when vivas only have exclusive resources
+- Algorithm works correctly when vivas always share the same resources
+- Algorithm works correctly with both scenarios simultaneously.
+- Algorithm correctly applies the breaking criteria when necessary.
+
 
 ## Coding Guidelines
 
