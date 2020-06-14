@@ -312,6 +312,42 @@ This sections covers in detail the last milestone of the project, which goal is 
 
 ### Requirements, Concerns and Contraints
 
+Instead of taking in consideration only the input order of the vivas, as seen in MS01 scheduler, the scheduler of this milestone should prioritize the resources availability preference, so the vivas take place in the best desired period of the jury. On a very high perspective, this seems a linear process of discovering the availabilities with highest preference for a given period that starts the earliest. Yet this assumption that the first combination of schedules is the best is wrong, as for example the following can occur:
+
+```
+
+(Period) : (Max Preference of Resource 1) - (Max Preference of Resource 2) - (Max Preference of Resource 3)
+
+Period 1 (09:30 - 10:30): 5 - 5 - 2 => Total 12
+
+Period 2 (11:30 - 12:30): 3 - 5 - 5 => Total 13
+
+```
+
+<center>Code Snippet 2 - Example of two combinations of schedule, which the second is the best</center>
+
+As seen in code snippet above, if we only considered the first earliest period, then we would take the wrong path of discovering the best combination as there is another period which leads to an higher sum of preferences. In order prevent this from happening, there is the need to realize that the scheduling is not a linear process, but rather an exploratory process. In order to make sure that the best combination of schedule is found, then there is the need to calculate the combinations for all possible periods. There is a catch to this last statement, as this is the expected for only one viva. If there is two or more vivas to schedule in which two or more of these share resources of their jury, then there is the notion of possible paths when splitting the period after a schedule of a viva that shares resources. This leads to a very complex algorithm which results in an heavy computing task that scales in space and time at `O(n!)` (TODO: ISTO PODE TAR ERRADO, CONFIRMAR) time.
+
+After all combinations are calculated, it is necessary to decide which one of these is the desired. The main requirement is that the best is the one with higher sum of schedule preferences. Yet, since we are calculating all possible combinations, there could be more than one combination with higher sum of schedule preferences. The tie-breaker criteria in these cases is to choose the one which periods are the earliest. There could also exist vivas that share the same jury. On these situations, the priority is the combination which schedule preference is the highest for the viva which appears first in the schedule input. So for example, if the following situation occurred, then the desired combination would be **C2** as vivas V2 and V3 share the same jury and in combination C2, **V2** has the highest schedule preference.
+
+```
+
+Input: V2, V1, V3
+
+Vivas who share the same Jury: V2, V3
+
+(Combination) : (Preference Viva 2) (Preference Viva 1) (Preference Viva 3)
+
+C1: V2 (10), V1 (11), V3(13) => 34
+C2: V2 (13), V1 (11), V3(10) => 34
+
+```
+
+<center>Code Snippet 3 - Example of combinations of scheduled vivas that share the same jury</center>
+
+To sum up, the output of the schedule should also be ordered by period earliness and if there is two or more vivas scheduled for the same period of time, the criteria is to alphabetically order by the viva title of those vivas who are schedule to the same period of time.
+
+
 ### How the Scheduler works
 
 ### Limitations
