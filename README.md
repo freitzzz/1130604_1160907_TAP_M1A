@@ -397,6 +397,43 @@ Apart from the optimizations mentioned in the sections above, ...
 
 ### Functional Tests conceived to validate the Scheduler
 
+In this milestone, we introduced functional tests to validate the correctness of the algorithm under specific input scenarios.
+
+In order to validate such scenarios, the following tests were written:
+
+#### given an empty list of vivas, then MS03 Scheduler returns an empty list
+
+We want to ensure that when a list of empty vivas is provided to the algorithm, then it’s prepared to handle this edge case scenario and that id does not break, and return an empty list of scheduled vivas instead.
+#### given a list of vivas that do not share resources, then the schedule that maximizes schedule preference of vivas which do not share resources is applied
+Since the algorithm is divided in two different parts, as at the beginning there is a split between vivas that share resources and vivas that have exclusive resources, we want to ensure that both parts of the algorithm are working correctly. For that end, this tests receives as an input a list of vivas that never share resources between them.
+#### given a list of vivas that only share resources, then the schedule that maximizes schedule preference of vivas which that share resources is applied
+This test tests the other part referred in the test above. It ensures that the algorithm works when evaluating only resources that always share vivas between them.
+#### given a list of vivas that share and don't resources, then the schedule that maximizes schedule preference of vivas which that share resources is applied to vivas which share resources and the schedule that maximizes schedule preference of vivas which do not share resources is applied to vivas which do not share resources
+As a compliment of the above last two functional tests described, we also want to ensure that the algorithm works in it’s full usage, when both intersected and different vivas are present at the same time.
+This functional test in particular is equivalent to the files provided in the assessment 03 evaluation in most cases.
+#### given a list of vivas which schedule period is not the same, then scheduler returns the scheduled vivas based on their period earliness
+
+In this case, we want to ensure that the order of the calculated scheduled vivas period is chronological, starting from the earliest and ending on the latest.
+To verify this, we provide a list of vivas that will never have the exact same scheduled period, and then we compare the periods of each scheduled viva. The period of the scheduled viva being evaluated must always be earlier than the next one, until the end of the list.
+#### given a list of vivas which schedule period is the same, then scheduler returns the scheduled vivas based on their period earliness and to those scheduled vivas which period is the same the order is based on the viva title
+
+Sometimes vivas will be scheduled to the exact same time period. In those cases, we want to make sure that the breaking criteria decided by the business rules is applied. In this case, we provided initial vivas data that will force vivas to the scheduled in the same time period. The breaking criteria says that the vivas should be ordered by it’s title and order of arrival as an input. To validate this, we compare the order of the scheduled vivas with the order of the initial vivas, to ensure the validation of the defined breaking criteria.
+#### given a list of vivas which resources have availabilities that overlap after a period division, but at least a combination of scheduled vivas is successful, then the scheduler returns a successful complete schedule
+
+Sometimes when applying the breadth first search, some split availabilities decisions will cause some options to have vivas scheduled with resources overlaping periods.
+This is not possible in pratical terms, but one invalid overlaping possibility should not cause the algorithm to completely fail, as long as there are other possible combinations that don’t have overlaping conditions. In this test we provide data that causes this scenario, but still returns a valid scheduling options for the vivas.
+#### given a list of vivas that shares resources and it was not possible to schedule these then the scheduler returns a Failure indicating that the schedule is impossible
+
+Sometimes the provided data is not valid to schedule all the vivas. The data might be wrong because the referred resources of the vivas don’t exist, or the availabilities are not enough. In these cases, we want to make sure that the algorithm handles such scenarios, and returns the correct error message as output.
+ 
+#### given a list of vivas in which two vivas share the same jury, then the combination of scheduled vivas is based on the max sum of scheduled preferences and based on the order of the input of these two vivas that share the same jury
+
+Sometimes the provided data will have two vivas with the exact same jury. In these cases, we want to make sure that the first viva to be scheduled is the one that can be the most maximized in terms of it’s total preference. In case of a draw in the max preference value, the breaking criteria already explained above should still be valid. This functional test ensures this behaviour.
+#### given a list of vivas in which four or more (6/8/10 ...) vivas share the same jury, then the combination of scheduled vivas is based on the max sum of scheduled preferences and based on the order of the input of these vivas that share the same jury
+
+This last functional test ensures the same as the previous described one, but it also ensures that the comparison works for more than 2 vivas.
+
+
 ### Future Improvements
 
 Although the algorithm for the MS03 is effective in it’s result, it is a complete Bread First Search algorithm, where all possibilities for all scheduled vivas are evaluated, and only after obtaining all the possible scheduling, we chose the one that matches the business criteria.
