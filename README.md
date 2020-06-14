@@ -6,8 +6,6 @@ The development was divided in three milestones, being the first one an MVP impl
 
 ## Milestones Development Process
 
-The next sections will explain in detail topics such as the coding guidelines imposed in the project to promote the code quality and readness by the current and future developers, the established domain and how functional design was adopted to certify it in the code, how input files are parsed, how each scheduling algorithm is designed and works as well how property based testing was tackled.
-
 ### MS01
 
 The first milestone was developed under the Test Driven Development approach (TDD). Since this was the beginning of the project, every domain model concept was still under development, and the code base was non existent.
@@ -43,6 +41,8 @@ The scenarios tested include:
 - Algorithm works correctly when vivas always share the same resources
 - Algorithm works correctly with both scenarios simultaneously.
 - Algorithm correctly applies the breaking criteria when necessary.
+
+The next sections will explain in detail topics such as the coding guidelines imposed in the project to promote the code quality and readness by the current and future developers, the established domain and how functional design was adopted to certify it in the code, how input files are parsed, how each scheduling algorithm is designed and works as well how property based testing was tackled.
 
 
 ## Coding Guidelines
