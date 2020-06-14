@@ -462,6 +462,14 @@ Once these periods are known, it is necessary to iterate through all them and re
 
 #### Output Ordering
 
+The output ordering is defined by the business rules criteria and applied accordingly in the algorithm.
+After calculating all the possible vivas scheduling, the option with the biggest sum returned. However, it is still unordered, so the necessary steps still need to be applied in order to achieve the correct ordering. 
+In this case, the first step is to sort the scheduled vivas the it’s time period, starting for the earliest until we reach the latest. This step has a complexity of O(Nlog(N)), since we are dealing with a sortBy which under the hood is a timsort implementation, and in the worst case scenario is an O(Nlog(N)) complexity.
+After executing this step, we obtain an ordered list by periods, but we still need to verify if there are periods that are repeated, because in these cases, we still want to order it by viva title. We group the list in periods that are equal to themselves and filter the cases where the result of the groupby operation is bigger than 1, which indicates a repeated period, and finally applying a flatMap to facilitate the next step in the ordering part of the algorithm.
+In case there are multiple vivas scheduled for the same period, a simple tail recursive algorithm is applied to order those period by viva title.
+The totally complexity of the algorithm is O(N(Log(N)) + O(N) in the worst case scenario because the validation of multiple vivas happening in the same time period implies a maximum complecity of O(N)
+
+
 
 ### Limitations
 
