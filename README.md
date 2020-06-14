@@ -473,6 +473,11 @@ The totally complexity of the algorithm is O(N(Log(N)) + O(N) in the worst case 
 
 ### Limitations
 
+Due to the complexity of the algorithm, from a certain amount of vivas and availabilities provided as inputs, the algorithm starts to perform badly in usable human time.
+Another limitation is related to the available memory of a machine during runtime execution of the algorithm. Since we explore every possibility of every branch in the tree, it can get pretty expensive to allocate of that memory.
+We didn’t define a limit of vivas that can be scheduled in 8gb of ram, but creating an input file that is big enough to cause a lack of memory would be a simple solution to evaluate how limited in term of inputs the algorithm can be.
+
+
 ### Applied Optimizations
 
 Apart from the optimizations mentioned in the sections above, ...
