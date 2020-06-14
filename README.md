@@ -384,6 +384,18 @@ Once the main flow of the scheduler is known, it is now possible to implement ea
 
 #### Resources Availabilities Preferences Maximization without calculating all possible combinations of schedule Algorithm
 
+One part of the algorithm is to find the resources availabilities maximization without considering all possible combinations.
+This part receives a viva and it only considers the viva as a standalone concept.
+It starts by transforming the jury of the viva in a set of resources.
+Then, all possible time periods of the resources are calculated based on their availabilities and the viva duration. At this point we get a list of all possible periods, not ordered in any specific way.
+The following operations is to find the time periods that are shared between the resources, so that we can discard the time period that will never be possible to be scheduled.
+Only after this step, the time periods are sorted based in their maximized preference between all the resources of the vivas. 
+At this point, we have an ordered list of preferences, starting by the one with the biggest sum of preferences of the resources, until the least preferred one.
+The last operation of this part of the algorithm is to simply grab the best time period, with additional validations in case there are more than one time period with the maximized sum of preferences.
+In terms of computational complexity, we can say that it’s complexity is O(N^4), where N is the total number of time periods of the resources, since we iterate through the periods one by one. It becomes O(N^4) as we chain iterations of the periods together. First, a map is done to iterate through all the periods.
+Then, to this map it’s applied a filter, and for this filter we also apply a forall to all periods. Finally, we verify if the period is valid inside the forall, making a total of O(N^4) complexity.
+
+
 #### Resources Availabilities Preferences Maximization by calculating all possible combinations of schedule Algorithm
 
 #### Output Ordering
