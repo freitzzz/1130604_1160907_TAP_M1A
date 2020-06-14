@@ -370,6 +370,7 @@ To sum up, the output of the schedule should also be ordered by period earliness
 ### Functional Tests conceived to validate the Scheduler
 
 ### Future Improvements
+
 Although the algorithm for the MS03 is effective in it’s result, it is a complete Bread First Search algorithm, where all possibilities for all scheduled vivas are evaluated, and only after obtaining all the possible scheduling, we chose the one that matches the business criteria.
 In practical terms, the longer the graph, the most computation intensive the algorithm will be.
 As of now, we utilize the Bread First Search as it was first defined, without later known techniques that reduce it’s computational effort without losing accuracy.
