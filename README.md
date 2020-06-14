@@ -334,6 +334,23 @@ This sections covers in detail the last milestone of the project, which goal is 
 ### Functional Tests conceived to validate the Scheduler
 
 ### Future Improvements
+Although the algorithm for the MS03 is effective in it’s result, it is a complete Bread First Search algorithm, where all possibilities for all scheduled vivas are evaluated, and only after obtaining all the possible scheduling, we chose the one that matches the business criteria.
+In practical terms, the longer the graph, the most computation intensive the algorithm will be.
+As of now, we utilize the Bread First Search as it was first defined, without later known techniques that reduce it’s computational effort without losing accuracy.
+Among those techniques, here are a few to consider in further iterations of the project:
+
+- Use adjacency list to reduce memory usage and add element quickly.
+- Use dynamic programming to store optimal solutions. This would allow, for example, to verify if a node has already been visited and not check the result again.
+- Use an array for visited nodes to prevent visiting the same nodes repeatedly.
+
+Furthermore, we may want to include load tests in the project to validate the algorithm breaking point in terms of how many vivas can it schedule in usable human time.
+As we questioned during the milestone 01 development, we may want to include load tests to verify some of the following questions:
+
+- Is the algorithm time effective to schedule in an optimal way all vivas from  the universities of Portugal?
+- What about the universities of the United States?
+- Can we sell the algorithm and be confident that will be able to schedule all the vivas that it receives as an input, without depending on the data?
+- In alternative to the Bread First Search algorithm, we could have used another approach, usually called Depth First Search. In case we opted for this algorithm, it would be possible to use an intermediate value to determine in an upcoming combination would be more optimized than the current value. If a more optimized value could not be found, then it would not be necessary to go deeper in the tree.
+
 
 ### Team Members
 
