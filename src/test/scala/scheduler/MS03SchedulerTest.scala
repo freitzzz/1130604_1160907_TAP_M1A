@@ -187,7 +187,7 @@ class MS03SchedulerTest extends AnyFunSuite with Matchers {
     val scheduledVivas = MS03Scheduler.scheduleVivas(vivas)
 
     //Assert
-    scheduledVivas.head.isFailure shouldBe true
+    scheduledVivas.headOption.get.isFailure shouldBe true
   }
 
   test(
